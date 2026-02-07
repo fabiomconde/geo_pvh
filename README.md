@@ -193,4 +193,5 @@ Formatos: GeoJSON, GML, Shapefile, KML
 
 ## Licença
 
-Dados sob licença [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+Dados sob licença [Creative Commons CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+    
