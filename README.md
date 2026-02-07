@@ -1,4 +1,4 @@
-# GeoPortal Porto Velho
+# Observatório de Conflitos Socioambientais e Direitos Humanos Porto Velho
 
 Sistema de Informação Geográfica (SIG) para monitoramento ambiental e territorial do município de Porto Velho, Rondônia.
 

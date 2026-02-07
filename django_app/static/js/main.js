@@ -5,23 +5,23 @@
 // Utility Functions
 const GeoPortal = {
     // Format numbers with Brazilian locale
-    formatNumber: function(num) {
+    formatNumber: function (num) {
         return new Intl.NumberFormat('pt-BR').format(num);
     },
 
     // Format area in hectares
-    formatArea: function(ha) {
+    formatArea: function (ha) {
         return this.formatNumber(Math.round(ha)) + ' ha';
     },
 
     // Format date
-    formatDate: function(dateStr) {
+    formatDate: function (dateStr) {
         const date = new Date(dateStr);
         return date.toLocaleDateString('pt-BR');
     },
 
     // API helper
-    fetchAPI: async function(endpoint) {
+    fetchAPI: async function (endpoint) {
         try {
             const response = await fetch(endpoint);
             if (!response.ok) throw new Error('API Error');
@@ -33,7 +33,7 @@ const GeoPortal = {
     },
 
     // Create Leaflet map with default settings
-    createMap: function(elementId, options = {}) {
+    createMap: function (elementId, options = {}) {
         const defaults = {
             center: [-8.76, -63.90],
             zoom: 10,
@@ -61,11 +61,11 @@ const GeoPortal = {
     },
 
     // Add WMS layer
-    addWMSLayer: function(map, layerName, options = {}) {
+    addWMSLayer: function (map, layerName, options = {}) {
         const defaults = {
             format: 'image/png',
             transparent: true,
-            attribution: 'GeoPortal PVH'
+            attribution: 'Observatório de Conflitos Socioambientais e Direitos Humanos - PVH'
         };
 
         const geoserverUrl = window.GEOSERVER_URL || '/geoserver';
@@ -78,7 +78,7 @@ const GeoPortal = {
     },
 
     // Create Chart.js chart with defaults
-    createChart: function(ctx, type, data, options = {}) {
+    createChart: function (ctx, type, data, options = {}) {
         const defaultOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -88,7 +88,7 @@ const GeoPortal = {
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             let label = context.dataset.label || '';
                             if (label) label += ': ';
                             if (context.parsed.y !== null) {
@@ -125,7 +125,7 @@ const GeoPortal = {
     },
 
     // Show loading spinner
-    showLoading: function(element) {
+    showLoading: function (element) {
         element.innerHTML = `
             <div class="d-flex justify-content-center align-items-center h-100">
                 <div class="spinner-border text-primary" role="status">
@@ -136,7 +136,7 @@ const GeoPortal = {
     },
 
     // Show error message
-    showError: function(element, message = 'Erro ao carregar dados') {
+    showError: function (element, message = 'Erro ao carregar dados') {
         element.innerHTML = `
             <div class="alert alert-danger m-3">
                 <i class="bi bi-exclamation-triangle"></i> ${message}
@@ -146,7 +146,7 @@ const GeoPortal = {
 };
 
 // Initialize tooltips and popovers on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize Bootstrap tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
                 e.preventDefault();

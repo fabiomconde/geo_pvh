@@ -17,7 +17,7 @@ from .models import (
 def home(request):
     """Home page - Dashboard principal"""
     context = {
-        'page_title': 'GeoPortal Porto Velho',
+        'page_title': 'Observatório de Conflitos Socioambientais e Direitos Humanos - Porto Velho',
         'geoserver_url': settings.GEOSERVER_URL,
     }
     return render(request, 'core_gis/home.html', context)
