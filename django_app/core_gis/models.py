@@ -16,7 +16,7 @@ class MunicipioRO(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'geo\".\"municipios_ro'
+        db_table = 'geo"."municipios_ro'
         verbose_name = 'Município de RO'
         verbose_name_plural = 'Municípios de RO'
 
@@ -35,7 +35,7 @@ class BairroPVH(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'geo\".\"bairros_pvh'
+        db_table = 'geo"."bairros_pvh'
         verbose_name = 'Bairro de Porto Velho'
         verbose_name_plural = 'Bairros de Porto Velho'
 
@@ -55,7 +55,7 @@ class DesmatamentoPVH(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'geo\".\"desmatamento_pvh'
+        db_table = 'geo"."desmatamento_pvh'
         verbose_name = 'Desmatamento PVH'
         verbose_name_plural = 'Desmatamentos PVH'
         ordering = ['-ano']
@@ -75,7 +75,7 @@ class AlertaDETER(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'geo\".\"alertas_deter'
+        db_table = 'geo"."alertas_deter'
         verbose_name = 'Alerta DETER'
         verbose_name_plural = 'Alertas DETER'
         ordering = ['-data_alerta']
@@ -95,7 +95,7 @@ class FocoCalor(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'geo\".\"focos_calor'
+        db_table = 'geo"."focos_calor'
         verbose_name = 'Foco de Calor'
         verbose_name_plural = 'Focos de Calor'
         ordering = ['-data_hora']
@@ -117,9 +117,29 @@ class AreaProtegida(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'geo\".\"areas_protegidas'
+        db_table = 'geo"."areas_protegidas'
         verbose_name = 'Área Protegida'
         verbose_name_plural = 'Áreas Protegidas'
+
+    def __str__(self):
+        return self.nome
+
+
+class DistritoPVH(models.Model):
+    """Distritos de Porto Velho"""
+    gid = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=100)
+    populacao_2022 = models.CharField(max_length=50, blank=True, null=True)
+    distancia_sede = models.CharField(max_length=50, blank=True, null=True)
+    caracteristicas = models.TextField(blank=True, null=True)
+    # Using PointField for compatibility with load script
+    geom = models.PointField(srid=4326, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'geo"."distritos_pvh'
+        verbose_name = 'Distrito de Porto Velho'
+        verbose_name_plural = 'Distritos de Porto Velho'
 
     def __str__(self):
         return self.nome

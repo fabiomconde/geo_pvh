@@ -2,7 +2,7 @@
 Views for PVH GeoPortal
 """
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Sum, Count, Avg
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
@@ -10,7 +10,7 @@ from django.conf import settings
 
 from .models import (
     DesmatamentoPVH, AlertaDETER, FocoCalor,
-    BairroPVH, MunicipioRO, AreaProtegida
+    BairroPVH, MunicipioRO, AreaProtegida, DistritoPVH
 )
 
 
@@ -54,6 +54,28 @@ def mapa_focos(request):
         'map_zoom': 10,
     }
     return render(request, 'core_gis/mapa_focos.html', context)
+
+
+def mapa_distritos(request):
+    """Mapa de distritos"""
+    context = {
+        'page_title': 'Mapa de Distritos',
+        'geoserver_url': settings.GEOSERVER_URL,
+        'map_center': [-8.76, -63.90],
+        'map_zoom': 8,
+    }
+    return render(request, 'core_gis/mapa_distritos.html', context)
+
+
+def distritos_geojson(request):
+    """API: Retorna os distritos em formato GeoJSON"""
+    print("DEBUG: Entered distritos_geojson view")
+    from django.core.serializers import serialize
+    distritos = DistritoPVH.objects.all()
+    print(f"DEBUG: Count {distritos.count()}")
+    geojson = serialize('geojson', distritos, geometry_field='geom', fields=('nome', 'populacao_2022', 'distancia_sede', 'caracteristicas'))
+    print(f"DEBUG: GeoJSON Type {type(geojson)}")
+    return HttpResponse(geojson, content_type='application/json')
 
 
 def dashboard_prodes(request):

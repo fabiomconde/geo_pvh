@@ -1,0 +1,22 @@
+<dataStore>
+  <id>DataStoreInfoImpl-4d6f1cd2:19c39f8849f:-7ff9</id>
+  <name>pvh_store</name>
+  <type>PostGIS</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-4d6f1cd2:19c39f8849f:-7ffb</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="schema">geo</entry>
+    <entry key="database">pvh_geoportal</entry>
+    <entry key="port">5432</entry>
+    <entry key="passwd">crypt2:xMMmyyhD31hzXB6A4otx99u0eT6pXZz2eHbfAtEXw/4=</entry>
+    <entry key="host">db</entry>
+    <entry key="dbtype">postgis</entry>
+    <entry key="user">postgres</entry>
+  </connectionParameters>
+  <__default>false</__default>
+  <dateCreated>2026-02-07 21:22:00.197 UTC</dateCreated>
+  <dateModified>2026-02-07 21:22:26.954 UTC</dateModified>
+  <disableOnConnFailure>false</disableOnConnFailure>
+</dataStore>

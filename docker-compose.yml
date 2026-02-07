@@ -65,8 +65,6 @@ services:
       context: ./django_app
       dockerfile: Dockerfile
     container_name: pvh_django
-    stdin_open: true
-    tty: true
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -85,7 +83,7 @@ services:
       - media_volume:/app/media
     ports:
       - "8000:8000"
-      - "5678:5678" # Porta do Debugger já está aqui, perfeito.
+      - "5678:5678"
     depends_on:
       db:
         condition: service_healthy
@@ -93,6 +91,7 @@ services:
         condition: service_started
     command: >
       sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
              python -m debugpy --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8000 --nothreading --noreload"
     networks:
       - geoportal_network

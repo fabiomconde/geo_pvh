@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mapa de Distritos - PVH GeoPortal{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <div id="map" style="width: 100%; height: calc(100vh - 70px);"></div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    .leaflet-popup-content-wrapper {
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .leaflet-popup-content {
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .district-popup h5 {
+        color: #f97316;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .district-popup p {
+        margin-bottom: 5px;
+        font-size: 0.95rem;
+    }
+
+    .district-popup strong {
+        color: #1e293b;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Initialize Map
+    var map = L.map('map').setView([-8.7619, -63.9039], 8); // Centered on PVH
+
+    // Base Layer (OSM)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Fetch Districts from Django API
+    var wfsUrl = "{% url 'core_gis:distritos_geojson' %}";
+
+    fetch(wfsUrl)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            L.geoJSON(data, {
+                pointToLayer: function (feature, latlng) {
+                    return L.marker(latlng);
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties) {
+                        var props = feature.properties;
+                        var content = `
+                            <div class="district-popup">
+                                <h5>${props.nm_distrito || props.nome}</h5>
+                                <p><strong>População (2022):</strong> ${props.populacao_2022}</p>
+                                <p><strong>Distância da Sede:</strong> ${props.distancia_sede}</p>
+                                <p><strong>Características:</strong><br>${props.caracteristicas}</p>
+                            </div>
+                        `;
+                        layer.bindPopup(content);
+                    }
+                }
+            }).addTo(map);
+        })
+        .catch(function (error) {
+            console.error('Error loading districts:', error);
+            // Fallback for CORS or connection error: Suggest user to check console
+            alert("Erro ao carregar dados do GeoServer. Verifique o console ou certifique-se que o GeoServer está rodando e permite CORS.");
+        });
+</script>
+{% endblock %}

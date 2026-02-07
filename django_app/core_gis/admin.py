@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.gis.admin import GISModelAdmin
 from .models import (
     MunicipioRO, BairroPVH, DesmatamentoPVH,
-    AlertaDETER, FocoCalor, AreaProtegida
+    AlertaDETER, FocoCalor, AreaProtegida, DistritoPVH
 )
 
 
@@ -45,4 +45,9 @@ class FocoCalorAdmin(GISModelAdmin):
 class AreaProtegidaAdmin(GISModelAdmin):
     list_display = ('nome', 'categoria', 'esfera', 'area_ha', 'ano_criacao')
     list_filter = ('categoria', 'esfera')
+    search_fields = ('nome',)
+
+@admin.register(DistritoPVH)
+class DistritoPVHAdmin(GISModelAdmin):
+    list_display = ('nome', 'populacao_2022', 'distancia_sede')
     search_fields = ('nome',)
