@@ -51,35 +51,56 @@ Velho{% endblock %}
     }).addTo(map);
 
     // Fetch Districts from Django API
-    var wfsUrl = "{% url 'core_gis:distritos_geojson' %}";
+    var distritosUrl = "{% url 'core_gis:distritos_geojson' %}";
+    var limiteUrl = "{% url 'core_gis:limite_pvh_geojson' %}";
 
-    fetch(wfsUrl)
-        .then(function (response) {
-            return response.json();
+    // 1. Fetch Limite Municipal first (to be background)
+    fetch(limiteUrl)
+        .then(response => response.json())
+        .then(data => {
+            L.geoJSON(data, {
+                style: function (feature) {
+                    return {
+                        color: "#3388ff",
+                        weight: 3,
+                        opacity: 0.8,
+                        fillOpacity: 0.1,
+                        fillColor: "#3388ff",
+                        dashArray: '5, 5'
+                    };
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties && feature.properties.nome) {
+                        layer.bindPopup("<strong>" + feature.properties.nome + "</strong>");
+                    }
+                }
+            }).addTo(map);
+
+            // 2. Then fetch Districts Points (to be on top)
+            return fetch(distritosUrl);
         })
-        .then(function (data) {
+        .then(response => response.json())
+        .then(data => {
             L.geoJSON(data, {
                 pointToLayer: function (feature, latlng) {
                     return L.marker(latlng);
                 },
                 onEachFeature: function (feature, layer) {
-                    if (feature.properties) {
-                        var props = feature.properties;
-                        var content = `
-                            <div class="district-popup">
-                                <h5>${props.nm_distrito || props.nome}</h5>
-                                <p><strong>População (2022):</strong> ${props.populacao_2022}</p>
-                                <p><strong>Distância da Sede:</strong> ${props.distancia_sede}</p>
-                                <p><strong>Características:</strong><br>${props.caracteristicas}</p>
-                            </div>
-                        `;
-                        layer.bindPopup(content);
-                    }
+                    var props = feature.properties;
+                    var content = `
+                        <h6>${props.nome}</h6>
+                        <table class="table table-sm table-borderless mb-0">
+                            <tr><td><strong>População:</strong></td><td>${props.populacao_2022}</td></tr>
+                            <tr><td><strong>Distância Sede:</strong></td><td>${props.distancia_sede}</td></tr>
+                            <tr><td colspan="2"><small>${props.caracteristicas}</small></td></tr>
+                        </table>
+                    `;
+                    layer.bindPopup(content);
                 }
             }).addTo(map);
         })
         .catch(function (error) {
-            console.error('Error loading districts:', error);
+            console.error('Error loading data:', error);
             // Fallback for CORS or connection error: Suggest user to check console
             alert("Erro ao carregar dados do GeoServer. Verifique o console ou certifique-se que o GeoServer está rodando e permite CORS.");
         });

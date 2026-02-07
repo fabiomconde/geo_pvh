@@ -31,4 +31,5 @@ urlpatterns = [
     path('dados/focos-diario/', views.dados_focos_diario, name='dados_focos_diario'),
     path('dados/estatisticas/', views.estatisticas_gerais, name='estatisticas_gerais'),
     path('api/distritos-geojson/', views.distritos_geojson, name='distritos_geojson'),
+    path('api/limite-pvh-geojson/', views.limite_pvh_geojson, name='limite_pvh_geojson'),
 ]

@@ -78,6 +78,15 @@ def distritos_geojson(request):
     return HttpResponse(geojson, content_type='application/json')
 
 
+def limite_pvh_geojson(request):
+    """API: Retorna o limite de Porto Velho em GeoJSON"""
+    from core_gis.models import LimitePVH
+    from django.core.serializers import serialize
+    limite = LimitePVH.objects.all()
+    geojson = serialize('geojson', limite, geometry_field='geom', fields=('nome',))
+    return HttpResponse(geojson, content_type='application/json')
+
+
 def dashboard_prodes(request):
     """Dashboard de desmatamento PRODES"""
     context = {
