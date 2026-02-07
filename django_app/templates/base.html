@@ -1,0 +1,270 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ page_title|default:"GeoPortal Porto Velho" }}{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Government Bar -->
+    <div class="gov-bar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="bi bi-building"></i>
+                    Protótipo de Observatório Geoespacial de Porto Velho - Rondônia
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center py-3">
+                <a href="{% url 'core_gis:home' %}" class="logo-link">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-icon">
+                            <i class="bi bi-globe-americas"></i>
+                        </div>
+                        <div class="logo-text">
+                            <span class="logo-title">GeoPortal</span>
+                            <span class="logo-subtitle">Porto Velho</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Main Navigation -->
+                <nav class="main-nav">
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                                href="{% url 'core_gis:home' %}">
+                                <i class="bi bi-house"></i> Início
+                            </a>
+                        </li>
+
+                        <!-- Maps Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-map"></i> Mapas
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core_gis:mapa_desmatamento' %}">
+                                        <i class="bi bi-tree"></i> Desmatamento (PRODES)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core_gis:mapa_alertas' %}">
+                                        <i class="bi bi-exclamation-triangle"></i> Alertas (DETER)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core_gis:mapa_focos' %}">
+                                        <i class="bi bi-fire"></i> Focos de Calor
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Dashboards Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-bar-chart-line"></i> Dashboards
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core_gis:dashboard_prodes' %}">
+                                        <i class="bi bi-graph-up"></i> Dashboard PRODES
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core_gis:dashboard_deter' %}">
+                                        <i class="bi bi-graph-down"></i> Dashboard DETER
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core_gis:dashboard_focos' %}">
+                                        <i class="bi bi-fire"></i> Dashboard Focos
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Data Access Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="bi bi-database"></i> Dados
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core_gis:downloads' %}">
+                                        <i class="bi bi-download"></i> Downloads
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'core_gis:web_services' %}">
+                                        <i class="bi bi-cloud"></i> Web Services
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/api/">
+                                        <i class="bi bi-code-slash"></i> API REST
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'sobre' %}active{% endif %}"
+                                href="{% url 'core_gis:sobre' %}">
+                                <i class="bi bi-info-circle"></i> Sobre
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Mobile Menu Toggle -->
+                <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileMenu">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Offcanvas -->
+    <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="mobileMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <nav class="nav flex-column">
+                <a class="nav-link" href="{% url 'core_gis:home' %}"><i class="bi bi-house"></i> Início</a>
+                <hr>
+                <span class="nav-header">Mapas</span>
+                <a class="nav-link" href="{% url 'core_gis:mapa_desmatamento' %}"><i class="bi bi-tree"></i>
+                    Desmatamento</a>
+                <a class="nav-link" href="{% url 'core_gis:mapa_alertas' %}"><i class="bi bi-exclamation-triangle"></i>
+                    Alertas</a>
+                <a class="nav-link" href="{% url 'core_gis:mapa_focos' %}"><i class="bi bi-fire"></i> Focos de Calor</a>
+                <hr>
+                <span class="nav-header">Dashboards</span>
+                <a class="nav-link" href="{% url 'core_gis:dashboard_prodes' %}"><i class="bi bi-graph-up"></i>
+                    PRODES</a>
+                <a class="nav-link" href="{% url 'core_gis:dashboard_deter' %}"><i class="bi bi-graph-down"></i>
+                    DETER</a>
+                <a class="nav-link" href="{% url 'core_gis:dashboard_focos' %}"><i class="bi bi-fire"></i> Focos</a>
+                <hr>
+                <a class="nav-link" href="{% url 'core_gis:downloads' %}"><i class="bi bi-download"></i> Downloads</a>
+                <a class="nav-link" href="{% url 'core_gis:web_services' %}"><i class="bi bi-cloud"></i> Web
+                    Services</a>
+                <a class="nav-link" href="{% url 'core_gis:sobre' %}"><i class="bi bi-info-circle"></i> Sobre</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="bi bi-link-45deg"></i> Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="https://www.gov.br/inpe" target="_blank">INPE</a></li>
+                        <li><a href="https://terrabrasilis.dpi.inpe.br" target="_blank">TerraBrasilis</a></li>
+                        <li><a href="http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes"
+                                target="_blank">PRODES</a></li>
+                        <li><a href="http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/deter"
+                                target="_blank">DETER</a></li>
+                        <li><a href="https://portovelho.ro.gov.br" target="_blank">Protótipo de Observatório Geoespacial
+                                de Porto Velho - Rondônia</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="bi bi-geo-alt"></i> Contato</h5>
+                    <address>
+                        <p><i class="bi bi-building"></i> Protótipo de Observatório Geoespacial de Porto Velho -
+                            Rondônia</p>
+                        <p><i class="bi bi-pin-map"></i> BR</p>
+                        <p><i class="bi bi-geo"></i> Porto Velho - RO</p>
+                    </address>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="bi bi-info-circle"></i> Sobre</h5>
+                    <p>
+                        GeoPortal Porto Velho é uma plataforma de dados geográficos
+                        para monitoramento ambiental e territorial do município.
+                    </p>
+                    <p class="license">
+                        <i class="bi bi-cc-circle"></i>
+                        Dados sob licença Creative Commons BY-SA 4.0
+                    </p>
+                </div>
+            </div>
+            <hr>
+            <div class="footer-bottom">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <p class="mb-0">
+                            &copy; {% now "Y" %} GeoPortal Porto Velho - Versão 1.0.0
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0">
+                            Protótipo de Observatório Geoespacial de Porto Velho - Rondônia
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

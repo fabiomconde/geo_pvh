@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4"><i class="bi bi-cloud"></i> Web Services</h1>
+
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        Os serviços web seguem as especificações da Infraestrutura Nacional de Dados Espaciais (INDE)
+        e padrões OGC (Open Geospatial Consortium).
+    </div>
+
+    <div class="row g-4">
+        <!-- WMS -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-layers"></i> WMS - Web Map Service
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Serviço para visualização de mapas em formato de imagem (tiles).
+                        Ideal para visualização em aplicações web e software GIS.
+                    </p>
+                    <h6>URL do Serviço:</h6>
+                    <code class="d-block bg-light p-2 mb-3">
+                        {{ geoserver_url }}/pvh/wms
+                    </code>
+                    <h6>Camadas Disponíveis:</h6>
+                    <ul>
+                        <li><code>pvh:desmatamento_pvh</code> - Desmatamento PRODES</li>
+                        <li><code>pvh:alertas_deter</code> - Alertas DETER</li>
+                        <li><code>pvh:focos_calor</code> - Focos de Calor</li>
+                        <li><code>pvh:bairros_pvh</code> - Bairros de Porto Velho</li>
+                    </ul>
+                    <a href="{{ geoserver_url }}/pvh/wms?service=WMS&request=GetCapabilities"
+                       class="btn btn-outline-primary" target="_blank">
+                        <i class="bi bi-file-text"></i> GetCapabilities
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- WFS -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="bi bi-vector-pen"></i> WFS - Web Feature Service
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Serviço para acesso a dados vetoriais (features).
+                        Permite consultas espaciais e download de dados.
+                    </p>
+                    <h6>URL do Serviço:</h6>
+                    <code class="d-block bg-light p-2 mb-3">
+                        {{ geoserver_url }}/pvh/wfs
+                    </code>
+                    <h6>Formatos de Saída:</h6>
+                    <ul>
+                        <li>GeoJSON</li>
+                        <li>GML</li>
+                        <li>Shapefile</li>
+                        <li>KML</li>
+                    </ul>
+                    <a href="{{ geoserver_url }}/pvh/wfs?service=WFS&request=GetCapabilities"
+                       class="btn btn-outline-success" target="_blank">
+                        <i class="bi bi-file-text"></i> GetCapabilities
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- REST API -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-dark text-white">
+                    <i class="bi bi-code-slash"></i> API REST
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        API RESTful com suporte a GeoJSON para desenvolvedores.
+                        Documentação interativa disponível via Django REST Framework.
+                    </p>
+                    <h6>Base URL:</h6>
+                    <code class="d-block bg-light p-2 mb-3">
+                        /api/
+                    </code>
+                    <h6>Endpoints:</h6>
+                    <ul>
+                        <li><code>/api/desmatamento/</code></li>
+                        <li><code>/api/alertas/</code></li>
+                        <li><code>/api/focos/</code></li>
+                        <li><code>/api/bairros/</code></li>
+                        <li><code>/api/municipios/</code></li>
+                    </ul>
+                    <a href="/api/" class="btn btn-outline-dark">
+                        <i class="bi bi-book"></i> Documentação API
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exemplos -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <i class="bi bi-code-square"></i> Exemplos de Uso
+                </div>
+                <div class="card-body">
+                    <h6>Leaflet (JavaScript):</h6>
+                    <pre class="bg-light p-2 rounded"><code>L.tileLayer.wms("{{ geoserver_url }}/pvh/wms", {
+    layers: 'pvh:desmatamento_pvh',
+    format: 'image/png',
+    transparent: true
+}).addTo(map);</code></pre>
+
+                    <h6>QGIS:</h6>
+                    <p class="small">
+                        Layer → Add Layer → Add WMS/WMTS Layer<br>
+                        URL: <code>{{ geoserver_url }}/pvh/wms</code>
+                    </p>
+
+                    <h6>Python (requests):</h6>
+                    <pre class="bg-light p-2 rounded"><code>import requests
+r = requests.get('/api/desmatamento/')
+data = r.json()</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

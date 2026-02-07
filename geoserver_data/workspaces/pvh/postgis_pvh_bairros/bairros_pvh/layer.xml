@@ -1,0 +1,16 @@
+<layer>
+  <name>bairros_pvh</name>
+  <id>LayerInfoImpl--13ec28c6:19c345ffdf0:-7ff1</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-33b0cc86:19c339d3765:-7ffe</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--13ec28c6:19c345ffdf0:-7ff2</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2026-02-06 20:07:57.31 UTC</dateCreated>
+</layer>

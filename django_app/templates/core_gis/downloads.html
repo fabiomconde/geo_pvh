@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4"><i class="bi bi-download"></i> Downloads</h1>
+
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        Os dados disponíveis para download estão sob licença Creative Commons BY-SA 4.0.
+        Cite a fonte ao utilizar os dados.
+    </div>
+
+    <div class="row g-4">
+        <!-- Desmatamento -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-danger text-white">
+                    <i class="bi bi-tree"></i> Dados de Desmatamento (PRODES)
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Polígonos de desmatamento detectados pelo programa PRODES para
+                        o município de Porto Velho.
+                    </p>
+                    <ul class="list-unstyled">
+                        <li><strong>Formato:</strong> GeoJSON, Shapefile</li>
+                        <li><strong>SRID:</strong> EPSG:4326</li>
+                        <li><strong>Período:</strong> 2019-2024</li>
+                    </ul>
+                    <div class="d-grid gap-2">
+                        <a href="/api/desmatamento/?format=json" class="btn btn-outline-primary" download>
+                            <i class="bi bi-download"></i> Download GeoJSON
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas DETER -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Alertas DETER
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Alertas de alteração na cobertura florestal detectados pelo
+                        sistema DETER em Porto Velho.
+                    </p>
+                    <ul class="list-unstyled">
+                        <li><strong>Formato:</strong> GeoJSON, Shapefile</li>
+                        <li><strong>SRID:</strong> EPSG:4326</li>
+                        <li><strong>Atualização:</strong> Mensal</li>
+                    </ul>
+                    <div class="d-grid gap-2">
+                        <a href="/api/alertas/?format=json" class="btn btn-outline-primary" download>
+                            <i class="bi bi-download"></i> Download GeoJSON
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Focos de Calor -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-orange text-white" style="background-color: #ff5722;">
+                    <i class="bi bi-fire"></i> Focos de Calor
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Focos de calor detectados por satélites na região de Porto Velho.
+                    </p>
+                    <ul class="list-unstyled">
+                        <li><strong>Formato:</strong> GeoJSON, CSV</li>
+                        <li><strong>SRID:</strong> EPSG:4326</li>
+                        <li><strong>Atualização:</strong> Diária</li>
+                    </ul>
+                    <div class="d-grid gap-2">
+                        <a href="/api/focos/?format=json" class="btn btn-outline-primary" download>
+                            <i class="bi bi-download"></i> Download GeoJSON
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bairros -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-geo-alt"></i> Bairros de Porto Velho
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Limites dos bairros do município de Porto Velho.
+                    </p>
+                    <ul class="list-unstyled">
+                        <li><strong>Formato:</strong> GeoJSON, Shapefile</li>
+                        <li><strong>SRID:</strong> EPSG:4326</li>
+                    </ul>
+                    <div class="d-grid gap-2">
+                        <a href="/api/bairros/?format=json" class="btn btn-outline-primary" download>
+                            <i class="bi bi-download"></i> Download GeoJSON
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Citação e Licença de Uso</h5>
+            <p>
+                Ao utilizar os dados do GeoPortal Porto Velho, cite da seguinte forma:
+            </p>
+            <blockquote class="blockquote bg-light p-3 rounded">
+                <p class="mb-0">
+                    GeoPortal Porto Velho. Dados de monitoramento ambiental.
+                    Disponível em: &lt;URL do portal&gt;. Acesso em: &lt;data de acesso&gt;.
+                </p>
+            </blockquote>
+            <p class="mb-0">
+                <i class="bi bi-cc-circle"></i>
+                Dados licenciados sob <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+                Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

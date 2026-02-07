@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+**/media/
+**/staticfiles/
+
+# Environment variables
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Docker
+docker-compose.override.yml
+
+# IDE settings
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Project data
+data_source/
+redis_data/
+postgres_data/
+
+# GeoServer (Ignore transient data, logs, cache, security)
+geoserver_data/logs/
+geoserver_data/temp/
+geoserver_data/tmp/
+geoserver_data/gwc/
+geoserver_data/monitoring/
+geoserver_data/security/
+*.log
+
+# Backups and temporary files
+*.bak
+*copy.yml

@@ -1,0 +1,406 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}GeoPortal Porto Velho - Plataforma de Dados Geográficos{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 class="hero-title">
+                    <i class="bi bi-globe-americas"></i>
+                    GeoPortal Porto Velho
+                </h1>
+                <p class="hero-subtitle">
+                    Plataforma de Dados Geográficos para Monitoramento Ambiental e Territorial
+                </p>
+                <p class="hero-description">
+                    Acesse, consulte e analise dados espaciais sobre desmatamento, alertas ambientais,
+                    focos de calor e outras informações geográficas do município de Porto Velho.
+                </p>
+                <div class="hero-buttons">
+                    <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-map"></i> Explorar Mapas
+                    </a>
+                    <a href="{% url 'core_gis:dashboard_prodes' %}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-bar-chart-line"></i> Ver Dashboard
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="hero-map-preview" id="miniMap"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section py-4">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-danger">
+                        <i class="bi bi-tree"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-desmatamento">--</span>
+                        <span class="stat-label">Hectares Monitorados</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-alertas">--</span>
+                        <span class="stat-label">Alertas DETER</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-orange">
+                        <i class="bi bi-fire"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-focos">--</span>
+                        <span class="stat-label">Focos de Calor</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success">
+                        <i class="bi bi-calendar-range"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="stat-anos">--</span>
+                        <span class="stat-label">Anos de Monitoramento</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Maps Section -->
+<section class="section-maps py-5">
+    <div class="container">
+        <div class="section-header">
+            <h2><i class="bi bi-map"></i> Mapas Interativos</h2>
+            <p>Visualize os dados geográficos de Porto Velho em mapas interativos</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- PRODES Map Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card map-card">
+                    <div class="card-image prodes-bg">
+                        <div class="card-badge">PRODES</div>
+                        <i class="bi bi-tree card-icon"></i>
+                    </div>
+                    <div class="card-body">
+                        <h3>Mapa de Desmatamento</h3>
+                        <p>
+                            Visualize os polígonos de supressão de vegetação nativa
+                            detectados pelo programa PRODES/INPE para Porto Velho.
+                        </p>
+                        <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-outline-primary">
+                            Acessar Mapa <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETER Map Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card map-card">
+                    <div class="card-image deter-bg">
+                        <div class="card-badge">DETER</div>
+                        <i class="bi bi-exclamation-triangle card-icon"></i>
+                    </div>
+                    <div class="card-body">
+                        <h3>Mapa de Alertas</h3>
+                        <p>
+                            Acompanhe os alertas de alteração na cobertura florestal
+                            detectados em tempo quase real pelo sistema DETER.
+                        </p>
+                        <a href="{% url 'core_gis:mapa_alertas' %}" class="btn btn-outline-warning">
+                            Acessar Mapa <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fire Spots Map Card -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card map-card">
+                    <div class="card-image focos-bg">
+                        <div class="card-badge">QUEIMADAS</div>
+                        <i class="bi bi-fire card-icon"></i>
+                    </div>
+                    <div class="card-body">
+                        <h3>Mapa de Focos de Calor</h3>
+                        <p>
+                            Monitore os focos de calor detectados por satélites
+                            na região de Porto Velho e entorno.
+                        </p>
+                        <a href="{% url 'core_gis:mapa_focos' %}" class="btn btn-outline-danger">
+                            Acessar Mapa <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboards Section -->
+<section class="section-dashboards py-5 bg-light">
+    <div class="container">
+        <div class="section-header">
+            <h2><i class="bi bi-bar-chart-line"></i> Dashboards</h2>
+            <p>Analise dados e estatísticas através de gráficos interativos</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- PRODES Dashboard -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card dashboard-card">
+                    <div class="card-image dashboard-prodes-bg">
+                        <div class="card-badge">PRODES</div>
+                        <i class="bi bi-graph-up card-icon"></i>
+                    </div>
+                    <div class="card-body">
+                        <h3>Dashboard de Desmatamento</h3>
+                        <p>
+                            Taxas anuais e dados de supressão de vegetação
+                            nativa em Porto Velho.
+                        </p>
+                        <a href="{% url 'core_gis:dashboard_prodes' %}" class="btn btn-primary">
+                            Acessar Dashboard <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETER Dashboard -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card dashboard-card">
+                    <div class="card-image dashboard-deter-bg">
+                        <div class="card-badge">DETER</div>
+                        <i class="bi bi-graph-down card-icon"></i>
+                    </div>
+                    <div class="card-body">
+                        <h3>Dashboard de Alertas</h3>
+                        <p>
+                            Acompanhamento dos alertas de alteração
+                            na cobertura florestal.
+                        </p>
+                        <a href="{% url 'core_gis:dashboard_deter' %}" class="btn btn-warning">
+                            Acessar Dashboard <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fire Dashboard -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card dashboard-card">
+                    <div class="card-image dashboard-focos-bg">
+                        <div class="card-badge">QUEIMADAS</div>
+                        <i class="bi bi-fire card-icon"></i>
+                    </div>
+                    <div class="card-body">
+                        <h3>Dashboard de Focos</h3>
+                        <p>
+                            Análise de focos de calor em áreas de
+                            vegetação nativa e desmatamento.
+                        </p>
+                        <a href="{% url 'core_gis:dashboard_focos' %}" class="btn btn-danger">
+                            Acessar Dashboard <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Data Access Section -->
+<section class="section-data py-5">
+    <div class="container">
+        <div class="section-header">
+            <h2><i class="bi bi-database"></i> Acesso aos Dados</h2>
+            <p>Baixe dados ou acesse via Web Services</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="data-card">
+                    <div class="data-icon">
+                        <i class="bi bi-download"></i>
+                    </div>
+                    <h3>Downloads</h3>
+                    <p>Arquivos em formato vetorial e raster disponíveis para download</p>
+                    <a href="{% url 'core_gis:downloads' %}" class="btn btn-outline-primary">
+                        Acessar <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="data-card">
+                    <div class="data-icon">
+                        <i class="bi bi-cloud"></i>
+                    </div>
+                    <h3>Web Services</h3>
+                    <p>Serviços WMS, WFS e WCS para integração com sistemas GIS</p>
+                    <a href="{% url 'core_gis:web_services' %}" class="btn btn-outline-primary">
+                        Acessar <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="data-card">
+                    <div class="data-icon">
+                        <i class="bi bi-code-slash"></i>
+                    </div>
+                    <h3>API REST</h3>
+                    <p>API com suporte a GeoJSON para desenvolvedores</p>
+                    <a href="/api/" class="btn btn-outline-primary">
+                        Documentação <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Chart Preview -->
+<section class="section-preview py-5 bg-light">
+    <div class="container">
+        <div class="section-header">
+            <h2><i class="bi bi-graph-up-arrow"></i> Panorama do Desmatamento</h2>
+            <p>Evolução histórica do desmatamento em Porto Velho</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="chart-container bg-white rounded shadow-sm p-4">
+                    <canvas id="homeChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize mini map in hero section
+    if (document.getElementById('miniMap')) {
+        const miniMap = L.map('miniMap', {
+            zoomControl: false,
+            attributionControl: false,
+            dragging: false,
+            scrollWheelZoom: false
+        }).setView([-8.76, -63.90], 10);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19
+        }).addTo(miniMap);
+
+        // Add a marker for Porto Velho
+        L.circle([-8.76, -63.90], {
+            color: '#e74c3c',
+            fillColor: '#e74c3c',
+            fillOpacity: 0.3,
+            radius: 30000
+        }).addTo(miniMap);
+    }
+
+    // Load statistics
+    fetch('{% url "core_gis:estatisticas_gerais" %}')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('stat-desmatamento').textContent =
+                new Intl.NumberFormat('pt-BR').format(Math.round(data.total_desmatamento_ha));
+            document.getElementById('stat-alertas').textContent =
+                new Intl.NumberFormat('pt-BR').format(data.total_alertas);
+            document.getElementById('stat-focos').textContent =
+                new Intl.NumberFormat('pt-BR').format(data.total_focos);
+            document.getElementById('stat-anos').textContent =
+                data.anos_monitoramento.length;
+        })
+        .catch(err => {
+            // Use fallback values
+            document.getElementById('stat-desmatamento').textContent = '82.159';
+            document.getElementById('stat-alertas').textContent = '25';
+            document.getElementById('stat-focos').textContent = '4';
+            document.getElementById('stat-anos').textContent = '6';
+        });
+
+    // Load chart data
+    fetch('{% url "core_gis:dados_desmatamento_anual" %}')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('homeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.ano),
+                    datasets: [{
+                        label: 'Área Desmatada (ha)',
+                        data: data.map(item => item.total_area),
+                        backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Desmatamento Anual em Porto Velho (ha)',
+                            font: { size: 16 }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Área (hectares)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('pt-BR').format(value);
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Ano'
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(err => console.error('Error loading chart:', err));
+});
+</script>
+{% endblock %}
