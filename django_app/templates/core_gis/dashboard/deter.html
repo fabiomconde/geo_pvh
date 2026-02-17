@@ -1,60 +1,89 @@
-{% extends 'base.html' %}
+{% extends 'core_gis/dashboard/base_dashboard.html' %}
 {% load static %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/dashboards.css' %}">
+{% block wrapper_class %}theme-deter{% endblock %}
+
+{% block sidebar_title %}DETER{% endblock %}
+
+{% block sidebar_filters %}
+<div class="filter-group">
+    <h6 class="filter-title">Classes</h6>
+    <div class="filter-item active">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> Desmatamento CR
+    </div>
+    <div class="filter-item">
+        <i class="bi bi-x-octagon me-2"></i> Degradação
+    </div>
+    <div class="filter-item">
+        <i class="bi bi-hammer me-2"></i> Mineração
+    </div>
+</div>
+
+<div class="filter-group">
+    <h6 class="filter-title">Período</h6>
+    <div class="filter-item">
+        <i class="bi bi-calendar3 me-2"></i> Último Mês
+    </div>
+    <div class="filter-item">
+        <i class="bi bi-calendar-range me-2"></i> Último Ano
+    </div>
+</div>
 {% endblock %}
 
-{% block content %}
-<div class="theme-deter">
-    <div class="dashboard-header">
-        <div class="container">
-            <h1><i class="bi bi-exclamation-triangle"></i> Dashboard DETER</h1>
-            <p class="mb-0">Alertas de Alteração na Cobertura Florestal - Porto Velho, RO</p>
+{% block breadcrumbs %}
+<span class="text-muted">Monitoramento / <strong>DETER (Alertas)</strong></span>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-header">
+    <h1><i class="bi bi-exclamation-triangle"></i> Dashboard DETER</h1>
+    <p class="mb-0">Alertas de Alteração na Cobertura Florestal - Porto Velho, RO</p>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <i class="bi bi-exclamation-triangle text-warning"></i>
+            <div class="stat-content">
+                <div class="stat-value" id="totalAlertas">--</div>
+                <div class="text-muted">Total de Alertas</div>
+            </div>
         </div>
     </div>
-
-    <div class="container">
-        <div class="row g-4 mb-4">
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                    <div class="stat-value" id="totalAlertas">--</div>
-                    <div class="text-muted">Total de Alertas</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <i class="bi bi-geo-alt text-primary" style="font-size: 2rem;"></i>
-                    <div class="stat-value" id="totalAreaAlertas">--</div>
-                    <div class="text-muted">Área Total (ha)</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <i class="bi bi-calendar text-success" style="font-size: 2rem;"></i>
-                    <div class="stat-value" id="ultimoAlerta">--</div>
-                    <div class="text-muted">Último Mês</div>
-                </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <i class="bi bi-geo-alt text-primary"></i>
+            <div class="stat-content">
+                <div class="stat-value" id="totalAreaAlertas">--</div>
+                <div class="text-muted">Área Total (ha)</div>
             </div>
         </div>
-
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <div class="chart-card">
-                    <h5 class="mb-3"><i class="bi bi-bar-chart"></i> Alertas por Mês</h5>
-                    <div class="chart-container">
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <i class="bi bi-calendar text-success"></i>
+            <div class="stat-content">
+                <div class="stat-value" id="ultimoAlerta">--</div>
+                <div class="text-muted">Último Mês</div>
             </div>
-            <div class="col-lg-4">
-                <div class="chart-card">
-                    <h5 class="mb-3"><i class="bi bi-pie-chart"></i> Por Classe</h5>
-                    <div class="chart-container">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="chart-card">
+            <h5 class="mb-3"><i class="bi bi-bar-chart"></i> Alertas por Mês</h5>
+            <div class="chart-container">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="chart-card">
+            <h5 class="mb-3"><i class="bi bi-pie-chart"></i> Por Classe</h5>
+            <div class="chart-container">
+                <canvas id="pieChart"></canvas>
             </div>
         </div>
     </div>

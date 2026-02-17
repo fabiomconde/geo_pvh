@@ -1,0 +1,353 @@
+/* Admin Custom CSS */
+
+:root {
+    --primary: #2c3e50;
+    --secondary: #34495e;
+    --accent: #3498db;
+    --text-color: #333;
+    --bg-color: #f8f9fa;
+    --header-bg: #fff;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #ecf0f1;
+}
+
+/* Header */
+#header {
+    background: var(--header-bg);
+    color: var(--text-color);
+    border-bottom: 1px solid #dee2e6;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#header a.branding {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+#header #user-tools {
+    color: var(--text-color);
+}
+
+#header #user-tools a {
+    color: var(--accent);
+}
+
+/* Branding */
+#site-name a {
+    color: var(--primary) !important;
+}
+
+/* Sidebar (Django 4.2+ native sidebar) */
+.main>.content {
+    flex-direction: row;
+}
+
+#nav-sidebar {
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    width: 280px;
+    flex-shrink: 0;
+}
+
+/* User tools in header */
+#user-tools {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Sidebar Search */
+#nav-filter {
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px;
+}
+
+#nav-filter input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 100%;
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+
+#nav-filter input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--accent);
+}
+
+#nav-filter input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Sidebar Modules */
+#nav-sidebar .module {
+    margin-bottom: 0;
+    background: transparent;
+    box-shadow: none;
+    border: none;
+}
+
+#nav-sidebar .module caption {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 15px 20px 5px 20px;
+    letter-spacing: 0.5px;
+}
+
+#nav-sidebar .module caption a.section {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Sidebar Links */
+#nav-sidebar table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    background: transparent !important;
+}
+
+#nav-sidebar tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: transparent !important;
+}
+
+#nav-sidebar th {
+    padding: 0;
+    width: 100%;
+    background: transparent !important;
+}
+
+#nav-sidebar td {
+    display: none;
+    background: transparent !important;
+}
+
+#nav-sidebar a {
+    color: rgba(255, 255, 255, 0.85);
+    padding: 12px 20px;
+    display: block;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: transparent !important;
+}
+
+#nav-sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding-left: 25px;
+}
+
+/* Active State */
+#nav-sidebar .current-app th {
+    background: transparent;
+}
+
+#nav-sidebar .current-model {
+    background: var(--accent);
+}
+
+#nav-sidebar .current-model a {
+    color: white;
+    font-weight: 500;
+}
+
+#nav-sidebar .current-model a:hover {
+    background: #2980b9;
+}
+
+/* Toggle Button */
+#toggle-nav-sidebar {
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+#toggle-nav-sidebar:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Main Content Area */
+#content {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Tables (ChangeList) */
+#changelist {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border: 1px solid #e9ecef;
+}
+
+#changelist table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#changelist table thead th {
+    background-color: #f1f3f5;
+    color: var(--text-color);
+    border-bottom: 2px solid #dee2e6;
+    padding: 10px;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+#changelist table tbody tr {
+    border-bottom: 1px solid #e9ecef;
+}
+
+#changelist table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+#changelist table tbody td {
+    padding: 12px 10px;
+    color: #495057;
+}
+
+#changelist table tbody th a {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+/* Forms */
+.aligned label {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.form-row {
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+}
+
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url],
+input[type=number],
+textarea,
+select,
+.vTextField {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px 12px;
+    color: #495057;
+    background-color: #fff;
+}
+
+input[type=text]:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    outline: 0;
+}
+
+/* Buttons */
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input,
+a.button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.button:hover,
+input[type=submit]:hover,
+input[type=button]:hover {
+    background: #2980b9;
+}
+
+.button.default,
+input[type=submit].default,
+.submit-row input.default {
+    background: var(--primary);
+}
+
+.button.default:hover,
+input[type=submit].default:hover,
+.submit-row input.default:hover {
+    background: var(--secondary);
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    background: transparent;
+    color: #6c757d;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 20px;
+}
+
+.breadcrumbs a {
+    color: var(--accent);
+}
+
+/* Dashboard Home */
+.dashboard .module table caption {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: transparent;
+    padding: 10px 0;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.dashboard .module {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.dashboard .module table th {
+    width: 100%;
+}
+
+.dashboard .module table td {
+    white-space: nowrap;
+}
+
+/* Links */
+a:link,
+a:visited {
+    color: var(--accent);
+}
+
+a:hover {
+    color: #2980b9;
+}

@@ -14,6 +14,8 @@ from .models import (
 )
 
 
+import os
+
 def home(request):
     """Home page - Dashboard principal"""
     context = {
@@ -250,3 +252,48 @@ def estatisticas_gerais(request):
         }
 
     return JsonResponse(stats)
+
+
+
+def icons_preview(request):
+    """
+    Page to preview all available static icons with pagination.
+    """
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+    import os
+    from django.conf import settings
+    
+    # Base directory for images
+    images_base_dir = os.path.join(settings.BASE_DIR, 'static', 'images')
+    all_icons = []
+    
+    if os.path.exists(images_base_dir):
+        for root, dirs, files in os.walk(images_base_dir):
+            for filename in files:
+                if filename.lower().endswith('.svg'):
+                    # Get relative path from static/images
+                    # This handles subdirectories like regular/icon.svg, solid/icon.svg
+                    rel_path = os.path.relpath(os.path.join(root, filename), images_base_dir)
+                    all_icons.append(rel_path)
+    
+    # Sort icons for consistent display
+    all_icons.sort()
+    
+    # Pagination
+    page = request.GET.get('page', 1)
+    paginator = Paginator(all_icons, 300)
+    
+    try:
+        icons = paginator.page(page)
+    except PageNotAnInteger:
+        icons = paginator.page(1)
+    except EmptyPage:
+        icons = paginator.page(paginator.num_pages)
+    
+    context = {
+        'page_title': 'Galeria de Ícones',
+        'icons': icons,
+        'total_icons': len(all_icons),
+    }
+    return render(request, 'core_gis/icons_preview.html', context)

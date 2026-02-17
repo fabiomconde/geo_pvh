@@ -566,3 +566,35 @@ a:hover {
     border: 1px solid var(--border-color);
     overflow: hidden;
 }
+
+/* SVG Icon Support (Masking for color inheritance) */
+.icon-svg {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    vertical-align: middle;
+}
+
+.stat-icon .icon-svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.card-icon.icon-svg {
+    width: 4rem;
+    height: 4rem;
+}
+
+.btn .icon-svg {
+    width: 1.2em;
+    height: 1.2em;
+    margin-right: 0.5rem;
+    vertical-align: text-bottom;
+}

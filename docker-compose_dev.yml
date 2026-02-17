@@ -65,6 +65,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: pvh_django
+    user: root
     stdin_open: true
     tty: true
     env_file: .env
@@ -85,7 +86,8 @@ services:
       redis:
         condition: service_started
     command: >
-      sh -c "python manage.py migrate &&
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
              python -m debugpy --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8000 --nothreading --noreload"
     networks:
       - geoportal_network

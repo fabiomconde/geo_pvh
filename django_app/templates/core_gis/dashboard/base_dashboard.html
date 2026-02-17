@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboards.css' %}">
+{% block dashboard_css %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper {% block wrapper_class %}{% endblock %}">
+    <!-- Sidebar -->
+    <nav id="dashboardSidebar" class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h5 class="text-white mb-0">
+                {% block sidebar_title %}Dashboard{% endblock %}
+            </h5>
+        </div>
+
+        <div class="sidebar-content">
+            {% block sidebar_filters %}
+            <!-- Default Filters Structure -->
+            <div class="filter-section">
+                <h6 class="filter-title">Filtros</h6>
+                <!-- Content will be injected by child templates -->
+            </div>
+            {% endblock %}
+        </div>
+
+    </nav>
+
+    <!-- Main Content -->
+    <div class="dashboard-main">
+        <!-- Top Action Bar -->
+        <div class="dashboard-topbar">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="breadcrumbs">
+                    {% block breadcrumbs %}
+                    <span class="text-muted">Filtros - Amazônia Legal / Estados / Todos</span>
+                    {% endblock %}
+                </div>
+
+                <div class="actions d-flex gap-3">
+                    <button class="btn btn-link text-secondary text-decoration-none" id="btnRemoveFilter">
+                        <i class="bi bi-funnel-fill"></i> Remover Filtro
+                    </button>
+                    <button class="btn btn-link text-secondary text-decoration-none" id="btnRestoreView">
+                        <i class="bi bi-globe"></i> Restaurar Visão
+                    </button>
+                    <button class="btn btn-link text-secondary text-decoration-none" id="btnSearch">
+                        <i class="bi bi-search"></i> Procurar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content Area -->
+        <div class="dashboard-content-scroll">
+            <div class="container-fluid py-4">
+                {% block dashboard_content %}
+                <!-- Charts and tables go here -->
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Toggle Sidebar functionality could go here
+    document.getElementById('btnRestoreView')?.addEventListener('click', function () {
+        window.location.reload();
+    });
+</script>
+{% block dashboard_js %}{% endblock %}
+{% endblock %}

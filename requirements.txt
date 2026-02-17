@@ -1,16 +1,35 @@
+# Django Core
 Django==4.2.9
 gunicorn==21.2.0
 whitenoise==6.6.0
+django-filter
+djangorestframework-gis
+debugpy
+
+# GeoDjango
+GDAL==3.6.2
+
+# Database
 psycopg2-binary==2.9.9
+
+# Django REST Framework
 djangorestframework==3.14.0
 djangorestframework-gis==1.0
-django-filter==23.5
 django-cors-headers==4.3.1
+
+# Cache
 django-redis==5.4.0
 redis==5.0.1
+
+# Utils
 python-decouple==3.8
 requests==2.31.0
 Pillow==10.2.0
+
+# GeoJSON
 geojson==3.1.0
+
+# Data processing
 numpy==1.26.3
 pandas==2.1.4
+

@@ -89,6 +89,52 @@ docker-compose ps
 - **GeoServer**: http://localhost/geoserver
 - **API REST**: http://localhost/api
 
+## Comandos Úteis (Cheatsheet)
+
+### Gerenciamento de Serviços
+```bash
+# Reiniciar todos os serviços
+docker-compose restart
+
+# Reiniciar apenas o Django
+docker-compose restart django
+
+# Parar serviços
+docker-compose down
+
+# Reconstruir imagens (útil após alterações no Dockerfile ou requirements.txt)
+docker-compose up -d --build
+```
+
+### Logs
+```bash
+# Ver logs de todos os serviços (acompanhar em tempo real)
+docker-compose logs -f
+
+# Ver logs apenas do Django
+docker-compose logs -f django
+```
+
+### Django Management
+```bash
+# Acessar o shell do container Django
+docker-compose exec django bash
+
+# Rodar migrações
+docker-compose exec django python manage.py migrate
+
+# Coletar arquivos estáticos
+docker-compose exec django python manage.py collectstatic --noinput
+
+# Criar superusuário
+docker-compose exec django python manage.py createsuperuser
+
+# Executar shell do Django
+docker-compose exec django python manage.py shell
+
+```
+
+
 ## Estrutura do Projeto
 
 ```
