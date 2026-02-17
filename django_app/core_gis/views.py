@@ -31,7 +31,7 @@ def mapa_desmatamento(request):
         'map_center': [-8.76, -63.90],  # Centro de Porto Velho
         'map_zoom': 10,
     }
-    return render(request, 'core_gis/mapa_desmatamento.html', context)
+    return render(request, 'core_gis/mapa/desmatamento.html', context)
 
 
 def mapa_alertas(request):
@@ -42,7 +42,7 @@ def mapa_alertas(request):
         'map_center': [-8.76, -63.90],
         'map_zoom': 10,
     }
-    return render(request, 'core_gis/mapa_alertas.html', context)
+    return render(request, 'core_gis/mapa/alertas.html', context)
 
 
 def mapa_focos(request):
@@ -53,7 +53,7 @@ def mapa_focos(request):
         'map_center': [-8.76, -63.90],
         'map_zoom': 10,
     }
-    return render(request, 'core_gis/mapa_focos.html', context)
+    return render(request, 'core_gis/mapa/focos.html', context)
 
 
 def mapa_distritos(request):
@@ -64,7 +64,7 @@ def mapa_distritos(request):
         'map_center': [-8.76, -63.90],
         'map_zoom': 8,
     }
-    return render(request, 'core_gis/mapa_distritos.html', context)
+    return render(request, 'core_gis/mapa/distritos.html', context)
 
 
 def distritos_geojson(request):
@@ -92,7 +92,7 @@ def dashboard_prodes(request):
     context = {
         'page_title': 'Dashboard PRODES - Porto Velho',
     }
-    return render(request, 'core_gis/dashboard_prodes.html', context)
+    return render(request, 'core_gis/dashboard/prodes.html', context)
 
 
 def dashboard_deter(request):
@@ -100,7 +100,7 @@ def dashboard_deter(request):
     context = {
         'page_title': 'Dashboard DETER - Porto Velho',
     }
-    return render(request, 'core_gis/dashboard_deter.html', context)
+    return render(request, 'core_gis/dashboard/deter.html', context)
 
 
 def dashboard_focos(request):
@@ -108,7 +108,7 @@ def dashboard_focos(request):
     context = {
         'page_title': 'Dashboard Focos de Calor - Porto Velho',
     }
-    return render(request, 'core_gis/dashboard_focos.html', context)
+    return render(request, 'core_gis/dashboard/focos.html', context)
 
 
 def sobre(request):

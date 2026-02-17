@@ -12,31 +12,7 @@ Velho{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<style>
-    .leaflet-popup-content-wrapper {
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .leaflet-popup-content {
-        font-family: 'Outfit', sans-serif;
-    }
-
-    .district-popup h5 {
-        color: #f97316;
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
-
-    .district-popup p {
-        margin-bottom: 5px;
-        font-size: 0.95rem;
-    }
-
-    .district-popup strong {
-        color: #1e293b;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/mapas.css' %}">
 {% endblock %}
 
 {% block extra_js %}
@@ -88,12 +64,14 @@ Velho{% endblock %}
                 onEachFeature: function (feature, layer) {
                     var props = feature.properties;
                     var content = `
-                        <h6>${props.nome}</h6>
-                        <table class="table table-sm table-borderless mb-0">
-                            <tr><td><strong>População:</strong></td><td>${props.populacao_2022}</td></tr>
-                            <tr><td><strong>Distância Sede:</strong></td><td>${props.distancia_sede}</td></tr>
-                            <tr><td colspan="2"><small>${props.caracteristicas}</small></td></tr>
-                        </table>
+                        <div class="district-popup">
+                            <h5>${props.nome}</h5>
+                            <table class="table table-sm table-borderless mb-0">
+                                <tr><td><strong>População:</strong></td><td>${props.populacao_2022}</td></tr>
+                                <tr><td><strong>Distância Sede:</strong></td><td>${props.distancia_sede}</td></tr>
+                                <tr><td colspan="2"><small>${props.caracteristicas}</small></td></tr>
+                            </table>
+                        </div>
                     `;
                     layer.bindPopup(content);
                 }

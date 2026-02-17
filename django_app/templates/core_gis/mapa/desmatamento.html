@@ -2,46 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-<style>
-    .map-container {
-        height: calc(100vh - 200px);
-        min-height: 500px;
-    }
-
-    .map-sidebar {
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .layer-control {
-        padding: 15px;
-    }
-
-    .layer-item {
-        display: flex;
-        align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid #eee;
-    }
-
-    .layer-item:last-child {
-        border-bottom: none;
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        margin: 5px 0;
-    }
-
-    .legend-color {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        border-radius: 3px;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/mapas.css' %}">
 {% endblock %}
 
 {% block content %}

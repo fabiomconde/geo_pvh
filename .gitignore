@@ -1,47 +1,51 @@
-# Python
+# --- PASTAS DE DADOS (CRÍTICO PARA O ERRO DE PERMISSÃO) ---
+# Ignoramos a pasta inteira para que o Docker nem tente ler os metadados
+postgres_data/
+redis_data/
+geoserver_data/
+data_source/
+
+# --- PYTHON ---
 __pycache__/
 *.py[cod]
 *$py.class
+.Python
+env/
+venv/
+.env
+.venv
+ENV/
+*.egg-info/
+.pytest_cache/
 
-# Django
+# --- DJANGO ---
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-**/media/
+staticfiles/
+media/
+# Caso as pastas acima estejam dentro de algum subdiretório:
 **/staticfiles/
+**/media/
 
-# Environment variables
-.env
-.venv
-env/
-venv/
-ENV/
+# --- DOCKER ---
+# Não precisamos enviar os arquivos de configuração para dentro da imagem
+docker-compose*
+Dockerfile
+.dockerignore
 
-# Docker
-docker-compose.override.yml
-
-# IDE settings
+# --- IDE & SISTEMA ---
 .idea/
 .vscode/
 *.swp
 *.swo
 .DS_Store
+.git/
+.gitignore
 
-# Project data
-data_source/
-redis_data/
-postgres_data/
-
-# GeoServer (Ignore transient data, logs, cache, security)
-geoserver_data/logs/
-geoserver_data/temp/
-geoserver_data/tmp/
-geoserver_data/gwc/
-geoserver_data/monitoring/
-geoserver_data/security/
-*.log
-
-# Backups and temporary files
+# --- BACKUPS E TEMPORÁRIOS ---
 *.bak
 *copy.yml
+temp/
+tmp/

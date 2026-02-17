@@ -159,3 +159,21 @@ class LimitePVH(models.Model):
 
     def __str__(self):
         return self.nome
+
+
+class SetorCensitario(models.Model):
+    # Campos baseados na tabela do IBGE que vimos no seu print
+    cd_setor = models.CharField(max_length=15, unique=True)
+    situacao = models.CharField(max_length=50, null=True, blank=True)
+    nm_regiao = models.CharField(max_length=50, null=True, blank=True)
+    area_km2 = models.FloatField(null=True)
+    
+    # O campo geométrico (MultiPolygon para garantir compatibilidade)
+    geom = models.MultiPolygonField(srid=4674)
+
+    class Meta:
+        managed = True
+        db_table = '"geo"."core_gis_setorcensitario"' # Força o esquema geo
+
+    def __str__(self):
+        return self.cd_setor

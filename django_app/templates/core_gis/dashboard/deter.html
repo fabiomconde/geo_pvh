@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboards.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="theme-deter">
+    <div class="dashboard-header">
+        <div class="container">
+            <h1><i class="bi bi-exclamation-triangle"></i> Dashboard DETER</h1>
+            <p class="mb-0">Alertas de Alteração na Cobertura Florestal - Porto Velho, RO</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                    <div class="stat-value" id="totalAlertas">--</div>
+                    <div class="text-muted">Total de Alertas</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <i class="bi bi-geo-alt text-primary" style="font-size: 2rem;"></i>
+                    <div class="stat-value" id="totalAreaAlertas">--</div>
+                    <div class="text-muted">Área Total (ha)</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <i class="bi bi-calendar text-success" style="font-size: 2rem;"></i>
+                    <div class="stat-value" id="ultimoAlerta">--</div>
+                    <div class="text-muted">Último Mês</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="chart-card">
+                    <h5 class="mb-3"><i class="bi bi-bar-chart"></i> Alertas por Mês</h5>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="chart-card">
+                    <h5 class="mb-3"><i class="bi bi-pie-chart"></i> Por Classe</h5>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('{% url "core_gis:dados_alertas_mensal" %}')
+            .then(response => response.json())
+            .then(data => {
+                const totalAlertas = data.reduce((sum, item) => sum + (item.total_alertas || 0), 0);
+                const totalArea = data.reduce((sum, item) => sum + parseFloat(item.total_area || 0), 0);
+
+                document.getElementById('totalAlertas').textContent = totalAlertas;
+                document.getElementById('totalAreaAlertas').textContent = new Intl.NumberFormat('pt-BR').format(Math.round(totalArea));
+
+                if (data.length > 0) {
+                    document.getElementById('ultimoAlerta').textContent = data[data.length - 1].mes || '-';
+                }
+
+                // Bar Chart
+                new Chart(document.getElementById('barChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(item => item.mes),
+                        datasets: [{
+                            label: 'Alertas',
+                            data: data.map(item => item.total_alertas),
+                            backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+
+                // Pie Chart - Classes (sample data)
+                new Chart(document.getElementById('pieChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Desmatamento CR', 'Degradação', 'Mineração'],
+                        datasets: [{
+                            data: [60, 30, 10],
+                            backgroundColor: ['#ffc107', '#ff9800', '#9c27b0']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            })
+            .catch(err => console.error('Error:', err));
+    });
+</script>
+{% endblock %}

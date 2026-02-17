@@ -1,0 +1,66 @@
+/* General Map Layout */
+.map-container {
+    height: calc(100vh - 200px);
+    min-height: 500px;
+}
+
+.map-sidebar {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Layer Controls */
+.layer-control {
+    padding: 15px;
+}
+
+.layer-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.layer-item:last-child {
+    border-bottom: none;
+}
+
+/* Legends */
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+/* Leaflet Popups (Specific to Districts but good for all) */
+.leaflet-popup-content-wrapper {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.leaflet-popup-content {
+    font-family: 'Outfit', sans-serif;
+}
+
+.district-popup h5 {
+    color: #f97316;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.district-popup p {
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+}
+
+.district-popup strong {
+    color: #1e293b;
+}

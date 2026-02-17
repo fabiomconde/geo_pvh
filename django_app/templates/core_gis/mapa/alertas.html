@@ -2,31 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
-<style>
-    .map-container {
-        height: calc(100vh - 200px);
-        min-height: 500px;
-    }
-    .map-sidebar {
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .layer-control {
-        padding: 15px;
-    }
-    .legend-item {
-        display: flex;
-        align-items: center;
-        margin: 5px 0;
-    }
-    .legend-color {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        border-radius: 3px;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/mapas.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -105,8 +81,8 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const map = L.map('map').setView({{ map_center }}, {{ map_zoom }});
+    document.addEventListener('DOMContentLoaded', function () {
+        const map = L.map('map').setView({{ map_center }}, {{ map_zoom }});
 
     const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
@@ -116,12 +92,12 @@ document.addEventListener('DOMContentLoaded', function() {
         attribution: '© Esri'
     });
 
-    document.getElementById('osmLayer').addEventListener('change', function() {
+    document.getElementById('osmLayer').addEventListener('change', function () {
         map.removeLayer(satelliteLayer);
         osmLayer.addTo(map);
     });
 
-    document.getElementById('satelliteLayer').addEventListener('change', function() {
+    document.getElementById('satelliteLayer').addEventListener('change', function () {
         map.removeLayer(osmLayer);
         satelliteLayer.addTo(map);
     });
@@ -132,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             alertasGeoJSON = L.geoJSON(data, {
-                style: function(feature) {
+                style: function (feature) {
                     const classe = feature.properties.classe;
                     let color = '#ffc107';
                     if (classe === 'DEGRADACAO') color = '#ff9800';
@@ -144,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         weight: 2
                     };
                 },
-                onEachFeature: function(feature, layer) {
+                onEachFeature: function (feature, layer) {
                     const props = feature.properties;
                     layer.bindPopup(`
                         <strong>Alerta DETER</strong><br>
@@ -159,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(err => console.log('Error loading alerts:', err));
 
-    document.getElementById('alertasLayer').addEventListener('change', function() {
+    document.getElementById('alertasLayer').addEventListener('change', function () {
         if (this.checked && alertasGeoJSON) {
             alertasGeoJSON.addTo(map);
         } else if (alertasGeoJSON) {
@@ -167,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.getElementById('zoomToPVH').addEventListener('click', function() {
+    document.getElementById('zoomToPVH').addEventListener('click', function () {
         map.setView([-8.76, -63.90], 10);
     });
 
