@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-0">Galeria de Ícones</h1>
+                        <p class="text-muted mb-0">{{ total_icons }} ícones disponíveis em
+                            <code>static/images/</code>
+                        </p>
+                    </div>
+                    <div class="w-50">
+                        <input type="text" id="iconSearch" class="form-control form-control-lg"
+                            placeholder="Filtrar nesta página (ex: regular/map, solid/alert)...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3 mb-4" id="iconsGrid">
+        {% for icon in icons %}
+        <div class="col icon-item" data-name="{{ icon }}">
+            <div class="card h-100 shadow-sm icon-card" onclick="copyIconCode('{{ icon }}')" role="button"
+                title="Clique para copiar o HTML">
+                <div class="card-body text-center d-flex flex-column align-items-center justify-content-center">
+                    <div class="mb-3 p-3 bg-light rounded bg-opacity-10" style="background-color: #f8f9fa;">
+                        <span class="icon-svg bg-dark"
+                            style="width: 32px; height: 32px; -webkit-mask-image: url('{% static 'images/'|add:icon %}'); mask-image: url('{% static 'images/'|add:icon %}');"></span>
+                    </div>
+                    <h6 class="card-title small mb-0 text-break">{{ icon }}</h6>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Controls -->
+    {% if icons.has_other_pages %}
+    <nav aria-label="Navegação de ícones" class="mb-5">
+        <ul class="pagination justifies-content-center">
+            {% if icons.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ icons.previous_page_number }}">&laquo; Anterior</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo; Anterior</span>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">
+                    Página {{ icons.number }} de {{ icons.paginator.num_pages }}
+                </span>
+            </li>
+
+            {% if icons.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ icons.next_page_number }}">Próximo &raquo;</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Próximo &raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Toast for copy feedback -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="copyToast" class="toast align-items-center text-white bg-success border-0" role="alert"
+        aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Código copiado com sucesso!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search functionality
+    document.getElementById('iconSearch').addEventListener('input', function (e) {
+        const searchText = e.target.value.toLowerCase();
+        const icons = document.querySelectorAll('.icon-item');
+
+        icons.forEach(icon => {
+            const name = icon.getAttribute('data-name').toLowerCase();
+            if (name.includes(searchText)) {
+                icon.style.display = '';
+            } else {
+                icon.style.display = 'none';
+            }
+        });
+    });
+
+    // Copy functionality
+    function copyIconCode(filename) {
+        const html = `<span class="icon-svg" style="-webkit-mask-image: url('{% static 'images/' %}${filename}'); mask-image: url('{% static 'images/' %}${filename}');"></span>`;
+
+        navigator.clipboard.writeText(html).then(() => {
+            const toastEl = document.getElementById('copyToast');
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        });
+    }
+
+    // Add hovering effect to icons
+    document.querySelectorAll('.icon-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.classList.add('border-primary');
+            card.querySelector('.icon-svg').classList.remove('bg-dark');
+            card.querySelector('.icon-svg').classList.add('bg-primary');
+        });
+        card.addEventListener('mouseleave', () => {
+            card.classList.remove('border-primary');
+            card.querySelector('.icon-svg').classList.remove('bg-primary');
+            card.querySelector('.icon-svg').classList.add('bg-dark');
+        });
+    });
+</script>
+
+<style>
+    .icon-card {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .icon-card:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

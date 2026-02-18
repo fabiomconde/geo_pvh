@@ -1,0 +1,398 @@
+/* ==========================================
+   Django Admin – Jet-inspired Theme
+   ========================================== */
+
+:root {
+  --jet-bg: #1f2940;
+  --jet-bg-light: #283148;
+  --jet-text: #a0aec0;
+  --jet-text-hover: #e2e8f0;
+  --jet-active: #63b3ed;
+  --jet-brand: #04a9f5;
+  --jet-border: rgba(255,255,255,0.06);
+  --body-bg: #f0f2f5;
+}
+
+/* ---- Base ---- */
+body {
+  background: var(--body-bg) !important;
+  font-family: "Open Sans", -apple-system,
+    BlinkMacSystemFont, sans-serif;
+}
+
+/* ---- Header / Top Bar ---- */
+#header {
+  background: #fff;
+  color: #333;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  height: 56px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: 240px;
+}
+
+#header #site-name { display: none; }
+
+#header a,
+#header a:link,
+#header a:visited {
+  color: var(--jet-brand) !important;
+}
+
+#header #user-tools {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333 !important;
+}
+
+#header #user-tools a {
+  color: var(--jet-brand) !important;
+}
+
+#header #user-tools button {
+  color: var(--jet-brand) !important;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ---- Sidebar ---- */
+#nav-sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--jet-bg);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 1000;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  border: none;
+  box-shadow: none;
+  margin-left: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+}
+
+/* Override Django's main wrapper */
+.main {
+  display: flex !important;
+}
+
+.main #nav-sidebar + .content {
+  flex: 1;
+}
+
+/* Push content right */
+#content {
+  margin-left: 240px;
+  padding: 24px;
+  background: var(--body-bg);
+}
+
+.breadcrumbs {
+  margin-left: 240px;
+  background: transparent;
+  color: #6c757d;
+  padding: 12px 24px;
+  font-size: 13px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.breadcrumbs a { color: var(--jet-brand); }
+
+/* ---- Brand ---- */
+.jet-brand {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+  border-bottom: 1px solid var(--jet-border);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.jet-brand i {
+  color: var(--jet-brand);
+  font-size: 20px;
+}
+
+/* ---- Main Nav ---- */
+.jet-nav-main {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--jet-border);
+}
+
+.jet-nav-main li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  color: var(--jet-text);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.15s;
+}
+
+.jet-nav-main li a:hover {
+  color: var(--jet-text-hover);
+}
+
+.jet-nav-main li a i {
+  font-size: 15px;
+  width: 18px;
+  text-align: center;
+}
+
+/* ---- Label ---- */
+.jet-label {
+  color: #5a6a85;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 18px 20px 8px;
+}
+
+/* ---- Apps Nav ---- */
+.jet-nav-apps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* App header row */
+.jet-app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  color: var(--jet-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.jet-app-header:hover {
+  color: var(--jet-text-hover);
+}
+
+.jet-app-header i {
+  font-size: 10px;
+  transition: transform 0.2s;
+  opacity: 0.5;
+}
+
+/* Open state */
+.jet-app.open > .jet-app-header {
+  color: #fff;
+  font-weight: 600;
+}
+
+.jet-app.open > .jet-app-header i {
+  transform: rotate(90deg);
+  opacity: 1;
+}
+
+/* ---- Submenu ---- */
+.jet-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+  background: rgba(0,0,0,0.12);
+}
+
+.jet-app.open > .jet-submenu {
+  max-height: 500px;
+}
+
+.jet-submenu li a {
+  display: block;
+  padding: 9px 20px 9px 44px;
+  color: var(--jet-text);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.jet-submenu li a::before {
+  content: "";
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transform: translateY(-50%);
+}
+
+.jet-submenu li a:hover {
+  color: #fff;
+}
+
+.jet-submenu li.active a {
+  color: var(--jet-active);
+  font-weight: 600;
+}
+
+.jet-submenu li.active a::before {
+  background: var(--jet-active);
+}
+
+/* ---- Hide toggle button ---- */
+#toggle-nav-sidebar { display: none; }
+
+/* ---- Content cards ---- */
+.dashboard .module {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.dashboard .module table caption {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  background: transparent;
+  padding: 0 0 12px;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 8px;
+}
+
+.dashboard .module table th { width: 100%; }
+.dashboard .module table td {
+  white-space: nowrap;
+}
+
+/* ---- Change list ---- */
+#changelist {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  padding: 20px;
+  border: 1px solid #e9ecef;
+}
+
+#changelist table { width: 100%; }
+
+#changelist table thead th {
+  background: #f8f9fa;
+  color: #333;
+  border-bottom: 2px solid #dee2e6;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+#changelist table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#changelist table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+#changelist table tbody td {
+  padding: 10px;
+  color: #495057;
+}
+
+#changelist table tbody th a {
+  color: var(--jet-brand);
+  font-weight: 500;
+}
+
+/* ---- Forms ---- */
+.aligned label {
+  color: #333;
+  font-weight: 500;
+}
+
+.form-row {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 0;
+}
+
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url],
+input[type=number],
+textarea, select, .vTextField {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: #495057;
+  background: #fff;
+}
+
+input[type=text]:focus,
+textarea:focus, select:focus {
+  border-color: var(--jet-brand);
+  box-shadow: 0 0 0 2px rgba(4,169,245,0.15);
+  outline: 0;
+}
+
+/* ---- Buttons ---- */
+.button, input[type=submit],
+input[type=button],
+.submit-row input, a.button {
+  background: var(--jet-brand);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-transform: uppercase;
+}
+
+.button:hover,
+input[type=submit]:hover {
+  background: #038fd4;
+}
+
+.button.default,
+input[type=submit].default,
+.submit-row input.default {
+  background: var(--jet-bg);
+}
+
+/* ---- Links ---- */
+a:link, a:visited {
+  color: var(--jet-brand);
+}
+
+a:hover { color: #038fd4; }
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  #nav-sidebar {
+    transform: translateX(-100%);
+  }
+  #header, #content, .breadcrumbs {
+    margin-left: 0;
+  }
+}

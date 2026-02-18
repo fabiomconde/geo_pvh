@@ -12,6 +12,7 @@ urlpatterns = [
     path('sobre/', views.sobre, name='sobre'),
     path('downloads/', views.downloads, name='downloads'),
     path('web-services/', views.web_services, name='web_services'),
+    path('icons/', views.icons_preview, name='icons_preview'),
 
     # Maps
     path('mapa/desmatamento/', views.mapa_desmatamento, name='mapa_desmatamento'),

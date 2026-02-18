@@ -1,0 +1,64 @@
+{% load static %}
+
+<nav id="nav-sidebar">
+  <div class="jet-brand">
+    <i class="bi bi-geo-alt-fill"></i>
+    <span>Observatório</span>
+  </div>
+
+  <ul class="jet-nav-main">
+    <li>
+      <a href="/admin/">
+        <i class="bi bi-house-door"></i>
+        <span>Início</span>
+      </a>
+    </li>
+    <li>
+      <a href="/" target="_blank">
+        <i class="bi bi-box-arrow-up-right"></i>
+        <span>Ver Site</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="jet-label">APLICAÇÕES</div>
+
+  {% if available_apps %}
+  <ul class="jet-nav-apps">
+    {% for app in available_apps %}
+    <li class="jet-app{% if app.app_url in request.path|urlencode %} open{% endif %}">
+      <a href="#"
+         class="jet-app-header"
+         data-toggle="submenu">
+        <span>{{ app.name }}</span>
+        <i class="bi bi-chevron-right"></i>
+      </a>
+      <ul class="jet-submenu">
+        {% for model in app.models %}
+        <li{% if model.admin_url in request.path|urlencode %} class="active"{% endif %}>
+          <a href="{{ model.admin_url }}">
+            {{ model.name }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var headers = document.querySelectorAll(
+    '.jet-app-header'
+  );
+  headers.forEach(function(h) {
+    h.addEventListener('click', function(e) {
+      e.preventDefault();
+      var li = this.closest('.jet-app');
+      li.classList.toggle('open');
+    });
+  });
+});
+</script>

@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1
 # Instala dependências do sistema
 RUN apt-get update && apt-get install -y \
     gdal-bin libgdal-dev libgeos-dev libproj-dev \
-    postgresql-client gcc python3-dev \
+    postgresql-client gcc g++ python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
