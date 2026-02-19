@@ -15,7 +15,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# --- O PULO DO GATO ---
 # Copia o CONTEÚDO da pasta django_app para a pasta /app do container
 COPY django_app/ . 
 

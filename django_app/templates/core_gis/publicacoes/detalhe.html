@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboards.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Image -->
+<div class="pub-detail-hero">
+    <div class="pub-detail-hero-placeholder">
+        <i class="bi bi-newspaper"></i>
+    </div>
+</div>
+
+<div class="container">
+    <article class="pub-detail-article">
+        <!-- Metadata -->
+        <div class="pub-detail-meta">
+            {% if publicacao.fonte_original %}
+            <span><i class="bi bi-at"></i> {{ publicacao.fonte_original }}</span>
+            {% endif %}
+            {% if publicacao.data_publicacao %}
+            <span><i class="bi bi-calendar3"></i> {{ publicacao.data_publicacao|date:"d \d\e F \d\e Y" }}</span>
+            <span><i class="bi bi-clock"></i> {{ publicacao.data_publicacao|date:"H:i" }}</span>
+            {% endif %}
+        </div>
+
+        <!-- Title -->
+        <h1 class="pub-detail-title">{{ publicacao.titulo }}</h1>
+
+        {% if publicacao.subtitulo %}
+        <p class="pub-detail-subtitle">{{ publicacao.subtitulo }}</p>
+        {% endif %}
+
+        <!-- Tags -->
+        <div class="pub-detail-tags">
+            {% if publicacao.tipo_documento %}
+            <span class="badge bg-primary"><i class="bi bi-tag"></i> {{ publicacao.tipo_documento.nome }}</span>
+            {% endif %}
+            {% if publicacao.conflito %}
+            <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-diamond"></i> {{ publicacao.conflito.nome }}</span>
+            {% endif %}
+            {% for violacao in publicacao.violacoes_denunciadas.all %}
+            <span class="badge bg-danger"><i class="bi bi-shield-exclamation"></i> {{ violacao.nome }}</span>
+            {% endfor %}
+            {% for ator in publicacao.atores_citados.all %}
+            <span class="badge bg-secondary"><i class="bi bi-person"></i> {{ ator.nome }}</span>
+            {% endfor %}
+        </div>
+
+        <hr class="pub-detail-divider">
+
+        <!-- Body Content -->
+        <div class="pub-detail-body">
+            {{ publicacao.corpo_texto|safe }}
+        </div>
+
+        {% if publicacao.anexo_pdf %}
+        <div class="pub-detail-attachment mt-4">
+            <a href="{{ publicacao.anexo_pdf.url }}" target="_blank" class="btn btn-outline-primary">
+                <i class="bi bi-file-earmark-pdf"></i> Baixar Anexo (PDF)
+            </a>
+        </div>
+        {% endif %}
+
+        <hr class="pub-detail-divider">
+
+        <!-- Previous / Next Navigation -->
+        <nav class="pub-nav">
+            <div class="pub-nav-item pub-nav-prev">
+                {% if anterior %}
+                <a href="{% url 'core_gis:detalhe_publicacao' anterior.pk %}">
+                    <span class="pub-nav-direction"><i class="bi bi-chevron-left"></i> Anterior</span>
+                    <span class="pub-nav-title">{{ anterior.titulo|truncatechars:60 }}</span>
+                </a>
+                {% endif %}
+            </div>
+            <div class="pub-nav-item pub-nav-next">
+                {% if proxima %}
+                <a href="{% url 'core_gis:detalhe_publicacao' proxima.pk %}">
+                    <span class="pub-nav-direction">Próximo <i class="bi bi-chevron-right"></i></span>
+                    <span class="pub-nav-title">{{ proxima.titulo|truncatechars:60 }}</span>
+                </a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <!-- Back to list -->
+        <div class="text-center mt-4 mb-5">
+            <a href="{% url 'core_gis:lista_publicacoes' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar para Publicações
+            </a>
+        </div>
+    </article>
+</div>
+{% endblock %}
