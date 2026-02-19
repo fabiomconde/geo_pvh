@@ -5,6 +5,8 @@ whitenoise==6.6.0
 django-filter
 djangorestframework-gis
 debugpy
+django-ckeditor-5==0.2.19
+faker
 
 # GeoDjango
 GDAL==3.6.2

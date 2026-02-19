@@ -148,6 +148,13 @@
                         </li>
 
                         <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'lista_publicacoes' %}active{% endif %}"
+                                href="{% url 'core_gis:lista_publicacoes' %}">
+                                <i class="bi bi-newspaper"></i> Publicações
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'sobre' %}active{% endif %}"
                                 href="{% url 'core_gis:sobre' %}">
                                 <i class="bi bi-info-circle"></i> Sobre
@@ -188,6 +195,9 @@
                 <a class="nav-link" href="{% url 'core_gis:dashboard_deter' %}"><i class="bi bi-graph-down"></i>
                     DETER</a>
                 <a class="nav-link" href="{% url 'core_gis:dashboard_focos' %}"><i class="bi bi-fire"></i> Focos</a>
+                <hr>
+                <a class="nav-link" href="{% url 'core_gis:lista_publicacoes' %}"><i class="bi bi-newspaper"></i>
+                    Publicações</a>
                 <hr>
                 <a class="nav-link" href="{% url 'core_gis:downloads' %}"><i class="bi bi-download"></i> Downloads</a>
                 <a class="nav-link" href="{% url 'core_gis:web_services' %}"><i class="bi bi-cloud"></i> Web

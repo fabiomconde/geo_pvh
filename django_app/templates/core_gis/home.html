@@ -12,7 +12,7 @@
                 <h1 class="hero-title">
                     <span class="icon-svg"
                         style="-webkit-mask-image: url({% static 'images/regular/globe.svg' %}); mask-image: url({% static 'images/regular/globe.svg' %});"></span>
-                    Observa Conflitos e Direitos
+                    Observatório de Conflitos Socioambientais e Direitos Humanos - Porto Velho
                 </h1>
                 <p class="hero-subtitle">
                     Plataforma digital de monitoramento e divulgação científica focada em Porto Velho
@@ -49,53 +49,67 @@
                 <div class="stat-card">
                     <div class="stat-icon bg-danger">
                         <span class="icon-svg"
-                            style="-webkit-mask-image: url({% static 'images/regular/tree.svg' %}); mask-image: url({% static 'images/regular/tree.svg' %});"></span>
+                            style="-webkit-mask-image: url({% static 'images/regular/file-list.svg' %}); mask-image: url({% static 'images/regular/file-list.svg' %});"></span>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value" id="stat-desmatamento">--</span>
+                        <span class="stat-value" id="stat-panorama">{{ total_publicacoes }}</span>
                         <span class="stat-label">Panorama</span>
                     </div>
                 </div>
             </div>
+            {% for tipo_nome, quantidade in contagem_tipos.items %}
             <div class="col-md-3 col-6">
                 <div class="stat-card">
-                    <div class="stat-icon bg-warning">
+                    <div class="stat-icon {% cycle 'bg-warning' 'bg-orange' 'bg-success' 'bg-info' 'bg-primary' %}">
                         <span class="icon-svg"
-                            style="-webkit-mask-image: url({% static 'images/regular/alert-triangle.svg' %}); mask-image: url({% static 'images/regular/alert-triangle.svg' %});"></span>
+                            style="-webkit-mask-image: url({% static 'images/regular/file-text.svg' %}); mask-image: url({% static 'images/regular/file-text.svg' %});"></span>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value" id="stat-alertas">--</span>
-                        <span class="stat-label">Boletins</span>
+                        <span class="stat-value">{{ quantidade }}</span>
+                        <span class="stat-label">{{ tipo_nome }}</span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <div class="stat-icon bg-orange">
-                        <span class="icon-svg"
-                            style="-webkit-mask-image: url({% static 'images/regular/fire.svg' %}); mask-image: url({% static 'images/regular/fire.svg' %});"></span>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="stat-focos">--</span>
-                        <span class="stat-label">Estudos</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-6">
-                <div class="stat-card">
-                    <div class="stat-icon bg-success">
-                        <span class="icon-svg"
-                            style="-webkit-mask-image: url({% static 'images/regular/calendar.svg' %}); mask-image: url({% static 'images/regular/calendar.svg' %});"></span>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value" id="stat-anos">--</span>
-                        <span class="stat-label">Publicações</span>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
+
+<!-- Dashboards Publicações -->
+<section class="section-dashboards py-5 bg-light">
+    <div class="container">
+        <div class="section-header">
+            <h2><span class="icon-svg"
+                    style="-webkit-mask-image: url({% static 'images/regular/clipboard-edit.svg' %}); mask-image: url({% static 'images/regular/clipboard-edit.svg' %});"></span>
+                Publicações</h2>
+            <p>Veja as publicações e estudos realizados</p>
+        </div>
+
+        <div class="row g-4">
+            {% for card in cards_publicacoes %}
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card dashboard-card">
+                    <div class="card-image {{ card.bg_class }}">
+                        <div class="card-badge">{{ card.tag }}</div>
+                        <span class="icon-svg card-icon"
+                            style="-webkit-mask-image: url({% static 'images/regular/' %}{{ card.icone }}); mask-image: url({% static 'images/regular/' %}{{ card.icone }});"></span>
+                    </div>
+                    <div class="card-body">
+                        <h3>{{ card.titulo }}</h3>
+                        <p>{{ card.subtitulo }}</p>
+                        <a href="{% url 'core_gis:lista_publicacoes' %}" class="btn {{ card.btn_class }}">
+                            {{ card.texto_botao }}
+                            <span class="icon-svg"
+                                style="-webkit-mask-image: url({% static 'images/regular/' %}{{ card.icone }}); mask-image: url({% static 'images/regular/' %}{{ card.icone }});"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
 
 <!-- Dashboards Section -->
 <section class="section-dashboards py-5 bg-light">
@@ -361,26 +375,8 @@
             }).addTo(miniMap);
         }
 
-        // Load statistics
-        fetch('{% url "core_gis:estatisticas_gerais" %}')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('stat-desmatamento').textContent =
-                    new Intl.NumberFormat('pt-BR').format(Math.round(data.total_desmatamento_ha));
-                document.getElementById('stat-alertas').textContent =
-                    new Intl.NumberFormat('pt-BR').format(data.total_alertas);
-                document.getElementById('stat-focos').textContent =
-                    new Intl.NumberFormat('pt-BR').format(data.total_focos);
-                document.getElementById('stat-anos').textContent =
-                    data.anos_monitoramento.length;
-            })
-            .catch(err => {
-                // Use fallback values
-                document.getElementById('stat-desmatamento').textContent = '82.159';
-                document.getElementById('stat-alertas').textContent = '25';
-                document.getElementById('stat-focos').textContent = '4';
-                document.getElementById('stat-anos').textContent = '6';
-            });
+        // Stats are now rendered server-side via Django template context
+        // No JS fetch needed for publication counts
 
         // Load chart data
         fetch('{% url "core_gis:dados_desmatamento_anual" %}')

@@ -2,7 +2,9 @@ from django.contrib import admin
 from django.contrib.gis.admin import GISModelAdmin
 from .models import (
     MunicipioRO, BairroPVH, DesmatamentoPVH,
-    AlertaDETER, FocoCalor, AreaProtegida, DistritoPVH
+    AlertaDETER, FocoCalor, AreaProtegida, DistritoPVH,
+    TipoDocumento, FaseConflito, TipoTerritorio, Bioma, TipoAtor, PapelAtor, SetorEconomico, DireitoAfetado, TipoViolacao,
+    Localizacao, Ator, Conflito, EnvolvimentoAtor, Publicacao
 )
 
 
@@ -51,3 +53,72 @@ class AreaProtegidaAdmin(GISModelAdmin):
 class DistritoPVHAdmin(GISModelAdmin):
     list_display = ('nome', 'populacao_2022', 'distancia_sede')
     search_fields = ('nome',)
+
+
+@admin.register(TipoDocumento)
+class TipoDocumentoAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
+@admin.register(FaseConflito)
+class FaseConflitoAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
+@admin.register(TipoTerritorio)
+class TipoTerritorioAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
+@admin.register(Bioma)
+class BiomaAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
+@admin.register(TipoAtor)
+class TipoAtorAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
+@admin.register(PapelAtor)
+class PapelAtorAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
+@admin.register(SetorEconomico)
+class SetorEconomicoAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
+@admin.register(DireitoAfetado)
+class DireitoAfetadoAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'descricao')
+
+@admin.register(TipoViolacao)
+class TipoViolacaoAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
+@admin.register(Localizacao)
+class LocalizacaoAdmin(admin.ModelAdmin):
+    list_display = ('nome_territorio', 'tipo', 'municipio', 'estado')
+    list_filter = ('tipo', 'bioma')
+    search_fields = ('nome_territorio', 'municipio')
+
+@admin.register(Ator)
+class AtorAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'tipo', 'setor_economico', 'dados_sensiveis')
+    list_filter = ('tipo', 'setor_economico')
+    search_fields = ('nome', 'cnpj_cpf')
+
+class EnvolvimentoAtorInline(admin.TabularInline):
+    model = EnvolvimentoAtor
+    extra = 1
+
+@admin.register(Conflito)
+class ConflitoAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'fase_atual', 'data_inicio', 'data_fim')
+    list_filter = ('fase_atual', 'data_inicio')
+    search_fields = ('nome', 'resumo')
+    inlines = [EnvolvimentoAtorInline]
+    filter_horizontal = ('localizacoes', 'direitos_afetados')
+
+@admin.register(Publicacao)
+class PublicacaoAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'tipo_documento', 'data_fato', 'is_publicado', 'is_restrito')
+    list_filter = ('tipo_documento', 'is_publicado', 'is_restrito', 'data_fato')
+    search_fields = ('titulo', 'fonte_original')
+    filter_horizontal = ('atores_citados', 'violacoes_denunciadas')
+    # O RichTextField será renderizado automaticamente no form padrão

@@ -10,17 +10,77 @@ from django.conf import settings
 
 from .models import (
     DesmatamentoPVH, AlertaDETER, FocoCalor,
-    BairroPVH, MunicipioRO, AreaProtegida, DistritoPVH
+    BairroPVH, MunicipioRO, AreaProtegida, DistritoPVH,
+    Publicacao, TipoDocumento
 )
 
 
 import os
+from dataclasses import dataclass
+
+
+@dataclass
+class CardPublicacao:
+    """Informações de exibição dos cards de publicação na home page"""
+    tag: str              # Badge no canto superior direito
+    icone: str            # Nome do arquivo SVG do ícone
+    titulo: str           # Título principal do card
+    subtitulo: str        # Texto descritivo
+    texto_botao: str      # Texto do botão de ação
+    btn_class: str        # Classe CSS do botão (ex: 'btn-primary')
+    bg_class: str         # Classe CSS do background (ex: 'dashboard-prodes-bg')
+
+
+CARDS_PUBLICACOES = [
+    CardPublicacao(
+        tag='Boletins',
+        icone='alert-triangle.svg',
+        titulo='Conflitos Socioambientais',
+        subtitulo='Publicações de boletins de conflitos socioambientais.',
+        texto_botao='Acessar Boletins',
+        btn_class='btn-primary',
+        bg_class='dashboard-prodes-bg',
+    ),
+    CardPublicacao(
+        tag='Estudos e Pesquisas',
+        icone='book-open.svg',
+        titulo='Estudos e Pesquisas',
+        subtitulo='Publicações de análises e estudos de caso.',
+        texto_botao='Acessar Estudos e Pesquisas',
+        btn_class='btn-warning',
+        bg_class='dashboard-deter-bg',
+    ),
+    CardPublicacao(
+        tag='Notas Técnicas',
+        icone='clipboard-list.svg',
+        titulo='Notas Técnicas',
+        subtitulo='Publicações de notas técnicas.',
+        texto_botao='Acessar Notas Técnicas',
+        btn_class='btn-danger',
+        bg_class='dashboard-focos-bg',
+    ),
+]
+
 
 def home(request):
     """Home page - Dashboard principal"""
+    # Contagem de publicações por tipo de documento
+    publicacoes_por_tipo = (
+        Publicacao.objects
+        .filter(is_publicado=True)
+        .values('tipo_documento__nome')
+        .annotate(total=Count('id'))
+        .order_by('tipo_documento__nome')
+    )
+    contagem_tipos = {item['tipo_documento__nome']: item['total'] for item in publicacoes_por_tipo}
+    total_publicacoes = Publicacao.objects.filter(is_publicado=True).count()
+
     context = {
         'page_title': 'Observatório de Conflitos Socioambientais e Direitos Humanos - Porto Velho',
         'geoserver_url': settings.GEOSERVER_URL,
+        'total_publicacoes': total_publicacoes,
+        'contagem_tipos': contagem_tipos,
+        'cards_publicacoes': CARDS_PUBLICACOES,
     }
     return render(request, 'core_gis/home.html', context)
 
@@ -231,6 +291,17 @@ def dados_focos_diario(request):
 def estatisticas_gerais(request):
     """API: Estatísticas gerais do portal"""
     try:
+        # Contagem de publicações por tipo de documento
+        publicacoes_por_tipo = (
+            Publicacao.objects
+            .filter(is_publicado=True)
+            .values('tipo_documento__nome')
+            .annotate(total=Count('id'))
+            .order_by('tipo_documento__nome')
+        )
+        contagem_tipos = {item['tipo_documento__nome']: item['total'] for item in publicacoes_por_tipo}
+        total_publicacoes = Publicacao.objects.filter(is_publicado=True).count()
+
         stats = {
             'total_desmatamento_ha': float(
                 DesmatamentoPVH.objects.aggregate(Sum('area_ha'))['area_ha__sum'] or 0
@@ -241,6 +312,8 @@ def estatisticas_gerais(request):
             'anos_monitoramento': list(
                 DesmatamentoPVH.objects.values_list('ano', flat=True).distinct().order_by('ano')
             ),
+            'total_publicacoes': total_publicacoes,
+            'publicacoes_por_tipo': contagem_tipos,
         }
     except Exception:
         stats = {
@@ -249,10 +322,101 @@ def estatisticas_gerais(request):
             'total_focos': 4,
             'total_bairros': 5,
             'anos_monitoramento': [2019, 2020, 2021, 2022, 2023, 2024],
+            'total_publicacoes': 0,
+            'publicacoes_por_tipo': {},
         }
 
     return JsonResponse(stats)
 
+
+
+def lista_publicacoes(request):
+    """Página de listagem de publicações com filtros"""
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+    from .models import Conflito, TipoViolacao
+
+    publicacoes = Publicacao.objects.filter(is_publicado=True).select_related(
+        'tipo_documento', 'conflito'
+    ).prefetch_related('violacoes_denunciadas', 'atores_citados')
+
+    # Filtros
+    tipo_id = request.GET.get('tipo')
+    conflito_id = request.GET.get('conflito')
+    violacao_id = request.GET.get('violacao')
+    busca = request.GET.get('busca', '').strip()
+
+    if tipo_id:
+        publicacoes = publicacoes.filter(tipo_documento_id=tipo_id)
+    if conflito_id:
+        publicacoes = publicacoes.filter(conflito_id=conflito_id)
+    if violacao_id:
+        publicacoes = publicacoes.filter(violacoes_denunciadas__id=violacao_id)
+    if busca:
+        publicacoes = publicacoes.filter(titulo__icontains=busca)
+
+    publicacoes = publicacoes.distinct()
+
+    # Paginação
+    paginator = Paginator(publicacoes, 10)
+    page = request.GET.get('page', 1)
+    try:
+        publicacoes_page = paginator.page(page)
+    except PageNotAnInteger:
+        publicacoes_page = paginator.page(1)
+    except EmptyPage:
+        publicacoes_page = paginator.page(paginator.num_pages)
+
+    # Dados para filtros na sidebar
+    tipos_documento = TipoDocumento.objects.all().order_by('nome')
+    conflitos = Conflito.objects.all().order_by('nome')
+    violacoes = TipoViolacao.objects.all().order_by('nome')
+
+    context = {
+        'page_title': 'Publicações',
+        'publicacoes': publicacoes_page,
+        'tipos_documento': tipos_documento,
+        'conflitos': conflitos,
+        'violacoes': violacoes,
+        'filtro_tipo': tipo_id,
+        'filtro_conflito': conflito_id,
+        'filtro_violacao': violacao_id,
+        'filtro_busca': busca,
+        'total_resultados': paginator.count,
+    }
+    return render(request, 'core_gis/publicacoes/lista.html', context)
+
+
+def detalhe_publicacao(request, pk):
+    """Página de detalhe de uma publicação"""
+    from django.shortcuts import get_object_or_404
+
+    publicacao = get_object_or_404(
+        Publicacao.objects.select_related('tipo_documento', 'conflito')
+        .prefetch_related('violacoes_denunciadas', 'atores_citados'),
+        pk=pk,
+        is_publicado=True,
+    )
+
+    # Publicação anterior e próxima (por data de publicação)
+    anterior = (
+        Publicacao.objects.filter(is_publicado=True, data_publicacao__lt=publicacao.data_publicacao)
+        .order_by('-data_publicacao')
+        .first()
+    ) if publicacao.data_publicacao else None
+
+    proxima = (
+        Publicacao.objects.filter(is_publicado=True, data_publicacao__gt=publicacao.data_publicacao)
+        .order_by('data_publicacao')
+        .first()
+    ) if publicacao.data_publicacao else None
+
+    context = {
+        'page_title': publicacao.titulo,
+        'publicacao': publicacao,
+        'anterior': anterior,
+        'proxima': proxima,
+    }
+    return render(request, 'core_gis/publicacoes/detalhe.html', context)
 
 
 def icons_preview(request):
