@@ -9,6 +9,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('core_gis.api.urls')), # Certifique-se que esta linha existe!
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
     path('', include('core_gis.urls')), 
 ]
 

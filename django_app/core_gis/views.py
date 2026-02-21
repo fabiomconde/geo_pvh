@@ -29,35 +29,39 @@ class CardPublicacao:
     texto_botao: str      # Texto do botão de ação
     btn_class: str        # Classe CSS do botão (ex: 'btn-primary')
     bg_class: str         # Classe CSS do background (ex: 'dashboard-prodes-bg')
+    link: str             # Link para a página de publicações
 
 
 CARDS_PUBLICACOES = [
     CardPublicacao(
-        tag='Boletins',
+        tag='Artigo Acadêmico',
         icone='alert-triangle.svg',
         titulo='Conflitos Socioambientais',
-        subtitulo='Publicações de boletins de conflitos socioambientais.',
-        texto_botao='Acessar Boletins',
+        subtitulo='Publicações de artigos acadêmicos sobre conflitos socioambientais.',
+        texto_botao='Acessar Artigos Acadêmicos',
         btn_class='btn-primary',
         bg_class='dashboard-prodes-bg',
+        link='?tipo=10'
     ),
     CardPublicacao(
-        tag='Estudos e Pesquisas',
+        tag='Nota Pública',
         icone='book-open.svg',
-        titulo='Estudos e Pesquisas',
-        subtitulo='Publicações de análises e estudos de caso.',
-        texto_botao='Acessar Estudos e Pesquisas',
+        titulo='Nota Pública',
+        subtitulo='Publicações de notas públicas.',
+        texto_botao='Acessar Notas Públicas',
         btn_class='btn-warning',
         bg_class='dashboard-deter-bg',
+        link='?tipo=8'
     ),
     CardPublicacao(
-        tag='Notas Técnicas',
+        tag='Relatório Técnico',
         icone='clipboard-list.svg',
-        titulo='Notas Técnicas',
-        subtitulo='Publicações de notas técnicas.',
-        texto_botao='Acessar Notas Técnicas',
+        titulo='Relatório Técnico',
+        subtitulo='Publicações de relatórios técnicos.',
+        texto_botao='Acessar Relatórios Técnicos',
         btn_class='btn-danger',
         bg_class='dashboard-focos-bg',
+        link='?tipo=7'
     ),
 ]
 
@@ -75,13 +79,30 @@ def home(request):
     contagem_tipos = {item['tipo_documento__nome']: item['total'] for item in publicacoes_por_tipo}
     total_publicacoes = Publicacao.objects.filter(is_publicado=True).count()
 
+    import json
+
+    # Contagem de publicações por tipo de violação
+    violacoes_stats = (
+        Publicacao.objects
+        .filter(is_publicado=True, violacoes_denunciadas__isnull=False)
+        .values('violacoes_denunciadas__nome')
+        .annotate(total=Count('id'))
+        .order_by('-total')
+    )
+    chart_labels = [item['violacoes_denunciadas__nome'] for item in violacoes_stats]
+    chart_data = [item['total'] for item in violacoes_stats]
+
     context = {
         'page_title': 'Observatório de Conflitos Socioambientais e Direitos Humanos - Porto Velho',
         'geoserver_url': settings.GEOSERVER_URL,
         'total_publicacoes': total_publicacoes,
         'contagem_tipos': contagem_tipos,
         'cards_publicacoes': CARDS_PUBLICACOES,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_data': json.dumps(chart_data),
     }
+
+    
     return render(request, 'core_gis/home.html', context)
 
 

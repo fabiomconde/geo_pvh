@@ -70,6 +70,7 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1000;
+  padding-bottom: 50px;
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -78,6 +79,12 @@ body {
   margin-left: 0 !important;
   left: 0 !important;
   transform: none !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#nav-sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Override Django's main wrapper */
@@ -103,6 +110,12 @@ body {
   padding: 12px 24px;
   font-size: 13px;
   border-bottom: 1px solid #dee2e6;
+}
+
+ul.messagelist, .messagelist {
+  margin-left: 240px !important;
+  position: relative;
+  z-index: 1001;
 }
 
 .breadcrumbs a { color: var(--jet-brand); }
@@ -167,7 +180,7 @@ body {
 .jet-nav-apps {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 150px 0; /* Extra space at the bottom to prevent cutoff */
 }
 
 /* App header row */
@@ -217,7 +230,7 @@ body {
 }
 
 .jet-app.open > .jet-submenu {
-  max-height: 500px;
+  max-height: 3000px;
 }
 
 .jet-submenu li a {
@@ -392,7 +405,7 @@ a:hover { color: #038fd4; }
   #nav-sidebar {
     transform: translateX(-100%);
   }
-  #header, #content, .breadcrumbs {
-    margin-left: 0;
+  #header, #content, .breadcrumbs, ul.messagelist, .messagelist {
+    margin-left: 0 !important;
   }
 }

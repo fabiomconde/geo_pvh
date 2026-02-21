@@ -11,8 +11,8 @@
             <div class="col-lg-7">
                 <h1 class="hero-title">
                     <span class="icon-svg"
-                        style="-webkit-mask-image: url({% static 'images/regular/globe.svg' %}); mask-image: url({% static 'images/regular/globe.svg' %});"></span>
-                    Observatório de Conflitos Socioambientais e Direitos Humanos - Porto Velho
+                        style="-webkit-mask-image: url({% static 'images/regular/eye-scan.svg' %}); mask-image: url({% static 'images/regular/eye-scan.svg' %});"></span>
+                    Conflitos Socioambientais e Direitos Humanos - Porto Velho
                 </h1>
                 <p class="hero-subtitle">
                     Plataforma digital de monitoramento e divulgação científica focada em Porto Velho
@@ -97,10 +97,10 @@
                     <div class="card-body">
                         <h3>{{ card.titulo }}</h3>
                         <p>{{ card.subtitulo }}</p>
-                        <a href="{% url 'core_gis:lista_publicacoes' %}" class="btn {{ card.btn_class }}">
+                        <a href="{% url 'core_gis:lista_publicacoes' %}{{ card.link }}" class="btn {{ card.btn_class }}">
                             {{ card.texto_botao }}
                             <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/' %}{{ card.icone }}); mask-image: url({% static 'images/regular/' %}{{ card.icone }});"></span>
+                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
                         </a>
                     </div>
                 </div>
@@ -335,8 +335,8 @@
         <div class="section-header">
             <h2><span class="icon-svg"
                     style="-webkit-mask-image: url({% static 'images/regular/chart-line-up.svg' %}); mask-image: url({% static 'images/regular/chart-line-up.svg' %});"></span>
-                Panorama do Desmatamento</h2>
-            <p>Evolução histórica do desmatamento em Porto Velho</p>
+                Panorama das Publicações</h2>
+            <p>Publicações por tipo de publicação</p>
         </div>
 
         <div class="row">
@@ -379,60 +379,54 @@
         // No JS fetch needed for publication counts
 
         // Load chart data
-        fetch('{% url "core_gis:dados_desmatamento_anual" %}')
-            .then(response => response.json())
-            .then(data => {
-                const ctx = document.getElementById('homeChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.map(item => item.ano),
-                        datasets: [{
-                            label: 'Área Desmatada (ha)',
-                            data: data.map(item => item.total_area),
-                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
-                            borderColor: 'rgba(220, 53, 69, 1)',
-                            borderWidth: 1
-                        }]
+        const chartLabels = {{ chart_labels|safe }};
+        const chartData = {{ chart_data|safe }};
+        
+        const ctx = document.getElementById('homeChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Quantidade de Publicações',
+                    data: chartData,
+                    backgroundColor: 'rgba(249, 115, 22, 0.7)',
+                    borderColor: 'rgba(249, 115, 22, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Desmatamento Anual em Porto Velho (ha)',
-                                font: { size: 16 }
-                            }
+                    title: {
+                        display: true,
+                        text: 'Tipos de Violação',
+                        font: { size: 16 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Quantidade de Publicações'
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Área (hectares)'
-                                },
-                                ticks: {
-                                    callback: function (value) {
-                                        return new Intl.NumberFormat('pt-BR').format(value);
-                                    }
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Ano'
-                                }
-                            }
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: false
                         }
                     }
-                });
-            })
-            .catch(err => console.error('Error loading chart:', err));
+                }
+            }
+        });
     });
 </script>
 {% endblock %}
