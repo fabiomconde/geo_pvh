@@ -13,6 +13,8 @@ urlpatterns = [
     path('downloads/', views.downloads, name='downloads'),
     path('web-services/', views.web_services, name='web_services'),
     path('icons/', views.icons_preview, name='icons_preview'),
+    path('publicacoes/', views.lista_publicacoes, name='lista_publicacoes'),
+    path('publicacoes/<int:pk>/', views.detalhe_publicacao, name='detalhe_publicacao'),
 
     # Maps
     path('mapa/desmatamento/', views.mapa_desmatamento, name='mapa_desmatamento'),

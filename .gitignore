@@ -43,6 +43,7 @@ Dockerfile
 .DS_Store
 .git/
 .gitignore
+.kanbn_boards/
 
 # --- BACKUPS E TEMPORÁRIOS ---
 *.bak

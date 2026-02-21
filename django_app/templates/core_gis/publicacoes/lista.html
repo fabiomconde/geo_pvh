@@ -1,0 +1,257 @@
+{% extends 'core_gis/dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block wrapper_class %}theme-publicacoes{% endblock %}
+
+{% block sidebar_title %}PUBLICAÇÕES{% endblock %}
+
+
+{% block sidebar_filters %}
+<div class="filter-group">
+    <h6 class="filter-title">Buscar</h6>
+    <form method="get" action="" class="sidebar-search-form">
+        {% if filtro_tipo %}<input type="hidden" name="tipo" value="{{ filtro_tipo }}">{% endif %}
+        {% if filtro_conflito %}<input type="hidden" name="conflito" value="{{ filtro_conflito }}">{% endif %}
+        {% if filtro_violacao %}<input type="hidden" name="violacao" value="{{ filtro_violacao }}">{% endif %}
+        <div class="input-group input-group-sm">
+            <input type="text" name="busca" class="form-control bg-transparent border-secondary"
+                placeholder="Pesquisar título..." value="{{ filtro_busca|default:'' }}">
+            <button class="btn btn-outline-secondary" type="submit">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="filter-group">
+    <h6 class="filter-title">Tipo de Documento</h6>
+    <a href="?{% if filtro_conflito %}conflito={{ filtro_conflito }}&{% endif %}{% if filtro_violacao %}violacao={{ filtro_violacao }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if not filtro_tipo %}active{% endif %}">
+        <i class="bi bi-collection me-2"></i> Todos
+    </a>
+    {% for tipo in tipos_documento %}
+    <a href="?tipo={{ tipo.id }}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if filtro_tipo == tipo.id|stringformat:'d' %}active{% endif %}">
+        <i class="bi bi-file-earmark-text me-2"></i> {{ tipo.nome }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="filter-group">
+    <h6 class="filter-title">Conflito</h6>
+    <a href="?{% if filtro_tipo %}tipo={{ filtro_tipo }}&{% endif %}{% if filtro_violacao %}violacao={{ filtro_violacao }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if not filtro_conflito %}active{% endif %}">
+        <i class="bi bi-list me-2"></i> Todos
+    </a>
+    {% for conflito in conflitos %}
+    <a href="?conflito={{ conflito.id }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if filtro_conflito == conflito.id|stringformat:'d' %}active{% endif %}">
+        <i class="bi bi-exclamation-diamond me-2"></i> {{ conflito.nome|truncatechars:30 }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="filter-group">
+    <h6 class="filter-title">Violações</h6>
+    <a href="?{% if filtro_tipo %}tipo={{ filtro_tipo }}&{% endif %}{% if filtro_conflito %}conflito={{ filtro_conflito }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if not filtro_violacao %}active{% endif %}">
+        <i class="bi bi-shield me-2"></i> Todas
+    </a>
+    {% for violacao in violacoes %}
+    <a href="?violacao={{ violacao.id }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if filtro_violacao == violacao.id|stringformat:'d' %}active{% endif %}">
+        <i class="bi bi-shield-exclamation me-2"></i> {{ violacao.nome|truncatechars:30 }}
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block breadcrumbs %}
+<span class="text-muted">Publicações / <strong>
+    {% if filtro_tipo or filtro_conflito or filtro_violacao or filtro_busca %}
+        Filtradas ({{ total_resultados }} resultado{{ total_resultados|pluralize:"s" }})
+    {% else %}
+        Todas ({{ total_resultados }})
+    {% endif %}
+</strong></span>
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- Dashboard Header -->
+<div class="dashboard-header">
+    <h1><i class="bi bi-newspaper"></i> Publicações</h1>
+    <p class="mb-0">Publicações, estudos e boletins sobre conflitos socioambientais</p>
+</div>
+
+{% if publicacoes.has_other_pages %}
+<nav class="pagination-wrapper mt-4" aria-label="Paginação">
+    <ul class="pagination justify-content-center">
+        {% if publicacoes.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ publicacoes.previous_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+                <i class="bi bi-chevron-left"></i> Anterior
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link"><i class="bi bi-chevron-left"></i> Anterior</span>
+        </li>
+        {% endif %}
+
+        {% for num in publicacoes.paginator.page_range %}
+            {% if publicacoes.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > publicacoes.number|add:'-3' and num < publicacoes.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+                    {{ num }}
+                </a>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if publicacoes.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ publicacoes.next_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+                Próxima <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Próxima <i class="bi bi-chevron-right"></i></span>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<!-- Active Filters -->
+{% if filtro_tipo or filtro_conflito or filtro_violacao or filtro_busca %}
+<div class="active-filters mb-4">
+    <span class="text-muted me-2"><i class="bi bi-funnel-fill"></i> Filtros ativos:</span>
+    {% if filtro_busca %}
+        <span class="badge bg-secondary me-1">Busca: "{{ filtro_busca }}"</span>
+    {% endif %}
+    {% if filtro_tipo %}
+        {% for tipo in tipos_documento %}
+            {% if tipo.id|stringformat:'d' == filtro_tipo %}
+                <span class="badge bg-primary me-1">{{ tipo.nome }}</span>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if filtro_conflito %}
+        {% for c in conflitos %}
+            {% if c.id|stringformat:'d' == filtro_conflito %}
+                <span class="badge bg-warning text-dark me-1">{{ c.nome|truncatechars:25 }}</span>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if filtro_violacao %}
+        {% for v in violacoes %}
+            {% if v.id|stringformat:'d' == filtro_violacao %}
+                <span class="badge bg-danger me-1">{{ v.nome|truncatechars:25 }}</span>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <a href="{% url 'core_gis:lista_publicacoes' %}" class="btn btn-sm btn-outline-secondary ms-2">
+        <i class="bi bi-x-circle"></i> Limpar
+    </a>
+</div>
+{% endif %}
+
+<!-- Publication Cards -->
+<div class="pub-list">
+    {% for pub in publicacoes %}
+    <div class="pub-card">
+        <div class="pub-card-image">
+            <div class="pub-placeholder">
+                <i class="bi bi-newspaper"></i>
+            </div>
+        </div>
+        <div class="pub-card-body">
+            <h3 class="pub-title">{{ pub.titulo }}</h3>
+            {% if pub.data_publicacao %}
+            <div class="pub-date">
+                <i class="bi bi-calendar3"></i> {{ pub.data_publicacao|date:"d/m/Y" }}
+            </div>
+            {% endif %}
+            {% if pub.subtitulo %}
+            <p class="pub-excerpt">{{ pub.subtitulo }}</p>
+            {% elif pub.corpo_texto %}
+            <p class="pub-excerpt">{{ pub.corpo_texto|striptags|truncatechars:180 }}</p>
+            {% endif %}
+            <div class="pub-meta">
+                {% if pub.tipo_documento %}
+                <span class="badge bg-light text-dark me-1">
+                    <i class="bi bi-tag"></i> {{ pub.tipo_documento.nome }}
+                </span>
+                {% endif %}
+                {% if pub.conflito %}
+                <span class="badge bg-light text-dark me-1">
+                    <i class="bi bi-exclamation-diamond"></i> {{ pub.conflito.nome|truncatechars:30 }}
+                </span>
+                {% endif %}
+            </div>
+            <a href="{% url 'core_gis:detalhe_publicacao' pub.pk %}" class="pub-read-more">LEIA MAIS</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-5">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <h4 class="mt-3 text-muted">Nenhuma publicação encontrada</h4>
+        <p class="text-muted">Tente ajustar os filtros ou limpar a busca.</p>
+        <a href="{% url 'core_gis:lista_publicacoes' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-counterclockwise"></i> Limpar Filtros
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if publicacoes.has_other_pages %}
+<nav class="pagination-wrapper mt-4" aria-label="Paginação">
+    <ul class="pagination justify-content-center">
+        {% if publicacoes.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ publicacoes.previous_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+                <i class="bi bi-chevron-left"></i> Anterior
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link"><i class="bi bi-chevron-left"></i> Anterior</span>
+        </li>
+        {% endif %}
+
+        {% for num in publicacoes.paginator.page_range %}
+            {% if publicacoes.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > publicacoes.number|add:'-3' and num < publicacoes.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+                    {{ num }}
+                </a>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if publicacoes.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ publicacoes.next_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+                Próxima <i class="bi bi-chevron-right"></i>
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">Próxima <i class="bi bi-chevron-right"></i></span>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}
