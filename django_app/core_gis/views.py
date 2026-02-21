@@ -39,8 +39,8 @@ CARDS_PUBLICACOES = [
         titulo='Conflitos Socioambientais',
         subtitulo='Publicações de artigos acadêmicos sobre conflitos socioambientais.',
         texto_botao='Acessar Artigos Acadêmicos',
-        btn_class='btn-primary',
-        bg_class='dashboard-prodes-bg',
+        btn_class='btn-outline-secondary',
+        bg_class='bg-secondary',
         link='?tipo=10'
     ),
     CardPublicacao(
@@ -49,8 +49,8 @@ CARDS_PUBLICACOES = [
         titulo='Nota Pública',
         subtitulo='Publicações de notas públicas.',
         texto_botao='Acessar Notas Públicas',
-        btn_class='btn-warning',
-        bg_class='dashboard-deter-bg',
+        btn_class='btn-outline-secondary',
+        bg_class='bg-secondary',
         link='?tipo=8'
     ),
     CardPublicacao(
@@ -59,10 +59,10 @@ CARDS_PUBLICACOES = [
         titulo='Relatório Técnico',
         subtitulo='Publicações de relatórios técnicos.',
         texto_botao='Acessar Relatórios Técnicos',
-        btn_class='btn-danger',
-        bg_class='dashboard-focos-bg',
+        btn_class='btn-outline-secondary',
+        bg_class='bg-secondary',
         link='?tipo=7'
-    ),
+    )
 ]
 
 
@@ -92,14 +92,23 @@ def home(request):
     chart_labels = [item['violacoes_denunciadas__nome'] for item in violacoes_stats]
     chart_data = [item['total'] for item in violacoes_stats]
 
+    dados_publicacoes = {
+        'labels': chart_labels,
+        'data': chart_data,
+        'datasetLabel': 'Quantidade de Publicações',
+        'backgroundColor': 'rgba(249, 115, 22, 0.7)',
+        'borderColor': 'rgba(249, 115, 22, 1)',
+        'titleText': 'Tipos de Violação',
+        'yTitleText': 'Quantidade de Publicações'
+    }
+
     context = {
         'page_title': 'Observatório de Conflitos Socioambientais e Direitos Humanos - Porto Velho',
         'geoserver_url': settings.GEOSERVER_URL,
         'total_publicacoes': total_publicacoes,
         'contagem_tipos': contagem_tipos,
         'cards_publicacoes': CARDS_PUBLICACOES,
-        'chart_labels': json.dumps(chart_labels),
-        'chart_data': json.dumps(chart_data),
+        'dados_publicacoes': json.dumps(dados_publicacoes),
     }
 
     
@@ -410,6 +419,7 @@ def lista_publicacoes(request):
 def detalhe_publicacao(request, pk):
     """Página de detalhe de uma publicação"""
     from django.shortcuts import get_object_or_404
+    from .models import Publicacao
 
     publicacao = get_object_or_404(
         Publicacao.objects.select_related('tipo_documento', 'conflito')
@@ -482,3 +492,13 @@ def icons_preview(request):
         'total_icons': len(all_icons),
     }
     return render(request, 'core_gis/icons_preview.html', context)
+
+
+def lista_mapas(request):
+    """Página hub listando todos os mapas interativos disponíveis"""
+    return render(request, 'core_gis/lista_mapas.html')
+
+
+def lista_dashboards(request):
+    """Página hub listando todos os dashboards disponíveis"""
+    return render(request, 'core_gis/lista_dashboards.html')

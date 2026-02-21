@@ -15,6 +15,8 @@ urlpatterns = [
     path('icons/', views.icons_preview, name='icons_preview'),
     path('publicacoes/', views.lista_publicacoes, name='lista_publicacoes'),
     path('publicacoes/<int:pk>/', views.detalhe_publicacao, name='detalhe_publicacao'),
+    path('mapas/', views.lista_mapas, name='lista_mapas'),
+    path('dashboards/', views.lista_dashboards, name='lista_dashboards'),
 
     # Maps
     path('mapa/desmatamento/', views.mapa_desmatamento, name='mapa_desmatamento'),

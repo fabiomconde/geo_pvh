@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header bg-light text-dark py-5 mb-5 border-bottom border-4 border-secondary">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Painéis de Controle (Dashboards)</h1>
+        <p class="lead mb-0">Monitore as métricas ambientais e indicadores estratégicos com gráficos iterativos</p>
+    </div>
+</div>
+
+<div class="container mb-5 pb-5">
+    <div class="row g-4 justify-content-center">
+        <!-- PRODES Dashboard Card -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
+                <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                    <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">PRODES</div>
+                    <span class="icon-svg card-icon text-white"
+                        style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/chart-line-up.svg" %}'); mask-image: url('{% static "images/regular/chart-line-up.svg" %}'); background-color: currentColor;"></span>
+                </div>
+                <div class="card-body p-4 d-flex flex-column">
+                    <h3 class="h5 fw-bold mb-3 text-dark">Dashboard de Desmatamento</h3>
+                    <p class="text-muted mb-4 flex-grow-1">
+                        Métricas anuais e histórico de desmatamento
+                        consolidado pelo sistema PRODES.
+                    </p>
+                    <a href="{% url 'core_gis:dashboard_prodes' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                        Acessar<span class="icon-svg ms-2 align-middle"
+                            style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- DETER Dashboard Card -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
+                <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                    <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">DETER</div>
+                    <span class="icon-svg card-icon text-white"
+                        style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/chart-line-down.svg" %}'); mask-image: url('{% static "images/regular/chart-line-down.svg" %}'); background-color: currentColor;"></span>
+                </div>
+                <div class="card-body p-4 d-flex flex-column">
+                    <h3 class="h5 fw-bold mb-3 text-dark">Dashboard de Alertas</h3>
+                    <p class="text-muted mb-4 flex-grow-1">
+                        Acompanhamento dos alertas e taxas de alteração
+                        na cobertura florestal em tempo real.
+                    </p>
+                    <a href="{% url 'core_gis:dashboard_deter' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                        Acessar<span class="icon-svg ms-2 align-middle"
+                            style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fire Spots Dashboard Card -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
+                <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                    <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">QUEIMADAS</div>
+                    <span class="icon-svg card-icon text-white"
+                        style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/fire.svg" %}'); mask-image: url('{% static "images/regular/fire.svg" %}'); background-color: currentColor;"></span>
+                </div>
+                <div class="card-body p-4 d-flex flex-column">
+                    <h3 class="h5 fw-bold mb-3 text-dark">Dashboard de Focos</h3>
+                    <p class="text-muted mb-4 flex-grow-1">
+                        Análise estatística e temporal de focos de calor 
+                        em áreas de vegetação através de gráficos.
+                    </p>
+                    <a href="{% url 'core_gis:dashboard_focos' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                        Acessar<span class="icon-svg ms-2 align-middle"
+                            style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -7,6 +7,7 @@ djangorestframework-gis
 debugpy
 django-ckeditor-5==0.2.19
 faker
+pyngrok
 
 # GeoDjango
 GDAL==3.6.2

@@ -22,15 +22,15 @@
                     e outras informações do município de Porto Velho.
                 </p>
                 <div class="hero-buttons">
-                    <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-primary btn-lg">
+                    <a href="{% url 'core_gis:lista_mapas' %}" class="btn btn-primary btn-lg">
                         <span class="icon-svg"
                             style="-webkit-mask-image: url({% static 'images/regular/map.svg' %}); mask-image: url({% static 'images/regular/map.svg' %});"></span>
                         Explorar Mapas
                     </a>
-                    <a href="{% url 'core_gis:dashboard_prodes' %}" class="btn btn-outline-light btn-lg">
+                    <a href="{% url 'core_gis:lista_dashboards' %}" class="btn btn-outline-light btn-lg">
                         <span class="icon-svg"
                             style="-webkit-mask-image: url({% static 'images/regular/chart-line.svg' %}); mask-image: url({% static 'images/regular/chart-line.svg' %});"></span>
-                        Ver Dashboard
+                        Ver Dashboards
                     </a>
                 </div>
             </div>
@@ -85,22 +85,22 @@
             <p>Veja as publicações e estudos realizados</p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             {% for card in cards_publicacoes %}
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card dashboard-card">
-                    <div class="card-image {{ card.bg_class }}">
-                        <div class="card-badge">{{ card.tag }}</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/' %}{{ card.icone }}); mask-image: url({% static 'images/regular/' %}{{ card.icone }});"></span>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-image {{ card.bg_class }} position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                        <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">{{ card.tag }}</div>
+                        <span class="icon-svg card-icon text-white"
+                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/" %}{{ card.icone }}'); mask-image: url('{% static "images/regular/" %}{{ card.icone }}'); background-color: currentColor;"></span>
                     </div>
-                    <div class="card-body">
-                        <h3>{{ card.titulo }}</h3>
-                        <p>{{ card.subtitulo }}</p>
-                        <a href="{% url 'core_gis:lista_publicacoes' %}{{ card.link }}" class="btn {{ card.btn_class }}">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3 text-dark">{{ card.titulo }}</h3>
+                        <p class="text-muted mb-4 flex-grow-1">{{ card.subtitulo }}</p>
+                        <a href="{% url 'core_gis:lista_publicacoes' %}{{ card.link }}" class="btn {{ card.btn_class }} w-100 fw-medium">
                             {{ card.texto_botao }}
-                            <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
+                            <span class="icon-svg ms-2 align-middle"
+                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                         </a>
                     </div>
                 </div>
@@ -121,68 +121,67 @@
             <p>Analise dados e estatísticas através de gráficos interativos</p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             <!-- PRODES Dashboard -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card dashboard-card">
-                    <div class="card-image dashboard-prodes-bg">
-                        <div class="card-badge">PRODES</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/chart-line-up.svg' %}); mask-image: url({% static 'images/regular/chart-line-up.svg' %});"></span>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                        <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">PRODES</div>
+                        <span class="icon-svg card-icon text-white"
+                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/chart-line-up.svg" %}'); mask-image: url('{% static "images/regular/chart-line-up.svg" %}'); background-color: currentColor;"></span>
                     </div>
-                    <div class="card-body">
-                        <h3>Dashboard de Desmatamento</h3>
-                        <p>
-                            Taxas anuais e dados de supressão de vegetação
-                            nativa em Porto Velho.
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3 text-dark">Dashboard de Desmatamento</h3>
+                        <p class="text-muted mb-4 flex-grow-1">
+                            Análise temporal e espacial do desmatamento.
                         </p>
-                        <a href="{% url 'core_gis:dashboard_prodes' %}" class="btn btn-primary">
-                            Acessar Dashboard <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
+                        <a href="{% url 'core_gis:dashboard_prodes' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                            Acessar Dashboard <span class="icon-svg ms-2 align-middle"
+                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                         </a>
                     </div>
                 </div>
             </div>
 
             <!-- DETER Dashboard -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card dashboard-card">
-                    <div class="card-image dashboard-deter-bg">
-                        <div class="card-badge">DETER</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/chart-line-down.svg' %}); mask-image: url({% static 'images/regular/chart-line-down.svg' %});"></span>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                        <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">DETER</div>
+                        <span class="icon-svg card-icon text-white"
+                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/chart-line-down.svg" %}'); mask-image: url('{% static "images/regular/chart-line-down.svg" %}'); background-color: currentColor;"></span>
                     </div>
-                    <div class="card-body">
-                        <h3>Dashboard de Alertas</h3>
-                        <p>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3 text-dark">Dashboard de Alertas</h3>
+                        <p class="text-muted mb-4 flex-grow-1">
                             Acompanhamento dos alertas de alteração
                             na cobertura florestal.
                         </p>
-                        <a href="{% url 'core_gis:dashboard_deter' %}" class="btn btn-warning">
-                            Acessar Dashboard <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
+                        <a href="{% url 'core_gis:dashboard_deter' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                            Acessar Dashboard <span class="icon-svg ms-2 align-middle"
+                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                         </a>
                     </div>
                 </div>
             </div>
 
             <!-- Fire Dashboard -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card dashboard-card">
-                    <div class="card-image dashboard-focos-bg">
-                        <div class="card-badge">QUEIMADAS</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/fire.svg' %}); mask-image: url({% static 'images/regular/fire.svg' %});"></span>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                        <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">QUEIMADAS</div>
+                        <span class="icon-svg card-icon text-white"
+                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/fire.svg" %}'); mask-image: url('{% static "images/regular/fire.svg" %}'); background-color: currentColor;"></span>
                     </div>
-                    <div class="card-body">
-                        <h3>Dashboard de Focos</h3>
-                        <p>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3 text-dark">Dashboard de Focos</h3>
+                        <p class="text-muted mb-4 flex-grow-1">
                             Análise de focos de calor em áreas de
                             vegetação nativa e desmatamento.
                         </p>
-                        <a href="{% url 'core_gis:dashboard_focos' %}" class="btn btn-danger">
-                            Acessar Dashboard <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
+                        <a href="{% url 'core_gis:dashboard_focos' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                            Acessar Dashboard <span class="icon-svg ms-2 align-middle"
+                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                         </a>
                     </div>
                 </div>
@@ -201,68 +200,68 @@
             <p>Visualize os dados geográficos de Porto Velho em mapas interativos</p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             <!-- PRODES Map Card -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card map-card">
-                    <div class="card-image prodes-bg">
-                        <div class="card-badge">PRODES</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/tree.svg' %}); mask-image: url({% static 'images/regular/tree.svg' %});"></span>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                        <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">PRODES</div>
+                        <span class="icon-svg card-icon text-white"
+                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/tree.svg" %}'); mask-image: url('{% static "images/regular/tree.svg" %}'); background-color: currentColor;"></span>
                     </div>
-                    <div class="card-body">
-                        <h3>Mapa de Desmatamento</h3>
-                        <p>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3 text-dark">Mapa de Desmatamento</h3>
+                        <p class="text-muted mb-4 flex-grow-1">
                             Visualize os polígonos de supressão de vegetação nativa
                             detectados pelo programa PRODES/INPE para Porto Velho.
                         </p>
-                        <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-outline-primary">
-                            Acessar Mapa <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
+                        <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                            Acessar Mapa <span class="icon-svg ms-2 align-middle"
+                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                         </a>
                     </div>
                 </div>
             </div>
 
             <!-- DETER Map Card -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card map-card">
-                    <div class="card-image deter-bg">
-                        <div class="card-badge">DETER</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/alert-triangle.svg' %}); mask-image: url({% static 'images/regular/alert-triangle.svg' %});"></span>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                        <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">DETER</div>
+                        <span class="icon-svg card-icon text-white"
+                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/alert-triangle.svg" %}'); mask-image: url('{% static "images/regular/alert-triangle.svg" %}'); background-color: currentColor;"></span>
                     </div>
-                    <div class="card-body">
-                        <h3>Mapa de Alertas</h3>
-                        <p>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3 text-dark">Mapa de Alertas</h3>
+                        <p class="text-muted mb-4 flex-grow-1">
                             Acompanhe os alertas de alteração na cobertura florestal
                             detectados em tempo quase real pelo sistema DETER.
                         </p>
-                        <a href="{% url 'core_gis:mapa_alertas' %}" class="btn btn-outline-warning">
-                            Acessar Mapa <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
+                        <a href="{% url 'core_gis:mapa_alertas' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                            Acessar Mapa <span class="icon-svg ms-2 align-middle"
+                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                         </a>
                     </div>
                 </div>
             </div>
 
             <!-- Fire Spots Map Card -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card map-card">
-                    <div class="card-image focos-bg">
-                        <div class="card-badge">QUEIMADAS</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/fire.svg' %}); mask-image: url({% static 'images/regular/fire.svg' %});"></span>
+            <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
+                        <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">QUEIMADAS</div>
+                        <span class="icon-svg card-icon text-white"
+                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/fire.svg" %}'); mask-image: url('{% static "images/regular/fire.svg" %}'); background-color: currentColor;"></span>
                     </div>
-                    <div class="card-body">
-                        <h3>Mapa de Focos de Calor</h3>
-                        <p>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3 text-dark">Mapa de Focos de Calor</h3>
+                        <p class="text-muted mb-4 flex-grow-1">
                             Monitore os focos de calor detectados por satélites
                             na região de Porto Velho e entorno.
                         </p>
-                        <a href="{% url 'core_gis:mapa_focos' %}" class="btn btn-outline-danger">
-                            Acessar Mapa <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
+                        <a href="{% url 'core_gis:mapa_focos' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                            Acessar Mapa <span class="icon-svg ms-2 align-middle"
+                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                         </a>
                     </div>
                 </div>
@@ -343,6 +342,12 @@
             <div class="col-lg-8 mx-auto">
                 <div class="chart-container bg-white rounded shadow-sm p-4">
                     <canvas id="homeChart" height="300"></canvas>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const chartDataObj = {{ dados_publicacoes|safe }};
+                            renderBarChart('homeChart', chartDataObj);
+                        });
+                    </script>
                 </div>
             </div>
         </div>
@@ -351,6 +356,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/bar_chart.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Initialize mini map in hero section
@@ -360,73 +366,36 @@
                 attributionControl: false,
                 dragging: false,
                 scrollWheelZoom: false
-            }).setView([-8.76, -63.90], 10);
+            });
 
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 maxZoom: 19
             }).addTo(miniMap);
 
-            // Add a marker for Porto Velho
-            L.circle([-8.76, -63.90], {
-                color: '#e74c3c',
-                fillColor: '#e74c3c',
-                fillOpacity: 0.3,
-                radius: 30000
-            }).addTo(miniMap);
+            // Add a polygon for Porto Velho limits
+            fetch('/api/limite-pvh-geojson/')
+                .then(response => response.json())
+                .then(data => {
+                    const geoJsonLayer = L.geoJSON(data, {
+                        style: function (feature) {
+                            return {
+                                color: '#3b82f6', // blue stroke
+                                weight: 2,
+                                opacity: 1,
+                                fillOpacity: 0.1,
+                                fillColor: '#3b82f6', // blue fill
+                                dashArray: '5, 5'     // dashed border style like reference map
+                            };
+                        }
+                    }).addTo(miniMap);
+                    // Adjust map to fit the entire polygon
+                    miniMap.fitBounds(geoJsonLayer.getBounds(), { padding: [10, 10] });
+                })
+                .catch(error => console.error('Error loading Porto Velho limits:', error));
         }
 
         // Stats are now rendered server-side via Django template context
         // No JS fetch needed for publication counts
-
-        // Load chart data
-        const chartLabels = {{ chart_labels|safe }};
-        const chartData = {{ chart_data|safe }};
-        
-        const ctx = document.getElementById('homeChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    label: 'Quantidade de Publicações',
-                    data: chartData,
-                    backgroundColor: 'rgba(249, 115, 22, 0.7)',
-                    borderColor: 'rgba(249, 115, 22, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Tipos de Violação',
-                        font: { size: 16 }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Quantidade de Publicações'
-                        },
-                        ticks: {
-                            stepSize: 1
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            autoSkip: false
-                        }
-                    }
-                }
-            }
-        });
     });
 </script>
 {% endblock %}
