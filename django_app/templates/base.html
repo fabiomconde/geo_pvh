@@ -35,10 +35,7 @@
     <div class="gov-bar">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
-                <span>
-                    <i class="bi bi-building"></i>
-                    Protótipo de Observatório Geoespacial de Porto Velho - Rondônia
-                </span>
+
             </div>
         </div>
     </div>
@@ -197,42 +194,9 @@
     <!-- Footer -->
     <footer class="main-footer">
         <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5><i class="bi bi-link-45deg"></i> Links</h5>
-                    <ul class="footer-links">
-                        <li><a href="https://www.gov.br/inpe" target="_blank">INPE</a></li>
-                        <li><a href="https://terrabrasilis.dpi.inpe.br" target="_blank">TerraBrasilis</a></li>
-                        <li><a href="http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes"
-                                target="_blank">PRODES</a></li>
-                        <li><a href="http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/deter"
-                                target="_blank">DETER</a></li>
-                        <li><a href="https://portovelho.ro.gov.br" target="_blank">Protótipo de Observatório Geoespacial
-                                de Porto Velho - Rondônia</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5><i class="bi bi-geo-alt"></i> Contato</h5>
-                    <address>
-                        <p><i class="bi bi-building"></i> Protótipo de Observatório Geoespacial de Porto Velho -
-                            Rondônia</p>
-                        <p><i class="bi bi-pin-map"></i> BR</p>
-                        <p><i class="bi bi-geo"></i> Porto Velho - RO</p>
-                    </address>
-                </div>
-                <div class="col-md-4">
-                    <h5><i class="bi bi-info-circle"></i> Sobre</h5>
-                    <p>
-                        Observatório de Conflitos Socioambientais e Direitos Humanos é uma plataforma de dados
-                        geográficos
-                        para monitoramento ambiental e territorial do município.
-                    </p>
-                    <p class="license">
-                        <i class="bi bi-cc-circle"></i>
-                        Dados sob licença Creative Commons CC BY-NC-SA 4.0
-                    </p>
-                </div>
-            </div>
+            {% load config_tags %}
+            {% get_configuracao 'rodape_informativo' as rodape %}
+            {{ rodape|safe }}
             <hr>
             <div class="footer-bottom">
                 <div class="row align-items-center">

@@ -1,7 +1,21 @@
 from django.contrib.gis.db import models
+from django.contrib.auth.models import User
 from django_ckeditor_5.fields import CKEditor5Field 
 
+class Configuracao(models.Model):
+    """Configurações dinâmicas de textos e informações do sistema"""
+    identificador = models.CharField("Identificador", max_length=100, unique=True, help_text="Ex: sobre, mensagem_inicio, rodape_informativo")
+    corpo_texto = CKEditor5Field("Conteúdo", config_name='extends')
+    data_criacao = models.DateTimeField("Data de Criação", auto_now_add=True)
+    data_alteracao = models.DateTimeField("Data de Alteração", auto_now=True)
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Usuário")
 
+    class Meta:
+        verbose_name = "Configuração do Sistema"
+        verbose_name_plural = "Configurações do Sistema"
+
+    def __str__(self):
+        return self.identificador
 
 class MunicipioRO(models.Model):
     """Municípios de Rondônia"""
@@ -171,7 +185,7 @@ class SetorCensitario(models.Model):
     geom = models.MultiPolygonField(srid=4674)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = '"geo"."core_gis_setorcensitario"' # Força o esquema geo
 
     def __str__(self):
@@ -323,3 +337,18 @@ class Publicacao(models.Model):
 
     def __str__(self):
         return self.titulo
+
+
+class PublicacaoImagem(models.Model):
+    publicacao = models.ForeignKey(Publicacao, related_name='imagens', on_delete=models.CASCADE)
+    imagem = models.ImageField("Imagem", upload_to='publicacoes/imagens/')
+    ordem = models.PositiveIntegerField("Ordem", default=0, help_text="Define a ordem de exibição. A primeira (menor número) será a capa da publicação.")
+    legenda = models.CharField("Legenda", max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Imagem da Publicação"
+        verbose_name_plural = "Imagens da Publicação"
+        ordering = ['ordem']
+
+    def __str__(self):
+        return f"Imagem {self.ordem} - {self.publicacao.titulo}"

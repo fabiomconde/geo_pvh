@@ -1,0 +1,53 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('{% url "core_gis:dados_focos_diario" %}')
+            .then(response => response.json())
+            .then(data => {
+                const totalFocos = data.reduce((sum, item) => sum + (item.total_focos || 0), 0);
+                const tempMedia = data.reduce((sum, item) => sum + parseFloat(item.temp_media || 0), 0) / data.length;
+
+                document.getElementById('totalFocos').textContent = totalFocos;
+                document.getElementById('tempMedia').textContent = tempMedia.toFixed(1);
+                document.getElementById('focosHoje').textContent = data.length > 0 ? data[0].total_focos : 0;
+                document.getElementById('satelites').textContent = '4';
+
+                // Line Chart
+                new Chart(document.getElementById('lineChart'), {
+                    type: 'line',
+                    data: {
+                        labels: data.map(item => item.dia).reverse(),
+                        datasets: [{
+                            label: 'Focos de Calor',
+                            data: data.map(item => item.total_focos).reverse(),
+                            borderColor: '#ff5722',
+                            backgroundColor: 'rgba(255, 87, 34, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+
+                // Pie Chart
+                new Chart(document.getElementById('pieChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['AQUA', 'TERRA', 'NPP', 'GOES-16'],
+                        datasets: [{
+                            data: [30, 25, 25, 20],
+                            backgroundColor: ['#ff5722', '#ff9800', '#ffc107', '#4caf50']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            })
+            .catch(err => console.error('Error:', err));
+    });
+</script>

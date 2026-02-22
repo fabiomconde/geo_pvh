@@ -16,6 +16,8 @@
     --accent-hover: #A19E9D;
     /* Light Accent Hover */
 
+
+
     /* Functional Colors (Accessibility / Contrast) */
     --text-color: #212121;
     /* Texto Secundário Base - WCAG Legibility */
@@ -276,7 +278,7 @@ a:hover {
 /* Hero Section (Reimagined as a clean header) */
 .hero-section {
     background: var(--white-color);
-    padding: 4rem 0 6rem;
+    padding: 0.5rem 0 4rem;
     /* Extra padding bottom for overlap */
     position: relative;
     border-bottom: 1px solid var(--border-color);
@@ -467,7 +469,7 @@ a:hover {
 }
 
 .theme-forest-gradient {
-    background: linear-gradient(135deg, rgba(46, 125, 50, 0.75) 0%, rgba(76, 175, 80, 0.75) 100%);
+    background: linear-gradient(135deg, rgba(46, 125, 50, 0.75) 0%, rgba(198, 240, 200, 0.75) 1%);
 }
 
 .theme-alert {
@@ -475,7 +477,7 @@ a:hover {
 }
 
 .theme-alert-gradient {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.75) 0%, rgba(251, 191, 36, 0.75) 100%);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.75) 0%, rgba(240, 227, 196, 0.75) 1%);
 }
 
 .theme-fire {
@@ -483,7 +485,7 @@ a:hover {
 }
 
 .theme-fire-gradient {
-    background: linear-gradient(135deg, rgba(230, 81, 0, 0.75) 0%, rgba(255, 152, 0, 0.75) 100%);
+    background: linear-gradient(135deg, rgba(230, 81, 0, 0.75) 0%, rgba(245, 215, 170, 0.75) 1%);
 }
 
 .theme-docs {
@@ -491,12 +493,12 @@ a:hover {
 }
 
 .theme-docs-gradient {
-    background: linear-gradient(135deg, rgba(21, 101, 192, 0.75) 0%, rgba(66, 165, 245, 0.75) 100%);
+    background: linear-gradient(135deg, rgba(21, 101, 192, 0.75) 0%, rgba(187, 221, 248, 0.75) 1%);
 }
 
 /* Gradients for Feature Cards Backgrounds (Legacy Overrides) */
 .prodes-bg {
-    background: linear-gradient(135deg, #fee2e2 0%, #ffedd5 100%);
+    background: linear-gradient(135deg, #fee2e2 0%, #ffedd5 1%);
 }
 
 .feature-card .card-body {

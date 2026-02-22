@@ -1,0 +1,129 @@
+{% extends 'core_gis/dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block wrapper_class %}{{ tema_class|default:"theme-default" }}{% endblock %}
+
+{% block sidebar_title %}{{ sidebar_title|default:"Dashboard" }}{% endblock %}
+
+{% block sidebar_filters %}
+    {% for grupo in filtros %}
+    <div class="filter-group">
+        <h6 class="filter-title">{{ grupo.titulo }}</h6>
+        {% for item in grupo.itens %}
+            {% if item.url %}
+            <a href="{{ item.url }}" class="filter-item text-decoration-none {% if item.active %}active{% endif %}">
+                <i class="bi {{ item.icone|default:'bi-dot' }} me-2"></i> {{ item.label }}
+            </a>
+            {% else %}
+            <div class="filter-item {% if item.active %}active{% endif %}" {% if item.id %}id="{{ item.id }}"{% endif %}>
+                <i class="bi {{ item.icone|default:'bi-dot' }} me-2"></i> {{ item.label }}
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+{% endblock %}
+
+{% block breadcrumbs %}
+    <span class="text-muted">
+        {% for crumb in breadcrumbs %}
+            {% if not forloop.last %}
+                {% if crumb.url %}
+                    <a href="{{ crumb.url }}" class="text-decoration-none text-muted">{{ crumb.label }}</a> / 
+                {% else %}
+                    {{ crumb.label }} / 
+                {% endif %}
+            {% else %}
+                <strong>{{ crumb.label }}</strong>
+            {% endif %}
+        {% empty %}
+            Dashboard
+        {% endfor %}
+    </span>
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- Dashboard Header -->
+<div class="dashboard-header">
+    <h1><i class="bi {{ header_icon|default:'bi-graph-up' }}"></i> {{ header_title }}</h1>
+    <p class="mb-0">{{ header_subtitle }}</p>
+</div>
+
+<!-- Stats Cards -->
+{% if cards %}
+<div class="row g-4 mb-4">
+    {% for card in cards %}
+    <div class="{{ card.col_class|default:'col-md-3 col-6' }}">
+        <div class="stat-card">
+            <i class="bi {{ card.icon }} {{ card.icon_color }}"></i>
+            <div class="stat-content">
+                <div class="stat-value" id="{{ card.id }}">{{ card.valor_inicial|default:"--" }}</div>
+                <div class="text-muted">{{ card.label }}</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Charts Array -->
+{% if charts %}
+<div class="row g-4 {% if cards %}mt-1{% endif %}">
+    {% for chart in charts %}
+    <div class="{{ chart.col_class|default:'col-lg-6' }}">
+        <div class="chart-card h-100">
+            <h5 class="mb-3">
+                {% if chart.icon %}<i class="bi {{ chart.icon }}"></i> {% endif %}{{ chart.title }}
+            </h5>
+            <div class="chart-container">
+                <canvas id="{{ chart.id }}"></canvas>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Data Table -->
+{% if tabela %}
+<div class="row g-4 mb-4 mt-2">
+    <div class="col-12">
+        <div class="table-card">
+            <div class="p-3 border-bottom">
+                <h5 class="mb-0">
+                    <i class="bi {{ tabela.icon|default:'bi-table' }}"></i> {{ tabela.title|default:"Dados" }}
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            {% for header in tabela.headers %}
+                            <th>{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody id="{{ tabela.body_id|default:'dataTable' }}">
+                        <tr>
+                            <td colspan="{{ tabela.headers|length }}" class="text-center">Carregando dados...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if raw_html %}
+    {{ raw_html|safe }}
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+{% if extra_js_template %}
+    {% include extra_js_template %}
+{% endif %}
+{% endblock %}
