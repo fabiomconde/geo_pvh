@@ -185,7 +185,7 @@ class SetorCensitario(models.Model):
     geom = models.MultiPolygonField(srid=4674)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = '"geo"."core_gis_setorcensitario"' # Força o esquema geo
 
     def __str__(self):
@@ -352,3 +352,51 @@ class PublicacaoImagem(models.Model):
 
     def __str__(self):
         return f"Imagem {self.ordem} - {self.publicacao.titulo}"
+
+
+# =============================================================================
+# 5. CONTEÚDOS DINÂMICOS (HOME)
+# =============================================================================
+
+class SecaoHome(models.Model):
+    TIPO_CHOICES = [
+        ('publicacao', 'Publicação'),
+        ('dashboard', 'Dashboard'),
+        ('mapa', 'Mapa Interativo'),
+    ]
+    
+    titulo = models.CharField("Título", max_length=200)
+    subtitulo = models.CharField("Subtítulo", max_length=255, blank=True, null=True)
+    tipo = models.CharField("Tipo da Seção", max_length=20, choices=TIPO_CHOICES, default='publicacao')
+    icone = models.CharField("Ícone (SVG)", max_length=100, help_text="Nome do arquivo SVG do ícone (ex: 'chart-line.svg')")
+    cor_fundo = models.CharField("Variável de Cor do Fundo", max_length=100, default='var(--theme-bg-white)', help_text="Cor ou variável CSS de fundo da seção")
+    ordem = models.PositiveIntegerField("Ordem de Exibição", default=0)
+    url = models.CharField("URL", default='#', max_length=255, help_text="URL ou nome da rota (ex: 'core_gis:lista_mapas')")
+
+    class Meta:
+        verbose_name = "Seção da Home"
+        verbose_name_plural = "Seções da Home"
+        ordering = ['ordem']
+
+    def __str__(self):
+        return f"{self.titulo} ({self.get_tipo_display()})"
+
+class CardSecao(models.Model):
+    secao = models.ForeignKey(SecaoHome, related_name='cards', on_delete=models.CASCADE, verbose_name="Seção")
+    titulo = models.CharField("Título do Card", max_length=200)
+    subtitulo = models.TextField("Subtítulo/Descrição", blank=True, null=True)
+    url = models.CharField("URL", max_length=255, help_text="URL ou nome da rota (ex: 'core_gis:lista_mapas')")
+    icone = models.CharField("Ícone (SVG)", max_length=100, help_text="Nome do arquivo SVG do ícone da badge")
+    texto_botao = models.CharField("Texto do Botão", max_length=100, default="Acessar")
+    btn_class = models.CharField("Classe CSS do Botão", max_length=50, default="btn-primary", help_text="ex: btn-primary")
+    badge_text = models.CharField("Texto da Badge", max_length=50, blank=True, null=True)
+    badge_class = models.CharField("Classe CSS da Badge", max_length=50, blank=True, null=True, help_text="ex: theme-forest")
+    ordem = models.PositiveIntegerField("Ordem de Exibição", default=0)
+
+    class Meta:
+        verbose_name = "Card da Seção"
+        verbose_name_plural = "Cards da Seção"
+        ordering = ['ordem']
+
+    def __str__(self):
+        return f"{self.titulo} - {self.secao.titulo}"

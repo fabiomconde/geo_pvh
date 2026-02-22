@@ -11,63 +11,16 @@ from django.conf import settings
 from .models import (
     DesmatamentoPVH, AlertaDETER, FocoCalor,
     BairroPVH, MunicipioRO, AreaProtegida, DistritoPVH,
-    Publicacao, TipoDocumento
+    Publicacao, TipoDocumento, CardSecao, SecaoHome
 )
 
 
 import os
-from dataclasses import dataclass
-
-
-@dataclass
-class CardPublicacao:
-    """Informações de exibição dos cards de publicação na home page"""
-    tag: str              # Badge no canto superior direito
-    icone: str            # Nome do arquivo SVG do ícone
-    titulo: str           # Título principal do card
-    subtitulo: str        # Texto descritivo
-    texto_botao: str      # Texto do botão de ação
-    btn_class: str        # Classe CSS do botão (ex: 'btn-primary')
-    bg_class: str         # Classe CSS do background (ex: 'dashboard-prodes-bg')
-    link: str             # Link para a página de publicações
-
-
-CARDS_PUBLICACOES = [
-    CardPublicacao(
-        tag='Artigo Acadêmico',
-        icone='alert-triangle.svg',
-        titulo='Conflitos Socioambientais',
-        subtitulo='Publicações de artigos acadêmicos sobre conflitos socioambientais.',
-        texto_botao='Acessar Artigos Acadêmicos',
-        btn_class='btn-outline-secondary',
-        bg_class='bg-secondary',
-        link='?tipo=10'
-    ),
-    CardPublicacao(
-        tag='Nota Pública',
-        icone='book-open.svg',
-        titulo='Nota Pública',
-        subtitulo='Publicações de notas públicas.',
-        texto_botao='Acessar Notas Públicas',
-        btn_class='btn-outline-secondary',
-        bg_class='bg-secondary',
-        link='?tipo=8'
-    ),
-    CardPublicacao(
-        tag='Relatório Técnico',
-        icone='clipboard-list.svg',
-        titulo='Relatório Técnico',
-        subtitulo='Publicações de relatórios técnicos.',
-        texto_botao='Acessar Relatórios Técnicos',
-        btn_class='btn-outline-secondary',
-        bg_class='bg-secondary',
-        link='?tipo=7'
-    )
-]
 
 
 def home(request):
     """Home page - Dashboard principal"""
+    
     # Contagem de publicações por tipo de documento
     publicacoes_por_tipo = (
         Publicacao.objects
@@ -102,12 +55,14 @@ def home(request):
         'yTitleText': 'Quantidade de Publicações'
     }
 
+    secoes_home = SecaoHome.objects.prefetch_related('cards').order_by('ordem')
+
     context = {
         'page_title': 'Observatório de Conflitos Socioambientais e Direitos Humanos - Porto Velho',
         'geoserver_url': settings.GEOSERVER_URL,
         'total_publicacoes': total_publicacoes,
         'contagem_tipos': contagem_tipos,
-        'cards_publicacoes': CARDS_PUBLICACOES,
+        'secoes_home': secoes_home,
         'dados_publicacoes': json.dumps(dados_publicacoes),
     }
 

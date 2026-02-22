@@ -4,7 +4,8 @@ from .models import (
     MunicipioRO, BairroPVH, DesmatamentoPVH,
     AlertaDETER, FocoCalor, AreaProtegida, DistritoPVH,
     TipoDocumento, FaseConflito, TipoTerritorio, Bioma, TipoAtor, PapelAtor, SetorEconomico, DireitoAfetado, TipoViolacao,
-    Localizacao, Ator, Conflito, EnvolvimentoAtor, Publicacao, PublicacaoImagem, Configuracao
+    Localizacao, Ator, Conflito, EnvolvimentoAtor, Publicacao, PublicacaoImagem, Configuracao,
+    SecaoHome, CardSecao
 )
 
 @admin.register(Configuracao)
@@ -138,3 +139,15 @@ class PublicacaoAdmin(admin.ModelAdmin):
     filter_horizontal = ('atores_citados', 'violacoes_denunciadas')
     inlines = [PublicacaoImagemInline]
     # O RichTextField será renderizado automaticamente no form padrão
+
+
+class CardSecaoInline(admin.StackedInline):
+    model = CardSecao
+    extra = 1
+
+@admin.register(SecaoHome)
+class SecaoHomeAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'tipo', 'ordem', 'cor_fundo')
+    list_editable = ('tipo', 'ordem', 'cor_fundo')
+    search_fields = ('titulo', 'subtitulo')
+    inlines = [CardSecaoInline]

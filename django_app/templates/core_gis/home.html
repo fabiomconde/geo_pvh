@@ -66,29 +66,40 @@
     </div>
 </section>
 
-<!-- Dashboards Publicações -->
-<section class="section-dashboards py-5" style="background-color: var(--theme-bg-publicacoes);">
+{% for secao in secoes_home %}
+<!-- Dynamic Section: {{ secao.titulo }} -->
+<section class="section-{{ secao.tipo }} py-5" style="background-color: {{ secao.cor_fundo }};">
     <div class="container">
         <div class="section-header">
             <h2><span class="icon-svg"
-                    style="-webkit-mask-image: url({% static 'images/regular/clipboard-edit.svg' %}); mask-image: url({% static 'images/regular/clipboard-edit.svg' %});"></span>
-                Publicações</h2>
-            <p>Veja as publicações e estudos realizados</p>
+                    style="-webkit-mask-image: url({% static 'images/regular/'|add:secao.icone %}); mask-image: url({% static 'images/regular/'|add:secao.icone %});"></span>
+                {{ secao.titulo }}</h2>
+            {% if secao.subtitulo %}
+            <p>{{ secao.subtitulo }}</p>
+            {% endif %}
         </div>
 
         <div class="row g-4 justify-content-center">
-            {% for card in cards_publicacoes %}
+            {% for card in secao.cards.all %}
             <div class="col-md-4">
-                <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
-                    <div class="card-image theme-docs-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                        <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-docs text-white fw-bold">{{ card.tag }}</div>
+                <div class="feature-card {% if secao.tipo == 'mapa' %}map-card{% else %}dashboard-card{% endif %} h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-image theme-{% if card.badge_class %}{{ card.badge_class|cut:'theme-' }}{% else %}docs{% endif %}-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                        {% if card.badge_text %}
+                        <div class="card-badge position-absolute top-0 end-0 m-3 badge {{ card.badge_class }} text-white fw-bold">{{ card.badge_text }}</div>
+                        {% endif %}
                         <span class="icon-svg card-icon text-white"
                             style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/" %}{{ card.icone }}'); mask-image: url('{% static "images/regular/" %}{{ card.icone }}'); background-color: currentColor;"></span>
                     </div>
                     <div class="card-body p-4 d-flex flex-column">
                         <h3 class="h5 fw-bold mb-3 text-dark">{{ card.titulo }}</h3>
+                        {% if card.subtitulo %}
                         <p class="text-muted mb-4 flex-grow-1">{{ card.subtitulo }}</p>
-                        <a href="{% url 'core_gis:lista_publicacoes' %}{{ card.link }}" class="btn w-100 fw-medium btn-primary transition-hover">
+                        {% endif %}
+                        {% if ':' in card.url %}
+                            <a href="{% url card.url %}" class="btn {{ card.btn_class }} w-100 fw-medium transition-hover">
+                        {% else %}
+                            <a href="{% url 'core_gis:lista_publicacoes' %}{{ card.url }}" class="btn {{ card.btn_class }} w-100 fw-medium transition-hover">
+                        {% endif %}
                             {{ card.texto_botao }}
                             <span class="icon-svg ms-2 align-middle"
                                 style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
@@ -97,169 +108,15 @@
                 </div>
             </div>
             {% endfor %}
+            <a href="/{{secao.url}}/" class="btn btn-outline-light btn-lg">
+                <span class="icon-svg"
+                    style="-webkit-mask-image: url({% static 'images/regular/eye.svg' %}); mask-image: url({% static 'images/regular/eye.svg' %});"></span>
+                {{ secao.titulo }}
+            </a>            
         </div>
     </div>
 </section>
-
-
-<!-- Dashboards Section -->
-<section class="section-dashboards py-5 bg-dashboards" style="background-color: var(--theme-bg-white);">
-    <div class="container">
-        <div class="section-header">
-            <h2><span class="icon-svg"
-                    style="-webkit-mask-image: url({% static 'images/regular/chart-line.svg' %}); mask-image: url({% static 'images/regular/chart-line.svg' %});"></span>
-                Dashboards</h2>
-            <p>Analise dados e estatísticas através de gráficos interativos</p>
-        </div>
-
-        <div class="row g-4 justify-content-center">
-            <!-- PRODES Dashboard -->
-            <div class="col-md-4">
-                <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
-                    <div class="card-image theme-forest-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                        <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-forest text-white fw-bold">PRODES</div>
-                        <span class="icon-svg card-icon text-white"
-                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/chart-line-up.svg" %}'); mask-image: url('{% static "images/regular/chart-line-up.svg" %}'); background-color: currentColor;"></span>
-                    </div>
-                    <div class="card-body p-4 d-flex flex-column">
-                        <h3 class="h5 fw-bold mb-3 text-dark">Dashboard de Desmatamento</h3>
-                        <p class="text-muted mb-4 flex-grow-1">
-                            Análise temporal e espacial do desmatamento.
-                        </p>
-                        <a href="{% url 'core_gis:dashboard_prodes' %}" class="btn btn-primary w-100 fw-medium">
-                            Acessar Dashboard <span class="icon-svg ms-2 align-middle"
-                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DETER Dashboard -->
-            <div class="col-md-4">
-                <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
-                    <div class="card-image theme-alert-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                        <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-alert text-white fw-bold">DETER</div>
-                        <span class="icon-svg card-icon text-white"
-                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/chart-line-down.svg" %}'); mask-image: url('{% static "images/regular/chart-line-down.svg" %}'); background-color: currentColor;"></span>
-                    </div>
-                    <div class="card-body p-4 d-flex flex-column">
-                        <h3 class="h5 fw-bold mb-3 text-dark">Dashboard de Alertas</h3>
-                        <p class="text-muted mb-4 flex-grow-1">
-                            Acompanhamento dos alertas de alteração
-                            na cobertura florestal.
-                        </p>
-                        <a href="{% url 'core_gis:dashboard_deter' %}" class="btn btn-primary w-100 fw-medium">
-                            Acessar Dashboard <span class="icon-svg ms-2 align-middle"
-                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fire Dashboard -->
-            <div class="col-md-4">
-                <div class="feature-card dashboard-card h-100 shadow-sm border-0 transition-hover">
-                    <div class="card-image theme-fire-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                        <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-fire text-white fw-bold">QUEIMADAS</div>
-                        <span class="icon-svg card-icon text-white"
-                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/fire.svg" %}'); mask-image: url('{% static "images/regular/fire.svg" %}'); background-color: currentColor;"></span>
-                    </div>
-                    <div class="card-body p-4 d-flex flex-column">
-                        <h3 class="h5 fw-bold mb-3 text-dark">Dashboard de Focos</h3>
-                        <p class="text-muted mb-4 flex-grow-1">
-                            Análise de focos de calor em áreas de
-                            vegetação nativa e desmatamento.
-                        </p>
-                        <a href="{% url 'core_gis:dashboard_focos' %}" class="btn btn-primary w-100 fw-medium">
-                            Acessar Dashboard <span class="icon-svg ms-2 align-middle"
-                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Maps Section -->
-<section class="section-maps py-5 bg-maps" style="background-color: var(--theme-bg-maps);">
-    <div class="container">
-        <div class="section-header">
-            <h2><span class="icon-svg"
-                    style="-webkit-mask-image: url({% static 'images/regular/map.svg' %}); mask-image: url({% static 'images/regular/map.svg' %});"></span>
-                Mapas Interativos</h2>
-            <p>Visualize os dados geográficos de Porto Velho em mapas interativos</p>
-        </div>
-
-        <div class="row g-4 justify-content-center">
-            <!-- PRODES Map Card -->
-            <div class="col-md-4">
-                <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
-                    <div class="card-image theme-forest-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                        <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-forest text-white fw-bold">PRODES</div>
-                        <span class="icon-svg card-icon text-white"
-                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/tree.svg" %}'); mask-image: url('{% static "images/regular/tree.svg" %}'); background-color: currentColor;"></span>
-                    </div>
-                    <div class="card-body p-4 d-flex flex-column">
-                        <h3 class="h5 fw-bold mb-3 text-dark">Mapa de Desmatamento</h3>
-                        <p class="text-muted mb-4 flex-grow-1">
-                            Visualize os polígonos de supressão de vegetação nativa
-                            detectados pelo programa PRODES/INPE para Porto Velho.
-                        </p>
-                        <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-primary w-100 fw-medium">
-                            Acessar Mapa <span class="icon-svg ms-2 align-middle"
-                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DETER Map Card -->
-            <div class="col-md-4">
-                <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
-                    <div class="card-image theme-alert-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                        <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-alert text-white fw-bold">DETER</div>
-                        <span class="icon-svg card-icon text-white"
-                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/alert-triangle.svg" %}'); mask-image: url('{% static "images/regular/alert-triangle.svg" %}'); background-color: currentColor;"></span>
-                    </div>
-                    <div class="card-body p-4 d-flex flex-column">
-                        <h3 class="h5 fw-bold mb-3 text-dark">Mapa de Alertas</h3>
-                        <p class="text-muted mb-4 flex-grow-1">
-                            Acompanhe os alertas de alteração na cobertura florestal
-                            detectados em tempo quase real pelo sistema DETER.
-                        </p>
-                        <a href="{% url 'core_gis:mapa_alertas' %}" class="btn btn-primary w-100 fw-medium">
-                            Acessar Mapa <span class="icon-svg ms-2 align-middle"
-                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fire Spots Map Card -->
-            <div class="col-md-4">
-                <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
-                    <div class="card-image theme-fire-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
-                        <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-fire text-white fw-bold">QUEIMADAS</div>
-                        <span class="icon-svg card-icon text-white"
-                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/fire.svg" %}'); mask-image: url('{% static "images/regular/fire.svg" %}'); background-color: currentColor;"></span>
-                    </div>
-                    <div class="card-body p-4 d-flex flex-column">
-                        <h3 class="h5 fw-bold mb-3 text-dark">Mapa de Focos de Calor</h3>
-                        <p class="text-muted mb-4 flex-grow-1">
-                            Monitore os focos de calor detectados por satélites
-                            na região de Porto Velho e entorno.
-                        </p>
-                        <a href="{% url 'core_gis:mapa_focos' %}" class="btn btn-primary w-100 fw-medium">
-                            Acessar Mapa <span class="icon-svg ms-2 align-middle"
-                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+{% endfor %}
 
 <!-- Data Access Section -->
 <section class="section-data py-5" style="background-color: var(--theme-bg-white);">
