@@ -15,7 +15,7 @@ class Configuracao(models.Model):
         verbose_name_plural = "Configurações do Sistema"
 
     def __str__(self):
-        return self.identificador
+        return self.identificador 
 
 class MunicipioRO(models.Model):
     """Municípios de Rondônia"""
