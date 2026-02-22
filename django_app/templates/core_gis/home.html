@@ -9,28 +9,19 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-7">
-                <h1 class="hero-title">
-                    <span class="icon-svg"
-                        style="-webkit-mask-image: url({% static 'images/regular/eye-scan.svg' %}); mask-image: url({% static 'images/regular/eye-scan.svg' %});"></span>
-                    Conflitos Socioambientais e Direitos Humanos - Porto Velho
-                </h1>
-                <p class="hero-subtitle">
-                    Plataforma digital de monitoramento e divulgação científica focada em Porto Velho
-                </p>
-                <p class="hero-description">
-                    Acesse, consulte e analise dados espaciais sobre conflitos socioambientais e direitos humanos
-                    e outras informações do município de Porto Velho.
-                </p>
+                {% load config_tags %}
+                {% get_configuracao 'mensagem_inicio' as msg_inicio %}
+                {{ msg_inicio|safe }}
                 <div class="hero-buttons">
-                    <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-primary btn-lg">
+                    <a href="{% url 'core_gis:lista_mapas' %}" class="btn btn-primary btn-lg">
                         <span class="icon-svg"
                             style="-webkit-mask-image: url({% static 'images/regular/map.svg' %}); mask-image: url({% static 'images/regular/map.svg' %});"></span>
                         Explorar Mapas
                     </a>
-                    <a href="{% url 'core_gis:dashboard_prodes' %}" class="btn btn-outline-light btn-lg">
+                    <a href="{% url 'core_gis:lista_dashboards' %}" class="btn btn-outline-light btn-lg">
                         <span class="icon-svg"
                             style="-webkit-mask-image: url({% static 'images/regular/chart-line.svg' %}); mask-image: url({% static 'images/regular/chart-line.svg' %});"></span>
-                        Ver Dashboard
+                        Ver Dashboards
                     </a>
                 </div>
             </div>
@@ -75,205 +66,60 @@
     </div>
 </section>
 
-<!-- Dashboards Publicações -->
-<section class="section-dashboards py-5 bg-light">
+{% for secao in secoes_home %}
+<!-- Dynamic Section: {{ secao.titulo }} -->
+<section class="section-{{ secao.tipo }} py-5" style="background-color: {{ secao.cor_fundo }};">
     <div class="container">
         <div class="section-header">
             <h2><span class="icon-svg"
-                    style="-webkit-mask-image: url({% static 'images/regular/clipboard-edit.svg' %}); mask-image: url({% static 'images/regular/clipboard-edit.svg' %});"></span>
-                Publicações</h2>
-            <p>Veja as publicações e estudos realizados</p>
+                    style="-webkit-mask-image: url({% static 'images/regular/'|add:secao.icone %}); mask-image: url({% static 'images/regular/'|add:secao.icone %});"></span>
+                {{ secao.titulo }}</h2>
+            {% if secao.subtitulo %}
+            <p>{{ secao.subtitulo }}</p>
+            {% endif %}
         </div>
 
-        <div class="row g-4">
-            {% for card in cards_publicacoes %}
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card dashboard-card">
-                    <div class="card-image {{ card.bg_class }}">
-                        <div class="card-badge">{{ card.tag }}</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/' %}{{ card.icone }}); mask-image: url({% static 'images/regular/' %}{{ card.icone }});"></span>
+        <div class="row g-4 justify-content-center">
+            {% for card in secao.cards.all %}
+            <div class="col-md-4">
+                <div class="feature-card {% if secao.tipo == 'mapa' %}map-card{% else %}dashboard-card{% endif %} h-100 shadow-sm border-0 transition-hover">
+                    <div class="card-image theme-{% if card.badge_class %}{{ card.badge_class|cut:'theme-' }}{% else %}docs{% endif %}-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                        {% if card.badge_text %}
+                        <div class="card-badge position-absolute top-0 end-0 m-3 badge {{ card.badge_class }} text-white fw-bold">{{ card.badge_text }}</div>
+                        {% endif %}
+                        <span class="icon-svg card-icon text-white"
+                            style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/" %}{{ card.icone }}'); mask-image: url('{% static "images/regular/" %}{{ card.icone }}'); background-color: currentColor;"></span>
                     </div>
-                    <div class="card-body">
-                        <h3>{{ card.titulo }}</h3>
-                        <p>{{ card.subtitulo }}</p>
-                        <a href="{% url 'core_gis:lista_publicacoes' %}{{ card.link }}" class="btn {{ card.btn_class }}">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h3 class="h5 fw-bold mb-3 text-dark">{{ card.titulo }}</h3>
+                        {% if card.subtitulo %}
+                        <p class="text-muted mb-4 flex-grow-1">{{ card.subtitulo }}</p>
+                        {% endif %}
+                        {% if ':' in card.url %}
+                            <a href="{% url card.url %}" class="btn {{ card.btn_class }} w-100 fw-medium transition-hover">
+                        {% else %}
+                            <a href="{% url 'core_gis:lista_publicacoes' %}{{ card.url }}" class="btn {{ card.btn_class }} w-100 fw-medium transition-hover">
+                        {% endif %}
                             {{ card.texto_botao }}
-                            <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
+                            <span class="icon-svg ms-2 align-middle"
+                                style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                         </a>
                     </div>
                 </div>
             </div>
             {% endfor %}
+            <a href="/{{secao.url}}/" class="btn btn-outline-light btn-lg">
+                <span class="icon-svg"
+                    style="-webkit-mask-image: url({% static 'images/regular/eye.svg' %}); mask-image: url({% static 'images/regular/eye.svg' %});"></span>
+                {{ secao.titulo }}
+            </a>            
         </div>
     </div>
 </section>
-
-
-<!-- Dashboards Section -->
-<section class="section-dashboards py-5 bg-light">
-    <div class="container">
-        <div class="section-header">
-            <h2><span class="icon-svg"
-                    style="-webkit-mask-image: url({% static 'images/regular/chart-line.svg' %}); mask-image: url({% static 'images/regular/chart-line.svg' %});"></span>
-                Dashboards</h2>
-            <p>Analise dados e estatísticas através de gráficos interativos</p>
-        </div>
-
-        <div class="row g-4">
-            <!-- PRODES Dashboard -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card dashboard-card">
-                    <div class="card-image dashboard-prodes-bg">
-                        <div class="card-badge">PRODES</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/chart-line-up.svg' %}); mask-image: url({% static 'images/regular/chart-line-up.svg' %});"></span>
-                    </div>
-                    <div class="card-body">
-                        <h3>Dashboard de Desmatamento</h3>
-                        <p>
-                            Taxas anuais e dados de supressão de vegetação
-                            nativa em Porto Velho.
-                        </p>
-                        <a href="{% url 'core_gis:dashboard_prodes' %}" class="btn btn-primary">
-                            Acessar Dashboard <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DETER Dashboard -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card dashboard-card">
-                    <div class="card-image dashboard-deter-bg">
-                        <div class="card-badge">DETER</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/chart-line-down.svg' %}); mask-image: url({% static 'images/regular/chart-line-down.svg' %});"></span>
-                    </div>
-                    <div class="card-body">
-                        <h3>Dashboard de Alertas</h3>
-                        <p>
-                            Acompanhamento dos alertas de alteração
-                            na cobertura florestal.
-                        </p>
-                        <a href="{% url 'core_gis:dashboard_deter' %}" class="btn btn-warning">
-                            Acessar Dashboard <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fire Dashboard -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card dashboard-card">
-                    <div class="card-image dashboard-focos-bg">
-                        <div class="card-badge">QUEIMADAS</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/fire.svg' %}); mask-image: url({% static 'images/regular/fire.svg' %});"></span>
-                    </div>
-                    <div class="card-body">
-                        <h3>Dashboard de Focos</h3>
-                        <p>
-                            Análise de focos de calor em áreas de
-                            vegetação nativa e desmatamento.
-                        </p>
-                        <a href="{% url 'core_gis:dashboard_focos' %}" class="btn btn-danger">
-                            Acessar Dashboard <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Maps Section -->
-<section class="section-maps py-5">
-    <div class="container">
-        <div class="section-header">
-            <h2><span class="icon-svg"
-                    style="-webkit-mask-image: url({% static 'images/regular/map.svg' %}); mask-image: url({% static 'images/regular/map.svg' %});"></span>
-                Mapas Interativos</h2>
-            <p>Visualize os dados geográficos de Porto Velho em mapas interativos</p>
-        </div>
-
-        <div class="row g-4">
-            <!-- PRODES Map Card -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card map-card">
-                    <div class="card-image prodes-bg">
-                        <div class="card-badge">PRODES</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/tree.svg' %}); mask-image: url({% static 'images/regular/tree.svg' %});"></span>
-                    </div>
-                    <div class="card-body">
-                        <h3>Mapa de Desmatamento</h3>
-                        <p>
-                            Visualize os polígonos de supressão de vegetação nativa
-                            detectados pelo programa PRODES/INPE para Porto Velho.
-                        </p>
-                        <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-outline-primary">
-                            Acessar Mapa <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DETER Map Card -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card map-card">
-                    <div class="card-image deter-bg">
-                        <div class="card-badge">DETER</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/alert-triangle.svg' %}); mask-image: url({% static 'images/regular/alert-triangle.svg' %});"></span>
-                    </div>
-                    <div class="card-body">
-                        <h3>Mapa de Alertas</h3>
-                        <p>
-                            Acompanhe os alertas de alteração na cobertura florestal
-                            detectados em tempo quase real pelo sistema DETER.
-                        </p>
-                        <a href="{% url 'core_gis:mapa_alertas' %}" class="btn btn-outline-warning">
-                            Acessar Mapa <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Fire Spots Map Card -->
-            <div class="col-lg-4 col-md-6">
-                <div class="feature-card map-card">
-                    <div class="card-image focos-bg">
-                        <div class="card-badge">QUEIMADAS</div>
-                        <span class="icon-svg card-icon"
-                            style="-webkit-mask-image: url({% static 'images/regular/fire.svg' %}); mask-image: url({% static 'images/regular/fire.svg' %});"></span>
-                    </div>
-                    <div class="card-body">
-                        <h3>Mapa de Focos de Calor</h3>
-                        <p>
-                            Monitore os focos de calor detectados por satélites
-                            na região de Porto Velho e entorno.
-                        </p>
-                        <a href="{% url 'core_gis:mapa_focos' %}" class="btn btn-outline-danger">
-                            Acessar Mapa <span class="icon-svg"
-                                style="-webkit-mask-image: url({% static 'images/regular/arrow-right.svg' %}); mask-image: url({% static 'images/regular/arrow-right.svg' %});"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
+{% endfor %}
 
 <!-- Data Access Section -->
-<section class="section-data py-5">
+<section class="section-data py-5" style="background-color: var(--theme-bg-white);">
     <div class="container">
         <div class="section-header">
             <h2><span class="icon-svg"
@@ -343,6 +189,12 @@
             <div class="col-lg-8 mx-auto">
                 <div class="chart-container bg-white rounded shadow-sm p-4">
                     <canvas id="homeChart" height="300"></canvas>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const chartDataObj = {{ dados_publicacoes|safe }};
+                            renderBarChart('homeChart', chartDataObj);
+                        });
+                    </script>
                 </div>
             </div>
         </div>
@@ -351,6 +203,7 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/bar_chart.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Initialize mini map in hero section
@@ -360,73 +213,36 @@
                 attributionControl: false,
                 dragging: false,
                 scrollWheelZoom: false
-            }).setView([-8.76, -63.90], 10);
+            });
 
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 maxZoom: 19
             }).addTo(miniMap);
 
-            // Add a marker for Porto Velho
-            L.circle([-8.76, -63.90], {
-                color: '#e74c3c',
-                fillColor: '#e74c3c',
-                fillOpacity: 0.3,
-                radius: 30000
-            }).addTo(miniMap);
+            // Add a polygon for Porto Velho limits
+            fetch('/api/limite-pvh-geojson/')
+                .then(response => response.json())
+                .then(data => {
+                    const geoJsonLayer = L.geoJSON(data, {
+                        style: function (feature) {
+                            return {
+                                color: '#3b82f6', // blue stroke
+                                weight: 2,
+                                opacity: 1,
+                                fillOpacity: 0.1,
+                                fillColor: '#3b82f6', // blue fill
+                                dashArray: '5, 5'     // dashed border style like reference map
+                            };
+                        }
+                    }).addTo(miniMap);
+                    // Adjust map to fit the entire polygon
+                    miniMap.fitBounds(geoJsonLayer.getBounds(), { padding: [10, 10] });
+                })
+                .catch(error => console.error('Error loading Porto Velho limits:', error));
         }
 
         // Stats are now rendered server-side via Django template context
         // No JS fetch needed for publication counts
-
-        // Load chart data
-        const chartLabels = {{ chart_labels|safe }};
-        const chartData = {{ chart_data|safe }};
-        
-        const ctx = document.getElementById('homeChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    label: 'Quantidade de Publicações',
-                    data: chartData,
-                    backgroundColor: 'rgba(249, 115, 22, 0.7)',
-                    borderColor: 'rgba(249, 115, 22, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Tipos de Violação',
-                        font: { size: 16 }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Quantidade de Publicações'
-                        },
-                        ticks: {
-                            stepSize: 1
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            autoSkip: false
-                        }
-                    }
-                }
-            }
-        });
     });
 </script>
 {% endblock %}

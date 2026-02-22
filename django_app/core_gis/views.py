@@ -11,63 +11,16 @@ from django.conf import settings
 from .models import (
     DesmatamentoPVH, AlertaDETER, FocoCalor,
     BairroPVH, MunicipioRO, AreaProtegida, DistritoPVH,
-    Publicacao, TipoDocumento
+    Publicacao, TipoDocumento, CardSecao, SecaoHome
 )
 
 
 import os
-from dataclasses import dataclass
-
-
-@dataclass
-class CardPublicacao:
-    """Informações de exibição dos cards de publicação na home page"""
-    tag: str              # Badge no canto superior direito
-    icone: str            # Nome do arquivo SVG do ícone
-    titulo: str           # Título principal do card
-    subtitulo: str        # Texto descritivo
-    texto_botao: str      # Texto do botão de ação
-    btn_class: str        # Classe CSS do botão (ex: 'btn-primary')
-    bg_class: str         # Classe CSS do background (ex: 'dashboard-prodes-bg')
-    link: str             # Link para a página de publicações
-
-
-CARDS_PUBLICACOES = [
-    CardPublicacao(
-        tag='Artigo Acadêmico',
-        icone='alert-triangle.svg',
-        titulo='Conflitos Socioambientais',
-        subtitulo='Publicações de artigos acadêmicos sobre conflitos socioambientais.',
-        texto_botao='Acessar Artigos Acadêmicos',
-        btn_class='btn-primary',
-        bg_class='dashboard-prodes-bg',
-        link='?tipo=10'
-    ),
-    CardPublicacao(
-        tag='Nota Pública',
-        icone='book-open.svg',
-        titulo='Nota Pública',
-        subtitulo='Publicações de notas públicas.',
-        texto_botao='Acessar Notas Públicas',
-        btn_class='btn-warning',
-        bg_class='dashboard-deter-bg',
-        link='?tipo=8'
-    ),
-    CardPublicacao(
-        tag='Relatório Técnico',
-        icone='clipboard-list.svg',
-        titulo='Relatório Técnico',
-        subtitulo='Publicações de relatórios técnicos.',
-        texto_botao='Acessar Relatórios Técnicos',
-        btn_class='btn-danger',
-        bg_class='dashboard-focos-bg',
-        link='?tipo=7'
-    ),
-]
 
 
 def home(request):
     """Home page - Dashboard principal"""
+    
     # Contagem de publicações por tipo de documento
     publicacoes_por_tipo = (
         Publicacao.objects
@@ -92,14 +45,25 @@ def home(request):
     chart_labels = [item['violacoes_denunciadas__nome'] for item in violacoes_stats]
     chart_data = [item['total'] for item in violacoes_stats]
 
+    dados_publicacoes = {
+        'labels': chart_labels,
+        'data': chart_data,
+        'datasetLabel': 'Quantidade de Publicações',
+        'backgroundColor': 'rgba(249, 115, 22, 0.7)',
+        'borderColor': 'rgba(249, 115, 22, 1)',
+        'titleText': 'Tipos de Violação',
+        'yTitleText': 'Quantidade de Publicações'
+    }
+
+    secoes_home = SecaoHome.objects.prefetch_related('cards').order_by('ordem')
+
     context = {
         'page_title': 'Observatório de Conflitos Socioambientais e Direitos Humanos - Porto Velho',
         'geoserver_url': settings.GEOSERVER_URL,
         'total_publicacoes': total_publicacoes,
         'contagem_tipos': contagem_tipos,
-        'cards_publicacoes': CARDS_PUBLICACOES,
-        'chart_labels': json.dumps(chart_labels),
-        'chart_data': json.dumps(chart_data),
+        'secoes_home': secoes_home,
+        'dados_publicacoes': json.dumps(dados_publicacoes),
     }
 
     
@@ -109,45 +73,168 @@ def home(request):
 def mapa_desmatamento(request):
     """Mapa interativo de desmatamento (similar ao PRODES)"""
     context = {
-        'page_title': 'Mapa de Desmatamento - PRODES',
-        'geoserver_url': settings.GEOSERVER_URL,
-        'map_center': [-8.76, -63.90],  # Centro de Porto Velho
+        'tema_class': 'theme-prodes',
+        'sidebar_title': 'Camadas',
+        'breadcrumbs': [
+            {'label': 'Mapas'},
+            {'label': 'Desmatamento (PRODES)'}
+        ],
+        'map_center': [-8.76, -63.90],
         'map_zoom': 10,
+        'allow_fullscreen': True,
+        'filtros': [
+            {
+                'titulo': 'Mapa Base',
+                'itens': [
+                    {'type': 'radio', 'name': 'baseLayer', 'id': 'osmLayer', 'label': 'OpenStreetMap', 'checked': True},
+                    {'type': 'radio', 'name': 'baseLayer', 'id': 'satelliteLayer', 'label': 'Satélite', 'checked': False},
+                    {'type': 'radio', 'name': 'baseLayer', 'id': 'topoLayer', 'label': 'Topográfico', 'checked': False}
+                ]
+            },
+            {
+                'titulo': 'Dados PRODES',
+                'itens': [
+                    {'type': 'checkbox', 'id': 'desmatamentoLayer', 'label': 'Desmatamento', 'checked': True},
+                    {'type': 'checkbox', 'id': 'bairrosLayer', 'label': 'Bairros de PVH', 'checked': False}
+                ]
+            },
+            {
+                'titulo': 'Filtrar por Ano',
+                'itens': [
+                    {'type': 'select', 'id': 'yearFilter', 'options': [
+                        {'value': 'all', 'label': 'Todos os anos', 'selected': True},
+                        {'value': '2024', 'label': '2024'},
+                        {'value': '2023', 'label': '2023'},
+                        {'value': '2022', 'label': '2022'},
+                        {'value': '2021', 'label': '2021'},
+                        {'value': '2020', 'label': '2020'},
+                        {'value': '2019', 'label': '2019'}
+                    ]}
+                ]
+            },
+            {
+                'titulo': 'Legenda',
+                'itens': [
+                    {'type': 'legend', 'color': 'rgba(220, 53, 69, 0.7)', 'label': 'Desmatamento PRODES'},
+                    {'type': 'legend', 'color': 'rgba(13, 110, 253, 0.5)', 'label': 'Limites de Bairros'},
+                    {'type': 'info', 'id': 'featureInfo', 'alert_class': 'info', 'icon': 'bi-info-circle', 'title': 'Informações'}
+                ]
+            }
+        ],
+        'extra_js_template': 'core_gis/mapa/js_mapa_desmatamento.html'
     }
-    return render(request, 'core_gis/mapa/desmatamento.html', context)
+    return render(request, 'core_gis/mapa/mapa_dinamico.html', context)
 
 
 def mapa_alertas(request):
     """Mapa de alertas DETER"""
     context = {
-        'page_title': 'Mapa de Alertas - DETER',
-        'geoserver_url': settings.GEOSERVER_URL,
+        'tema_class': 'theme-deter',
+        'sidebar_title': 'Camadas',
+        'breadcrumbs': [
+            {'label': 'Mapas'},
+            {'label': 'Alertas (DETER)'}
+        ],
         'map_center': [-8.76, -63.90],
         'map_zoom': 10,
+        'allow_fullscreen': True,
+        'filtros': [
+            {
+                'titulo': 'Mapa Base',
+                'itens': [
+                    {'type': 'radio', 'name': 'baseLayer', 'id': 'osmLayer', 'label': 'OpenStreetMap', 'checked': True},
+                    {'type': 'radio', 'name': 'baseLayer', 'id': 'satelliteLayer', 'label': 'Satélite', 'checked': False}
+                ]
+            },
+            {
+                'titulo': 'Alertas DETER',
+                'itens': [
+                    {'type': 'checkbox', 'id': 'alertasLayer', 'label': 'Alertas', 'checked': True}
+                ]
+            },
+            {
+                'titulo': 'Legenda',
+                'itens': [
+                    {'type': 'legend', 'color': 'rgba(255, 193, 7, 0.7)', 'label': 'Desmatamento CR'},
+                    {'type': 'legend', 'color': 'rgba(255, 152, 0, 0.7)', 'label': 'Degradação'},
+                    {'type': 'legend', 'color': 'rgba(156, 39, 176, 0.7)', 'label': 'Mineração'},
+                    {'type': 'info', 'id': 'featureInfo', 'alert_class': 'warning', 'icon': 'bi-exclamation-triangle', 'title': 'Alerta'}
+                ]
+            }
+        ],
+        'extra_js_template': 'core_gis/mapa/js_mapa_alertas.html'
     }
-    return render(request, 'core_gis/mapa/alertas.html', context)
+    return render(request, 'core_gis/mapa/mapa_dinamico.html', context)
 
 
 def mapa_focos(request):
     """Mapa de focos de calor"""
     context = {
-        'page_title': 'Mapa de Focos de Calor',
-        'geoserver_url': settings.GEOSERVER_URL,
+        'tema_class': 'theme-focos',
+        'sidebar_title': 'Camadas',
+        'breadcrumbs': [
+            {'label': 'Mapas'},
+            {'label': 'Focos de Calor'}
+        ],
         'map_center': [-8.76, -63.90],
         'map_zoom': 10,
+        'allow_fullscreen': True,
+        'filtros': [
+            {
+                'titulo': 'Mapa Base',
+                'itens': [
+                    {'type': 'radio', 'name': 'baseLayer', 'id': 'osmLayer', 'label': 'OpenStreetMap', 'checked': True},
+                    {'type': 'radio', 'name': 'baseLayer', 'id': 'satelliteLayer', 'label': 'Satélite', 'checked': False}
+                ]
+            },
+            {
+                'titulo': 'Focos de Calor',
+                'itens': [
+                    {'type': 'checkbox', 'id': 'focosLayer', 'label': 'Focos Ativos', 'checked': True}
+                ]
+            },
+            {
+                'titulo': 'Legenda',
+                'itens': [
+                    {'type': 'legend', 'color': '#ff5722', 'label': 'Foco de Calor'}
+                ]
+            }
+        ],
+        'extra_js_template': 'core_gis/mapa/js_mapa_focos.html'
     }
-    return render(request, 'core_gis/mapa/focos.html', context)
+    return render(request, 'core_gis/mapa/mapa_dinamico.html', context)
 
 
 def mapa_distritos(request):
     """Mapa de distritos"""
     context = {
-        'page_title': 'Mapa de Distritos',
-        'geoserver_url': settings.GEOSERVER_URL,
-        'map_center': [-8.76, -63.90],
-        'map_zoom': 8,
+        'tema_class': 'theme-default',
+        'sidebar_title': 'Camadas',
+        'breadcrumbs': [
+            {'label': 'Mapas'},
+            {'label': 'Distritos'}
+        ],
+        'map_center': [-9.0, -63.90],
+        'map_zoom': 6,
+        'allow_fullscreen': True,
+        'filtros': [
+            {
+                'titulo': 'Mapa Base',
+                'itens': [
+                    {'type': 'radio', 'name': 'baseLayer', 'id': 'osmLayer', 'label': 'OpenStreetMap', 'checked': True}
+                ]
+            },
+            {
+                'titulo': 'Limites',
+                'itens': [
+                    {'type': 'legend', 'color': '#3388ff', 'label': 'Limite Municipal'},
+                    {'type': 'info', 'id': 'districtInfo', 'alert_class': 'info', 'icon': 'bi-info-circle', 'title': 'Detalhes do Distrito'}
+                ]
+            }
+        ],
+        'extra_js_template': 'core_gis/mapa/js_mapa_distritos.html'
     }
-    return render(request, 'core_gis/mapa/distritos.html', context)
+    return render(request, 'core_gis/mapa/mapa_dinamico.html', context)
 
 
 def distritos_geojson(request):
@@ -173,25 +260,138 @@ def limite_pvh_geojson(request):
 def dashboard_prodes(request):
     """Dashboard de desmatamento PRODES"""
     context = {
-        'page_title': 'Dashboard PRODES - Porto Velho',
+        'tema_class': 'theme-prodes',
+        'sidebar_title': 'PRODES',
+        'breadcrumbs': [
+            {'label': 'Monitoramento'},
+            {'label': 'PRODES (Desmatamento)'}
+        ],
+        'filtros': [
+            {
+                'titulo': 'Taxas de Desmatamento',
+                'itens': [{'label': 'Amazônia Legal', 'icone': 'bi-bar-chart-fill', 'active': True}]
+            },
+            {
+                'titulo': 'Incrementos',
+                'itens': [
+                    {'label': 'Amazônia Legal', 'icone': 'bi-graph-up-arrow'},
+                    {'label': 'Amazônia', 'icone': 'bi-tree'},
+                    {'label': 'Não Floresta', 'icone': 'bi-x-circle'}
+                ]
+            }
+        ],
+        'header_title': 'Dashboard PRODES',
+        'header_subtitle': 'Monitoramento de Desmatamento - Porto Velho, RO',
+        'header_icon': 'bi-graph-up',
+        'cards': [
+            {'icon': 'bi-tree', 'icon_color': 'text-danger', 'valor_inicial': '--', 'label': 'Total Desmatado (ha)', 'id': 'totalArea', 'col_class': 'col-md-3 col-6'},
+            {'icon': 'bi-calendar-range', 'icon_color': 'text-primary', 'valor_inicial': '--', 'label': 'Anos Monitorados', 'id': 'totalAnos', 'col_class': 'col-md-3 col-6'},
+            {'icon': 'bi-graph-down-arrow', 'icon_color': 'text-success', 'valor_inicial': '--', 'label': 'Último Ano (ha)', 'id': 'ultimoAno', 'col_class': 'col-md-3 col-6'},
+            {'icon': 'bi-percent', 'icon_color': 'text-warning', 'valor_inicial': '--', 'label': 'Variação Anual', 'id': 'variacao', 'col_class': 'col-md-3 col-6'}
+        ],
+        'charts': [
+            {'id': 'barChart', 'title': 'Desmatamento Anual em Porto Velho', 'icon': 'bi-bar-chart', 'col_class': 'col-lg-8'},
+            {'id': 'pieChart', 'title': 'Distribuição por Período', 'icon': 'bi-pie-chart', 'col_class': 'col-lg-4'},
+            {'id': 'lineChart', 'title': 'Evolução Histórica', 'icon': 'bi-graph-up', 'col_class': 'col-12'}
+        ],
+        'tabela': {
+            'title': 'Dados por Ano',
+            'icon': 'bi-table',
+            'headers': ['Ano', 'Área Desmatada (ha)', 'Polígonos', 'Variação'],
+            'body_id': 'dataTable'
+        },
+        'extra_js_template': 'core_gis/dashboard/js_prodes.html'
     }
-    return render(request, 'core_gis/dashboard/prodes.html', context)
+    return render(request, 'core_gis/dashboard/dashboard_dinamico.html', context)
 
 
 def dashboard_deter(request):
     """Dashboard de alertas DETER"""
     context = {
-        'page_title': 'Dashboard DETER - Porto Velho',
+        'tema_class': 'theme-deter',
+        'sidebar_title': 'DETER',
+        'breadcrumbs': [
+            {'label': 'Monitoramento'},
+            {'label': 'DETER (Alertas)'}
+        ],
+        'filtros': [
+            {
+                'titulo': 'Classes',
+                'itens': [
+                    {'label': 'Desmatamento CR', 'icone': 'bi-exclamation-triangle-fill', 'active': True},
+                    {'label': 'Degradação', 'icone': 'bi-x-octagon'},
+                    {'label': 'Mineração', 'icone': 'bi-hammer'},
+                ]
+            },
+            {
+                'titulo': 'Período',
+                'itens': [
+                    {'label': 'Último Mês', 'icone': 'bi-calendar3'},
+                    {'label': 'Último Ano', 'icone': 'bi-calendar-range'}
+                ]
+            }
+        ],
+        'header_title': 'Dashboard DETER',
+        'header_subtitle': 'Alertas de Alteração na Cobertura Florestal - Porto Velho, RO',
+        'header_icon': 'bi-exclamation-triangle',
+        'cards': [
+            {'icon': 'bi-exclamation-triangle', 'icon_color': 'text-warning', 'id': 'totalAlertas', 'label': 'Total de Alertas', 'col_class': 'col-md-4'},
+            {'icon': 'bi-geo-alt', 'icon_color': 'text-primary', 'id': 'totalAreaAlertas', 'label': 'Área Total (ha)', 'col_class': 'col-md-4'},
+            {'icon': 'bi-calendar', 'icon_color': 'text-success', 'id': 'ultimoAlerta', 'label': 'Último Mês', 'col_class': 'col-md-4'}
+        ],
+        'charts': [
+            {'id': 'barChart', 'title': 'Alertas por Mês', 'icon': 'bi-bar-chart', 'col_class': 'col-lg-8'},
+            {'id': 'pieChart', 'title': 'Por Classe', 'icon': 'bi-pie-chart', 'col_class': 'col-lg-4'}
+        ],
+        'extra_js_template': 'core_gis/dashboard/js_deter.html'
     }
-    return render(request, 'core_gis/dashboard/deter.html', context)
+    return render(request, 'core_gis/dashboard/dashboard_dinamico.html', context)
 
 
 def dashboard_focos(request):
     """Dashboard de focos de calor"""
     context = {
-        'page_title': 'Dashboard Focos de Calor - Porto Velho',
+        'tema_class': 'theme-focos',
+        'sidebar_title': 'Focos',
+        'breadcrumbs': [
+            {'label': 'Monitoramento'},
+            {'label': 'Focos de Calor'}
+        ],
+        'filtros': [
+            {
+                'titulo': 'Satélites',
+                'itens': [
+                    {'label': 'Todos', 'icone': 'bi-satellite', 'active': True},
+                    {'label': 'AQUA', 'icone': 'bi-broadcast'},
+                    {'label': 'TERRA', 'icone': 'bi-broadcast'},
+                    {'label': 'NPP', 'icone': 'bi-broadcast'}
+                ]
+            },
+            {
+                'titulo': 'Período',
+                'itens': [
+                    {'label': 'Hoje', 'icone': 'bi-calendar-day'},
+                    {'label': 'Última Semana', 'icone': 'bi-calendar-week'},
+                    {'label': 'Último Mês', 'icone': 'bi-calendar-month'}
+                ]
+            }
+        ],
+        'header_title': 'Dashboard Focos de Calor',
+        'header_subtitle': 'Monitoramento de Queimadas - Porto Velho, RO',
+        'header_icon': 'bi-fire',
+        'cards': [
+            {'icon': 'bi-fire', 'icon_color': 'text-danger', 'valor_inicial': '--', 'label': 'Total de Focos', 'id': 'totalFocos', 'col_class': 'col-md-3'},
+            {'icon': 'bi-thermometer-high', 'icon_color': 'text-warning', 'valor_inicial': '--', 'label': 'Temp. Média (K)', 'id': 'tempMedia', 'col_class': 'col-md-3'},
+            {'icon': 'bi-calendar-day', 'icon_color': 'text-primary', 'valor_inicial': '--', 'label': 'Focos Recentes', 'id': 'focosHoje', 'col_class': 'col-md-3'},
+            {'icon': 'bi-satellite', 'icon_color': 'text-success', 'valor_inicial': '--', 'label': 'Satélites', 'id': 'satelites', 'col_class': 'col-md-3'}
+        ],
+        'charts': [
+            {'id': 'lineChart', 'title': 'Focos por Dia', 'icon': 'bi-graph-up', 'col_class': 'col-lg-8'},
+            {'id': 'pieChart', 'title': 'Por Satélite', 'icon': 'bi-pie-chart', 'col_class': 'col-lg-4'}
+        ],
+        'extra_js_template': 'core_gis/dashboard/js_focos.html'
     }
-    return render(request, 'core_gis/dashboard/focos.html', context)
+    return render(request, 'core_gis/dashboard/dashboard_dinamico.html', context)
 
 
 def sobre(request):
@@ -410,6 +610,7 @@ def lista_publicacoes(request):
 def detalhe_publicacao(request, pk):
     """Página de detalhe de uma publicação"""
     from django.shortcuts import get_object_or_404
+    from .models import Publicacao
 
     publicacao = get_object_or_404(
         Publicacao.objects.select_related('tipo_documento', 'conflito')
@@ -482,3 +683,13 @@ def icons_preview(request):
         'total_icons': len(all_icons),
     }
     return render(request, 'core_gis/icons_preview.html', context)
+
+
+def lista_mapas(request):
+    """Página hub listando todos os mapas interativos disponíveis"""
+    return render(request, 'core_gis/lista_mapas.html')
+
+
+def lista_dashboards(request):
+    """Página hub listando todos os dashboards disponíveis"""
+    return render(request, 'core_gis/lista_dashboards.html')

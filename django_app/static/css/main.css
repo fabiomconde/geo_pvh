@@ -7,27 +7,49 @@
 /* CSS Variables */
 :root {
     /* Brand Colors */
-    --primary-color: #1e293b;
-    /* Dark Slate Blue - Textos principais e Navbar */
-    --secondary-color: #334155;
-    /* Slate mais claro - Textos secundários */
-    --accent-color: #f97316;
-    /* Orange - Botões e Destaques */
-    --accent-hover: #ea580c;
-    /* Orange Hover */
+    --primary-color: #110f18;
+    /* Cinza Escuro - Textos principais e Navbar */
+    --secondary-color: #A19E9D;
+    /* Cinza Médio - Textos secundários */
+    --accent-color: #444143;
+    /* Dark Accent - Botões e Destaques */
+    --accent-hover: #A19E9D;
+    /* Light Accent Hover */
 
-    /* Functional Colors */
+
+
+    /* Functional Colors (Accessibility / Contrast) */
+    --text-color: #212121;
+    /* Texto Secundário Base - WCAG Legibility */
     --danger-color: #ef4444;
     --warning-color: #f59e0b;
     --success-color: #10b981;
     --info-color: #3b82f6;
 
+    /* Semantic Theme Colors */
+    --theme-prodes-forest: #2E7D32;
+    /* Verde Mata - Desmatamento/Vegetação */
+    --theme-deter-alert: #F59E0B;
+    /* Amarelo Ocre - Alertas */
+    --theme-focos-fire: #E65100;
+    /* Laranja Neutro - Queimadas / Foco */
+    --theme-docs-public: #1565C0;
+    /* Azul Institucional - Conflitos / Documentos */
+    --theme-bg-publicacoes: #F5F5F5;
+    /* Gelo suave para quebra visual - Publicações */
+    --theme-bg-dashboards: #FAF9F6;
+    /* Gelo suave para quebra visual - Dash */
+    --theme-bg-maps: #F5F5F5;
+    /* Beige para quebra visual - Mapas */
+    --theme-bg-data: #FAF9F6;
+    /* Beige para quebra visual - Mapas */
+
     /* Neutrals */
-    --dark-color: #0f172a;
-    --light-color: #f8fafc;
-    /* Background da página */
+    --dark-color: #444143;
+    --light-color: #fffefe;
+    /* Background da página inicial */
     --white-color: #ffffff;
-    --border-color: #e2e8f0;
+    --border-color: #E2E2DA;
 
     /* Layout */
     --header-height: 80px;
@@ -52,7 +74,7 @@ body {
     display: flex;
     flex-direction: column;
     background-color: var(--light-color);
-    color: var(--secondary-color);
+    color: var(--text-color);
     line-height: 1.6;
 }
 
@@ -195,30 +217,56 @@ a:hover {
     box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
 }
 
-/* Mobile Menu */
-.offcanvas {
-    border-radius: 0 16px 16px 0;
+/* Bottom Navigation Bar (Mobile Only) */
+.bottom-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: var(--white-color);
+    border-radius: 30px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1050;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
 }
 
-.offcanvas .nav-header {
-    font-weight: 700;
-    color: var(--primary-color);
-    padding: 1rem;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--border-color);
+.bottom-nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.offcanvas .nav-link {
-    padding: 1rem;
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     color: var(--secondary-color);
-    border-bottom: 1px solid var(--light-color);
+    text-decoration: none;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    transition: all 0.2s ease;
+    border-radius: 12px;
 }
 
-.offcanvas .nav-link:hover {
-    background-color: var(--light-color);
+.bottom-nav-item i {
+    font-size: 1.25rem;
+    margin-bottom: 2px;
+}
+
+.bottom-nav-item:hover,
+.bottom-nav-item.active {
     color: var(--accent-color);
+    background: #fff7ed;
+}
+
+/* Margin on body to prevent bottom nav from overlapping content */
+@media (max-width: 991.98px) {
+    body {
+        padding-bottom: 80px;
+    }
 }
 
 /* Main Content */
@@ -230,7 +278,7 @@ a:hover {
 /* Hero Section (Reimagined as a clean header) */
 .hero-section {
     background: var(--white-color);
-    padding: 4rem 0 6rem;
+    padding: 0.5rem 0 4rem;
     /* Extra padding bottom for overlap */
     position: relative;
     border-bottom: 1px solid var(--border-color);
@@ -414,29 +462,43 @@ a:hover {
     box-shadow: var(--shadow-sm);
 }
 
-/* Gradients for Feature Cards Backgrounds */
+/* Semantic Backgrounds for Theme Cards */
+.theme-forest {
+    background-color: var(--theme-prodes-forest);
+    /* For solid elements */
+}
+
+.theme-forest-gradient {
+    background: linear-gradient(135deg, rgba(46, 125, 50, 0.75) 0%, rgba(198, 240, 200, 0.75) 1%);
+}
+
+.theme-alert {
+    background-color: var(--theme-deter-alert);
+}
+
+.theme-alert-gradient {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.75) 0%, rgba(240, 227, 196, 0.75) 1%);
+}
+
+.theme-fire {
+    background-color: var(--theme-focos-fire);
+}
+
+.theme-fire-gradient {
+    background: linear-gradient(135deg, rgba(230, 81, 0, 0.75) 0%, rgba(245, 215, 170, 0.75) 1%);
+}
+
+.theme-docs {
+    background-color: var(--theme-docs-public);
+}
+
+.theme-docs-gradient {
+    background: linear-gradient(135deg, rgba(21, 101, 192, 0.75) 0%, rgba(187, 221, 248, 0.75) 1%);
+}
+
+/* Gradients for Feature Cards Backgrounds (Legacy Overrides) */
 .prodes-bg {
-    background: linear-gradient(135deg, #fee2e2 0%, #ffedd5 100%);
-}
-
-.deter-bg {
-    background: linear-gradient(135deg, #fef3c7 0%, #fee2e2 100%);
-}
-
-.focos-bg {
-    background: linear-gradient(135deg, #ffedd5 0%, #fef3c7 100%);
-}
-
-.prodes-bg .card-icon {
-    color: #fecaca;
-}
-
-.deter-bg .card-icon {
-    color: #fde68a;
-}
-
-.focos-bg .card-icon {
-    color: #fed7aa;
+    background: linear-gradient(135deg, #fee2e2 0%, #ffedd5 1%);
 }
 
 .feature-card .card-body {
@@ -493,6 +555,47 @@ a:hover {
     background-color: var(--white-color);
     color: var(--accent-color);
     border-color: var(--accent-color);
+}
+
+/* Call to Action Solid Theme Buttons */
+.btn-solid-forest {
+    background-color: var(--theme-prodes-forest);
+    border-color: var(--theme-prodes-forest);
+    color: #ffffff;
+}
+.btn-solid-forest:hover {
+    background-color: #1B5E20;
+    color: #ffffff;
+}
+
+.btn-solid-alert {
+    background-color: var(--theme-deter-alert);
+    border-color: var(--theme-deter-alert);
+    color: #ffffff;
+}
+.btn-solid-alert:hover {
+    background-color: #D97706;
+    color: #ffffff;
+}
+
+.btn-solid-fire {
+    background-color: var(--theme-focos-fire);
+    border-color: var(--theme-focos-fire);
+    color: #ffffff;
+}
+.btn-solid-fire:hover {
+    background-color: #BF360C;
+    color: #ffffff;
+}
+
+.btn-solid-docs {
+    background-color: var(--theme-docs-public);
+    border-color: var(--theme-docs-public);
+    color: #ffffff;
+}
+.btn-solid-docs:hover {
+    background-color: #0D47A1;
+    color: #ffffff;
 }
 
 /* Footer */
@@ -565,6 +668,7 @@ a:hover {
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-color);
     overflow: hidden;
+    min-height: 400px;
 }
 
 /* SVG Icon Support (Masking for color inheritance) */

@@ -162,39 +162,60 @@
 {% endif %}
 
 <!-- Publication Cards -->
-<div class="pub-list">
+<div class="row g-3">
     {% for pub in publicacoes %}
-    <div class="pub-card">
-        <div class="pub-card-image">
-            <div class="pub-placeholder">
-                <i class="bi bi-newspaper"></i>
-            </div>
-        </div>
-        <div class="pub-card-body">
-            <h3 class="pub-title">{{ pub.titulo }}</h3>
-            {% if pub.data_publicacao %}
-            <div class="pub-date">
-                <i class="bi bi-calendar3"></i> {{ pub.data_publicacao|date:"d/m/Y" }}
-            </div>
-            {% endif %}
-            {% if pub.subtitulo %}
-            <p class="pub-excerpt">{{ pub.subtitulo }}</p>
-            {% elif pub.corpo_texto %}
-            <p class="pub-excerpt">{{ pub.corpo_texto|striptags|truncatechars:180 }}</p>
-            {% endif %}
-            <div class="pub-meta">
-                {% if pub.tipo_documento %}
-                <span class="badge bg-light text-dark me-1">
-                    <i class="bi bi-tag"></i> {{ pub.tipo_documento.nome }}
-                </span>
-                {% endif %}
-                {% if pub.conflito %}
-                <span class="badge bg-light text-dark me-1">
-                    <i class="bi bi-exclamation-diamond"></i> {{ pub.conflito.nome|truncatechars:30 }}
-                </span>
+    <div class="col-12">
+        <div class="pub-card rounded border shadow-sm d-flex flex-column flex-md-row overflow-hidden transition-hover bg-white mb-2">
+            {% with primeira_imagem=pub.imagens.first %}
+            <div class="pub-card-image flex-shrink-0" style="width: 250px; background: linear-gradient(135deg, #A19E9D 0%, #E2E2DA 100%); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                {% if primeira_imagem %}
+                    <img src="{{ primeira_imagem.imagem.url }}" alt="Capa de {{ pub.titulo }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <div class="pub-placeholder text-white">
+                        <i class="bi bi-newspaper" style="font-size: 3rem; opacity: 0.85;"></i>
+                    </div>
                 {% endif %}
             </div>
-            <a href="{% url 'core_gis:detalhe_publicacao' pub.pk %}" class="pub-read-more">LEIA MAIS</a>
+            {% endwith %}
+            <div class="pub-card-body p-4 d-flex flex-column w-100">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h3 class="pub-title mb-0 text-dark" style="font-size: 1.25rem; font-weight: 600;">{{ pub.titulo }}</h3>
+                    {% if pub.data_publicacao %}
+                    <div class="pub-date text-muted ms-3 flex-shrink-0" style="font-size: 0.85rem;">
+                        <i class="bi bi-calendar3"></i> {{ pub.data_publicacao|date:"d/m/Y" }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="pub-meta mb-3">
+                    {% if pub.tipo_documento %}
+                    <span class="badge bg-light text-dark border me-2">
+                        <i class="bi bi-tag"></i> {{ pub.tipo_documento.nome }}
+                    </span>
+                    {% endif %}
+                    {% if pub.conflito %}
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-exclamation-diamond"></i> {{ pub.conflito.nome|truncatechars:40 }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <p class="pub-excerpt text-muted mb-4" style="font-size: 0.95rem; line-height: 1.5; flex-grow: 1;">
+                    {% if pub.subtitulo %}
+                        {{ pub.subtitulo|truncatechars:180 }}
+                    {% elif pub.corpo_texto %}
+                        {{ pub.corpo_texto|striptags|truncatechars:200 }}
+                    {% else %}
+                        Nenhum resumo informativo cadastrado.
+                    {% endif %}
+                </p>
+                
+                <div class="mt-auto text-end">
+                    <a href="{% url 'core_gis:detalhe_publicacao' pub.pk %}" class="btn btn-outline-secondary btn-sm px-4 fw-medium">
+                        LEIA MAIS <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     {% empty %}

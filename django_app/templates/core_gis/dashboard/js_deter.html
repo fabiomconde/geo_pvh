@@ -1,0 +1,54 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('{% url "core_gis:dados_alertas_mensal" %}')
+            .then(response => response.json())
+            .then(data => {
+                const totalAlertas = data.reduce((sum, item) => sum + (item.total_alertas || 0), 0);
+                const totalArea = data.reduce((sum, item) => sum + parseFloat(item.total_area || 0), 0);
+
+                document.getElementById('totalAlertas').textContent = totalAlertas;
+                document.getElementById('totalAreaAlertas').textContent = new Intl.NumberFormat('pt-BR').format(Math.round(totalArea));
+
+                if (data.length > 0) {
+                    document.getElementById('ultimoAlerta').textContent = data[data.length - 1].mes || '-';
+                }
+
+                // Bar Chart
+                new Chart(document.getElementById('barChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(item => item.mes),
+                        datasets: [{
+                            label: 'Alertas',
+                            data: data.map(item => item.total_alertas),
+                            backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+
+                // Pie Chart - Classes (sample data)
+                new Chart(document.getElementById('pieChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Desmatamento CR', 'Degradação', 'Mineração'],
+                        datasets: [{
+                            data: [60, 30, 10],
+                            backgroundColor: ['#ffc107', '#ff9800', '#9c27b0']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            })
+            .catch(err => console.error('Error:', err));
+    });
+</script>

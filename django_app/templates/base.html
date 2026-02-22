@@ -35,10 +35,7 @@
     <div class="gov-bar">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
-                <span>
-                    <i class="bi bi-building"></i>
-                    Protótipo de Observatório Geoespacial de Porto Velho - Rondônia
-                </span>
+
             </div>
         </div>
     </div>
@@ -50,13 +47,13 @@
                 <a href="{% url 'core_gis:home' %}" class="logo-link">
                     <div class="d-flex align-items-center">
                         <div class="logo-text">
-                            <img src="{% static 'images/logo_04.jpg' %}" alt="Logo Observatório" class="main-logo-img">
+                            <img src="{% static 'images/logo_04.jpeg' %}" height="60" alt="Logo Observatório" class="main-logo-img">
                         </div>
                     </div>
                 </a>
 
                 <!-- Main Navigation -->
-                <nav class="main-nav">
+                <nav class="main-nav d-none d-lg-block">
                     <ul class="nav">
                         <li class="nav-item">
                             <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
@@ -158,49 +155,36 @@
                     </ul>
                 </nav>
 
-                <!-- Mobile Menu Toggle -->
-                <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#mobileMenu">
-                    <i class="bi bi-list"></i>
-                </button>
+                <!-- Mobile Menu Toggle was removed, using Bottom Navigation instead -->
             </div>
         </div>
     </header>
 
-    <!-- Mobile Menu Offcanvas -->
-    <div class="offcanvas offcanvas-end d-lg-none" tabindex="-1" id="mobileMenu">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title">Menu</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    <!-- Bottom Navigation Bar for Mobile -->
+    <nav class="bottom-nav d-lg-none">
+        <div class="bottom-nav-inner">
+            <a href="{% url 'core_gis:home' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <i class="bi bi-house"></i>
+                <span>Início</span>
+            </a>
+            <a href="{% url 'core_gis:lista_mapas' %}" class="bottom-nav-item {% if 'mapa' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-map"></i>
+                <span>Mapas</span>
+            </a>
+            <a href="{% url 'core_gis:lista_dashboards' %}" class="bottom-nav-item {% if 'dashboard' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="bi bi-bar-chart-line"></i>
+                <span>Dashboards</span>
+            </a>
+            <a href="{% url 'core_gis:downloads' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'downloads' %}active{% endif %}">
+                <i class="bi bi-database"></i>
+                <span>Dados</span>
+            </a>
+            <a href="{% url 'core_gis:lista_publicacoes' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'lista_publicacoes' %}active{% endif %}">
+                <i class="bi bi-newspaper"></i>
+                <span>Publicações</span>
+            </a>
         </div>
-        <div class="offcanvas-body">
-            <nav class="nav flex-column">
-                <a class="nav-link" href="{% url 'core_gis:home' %}"><i class="bi bi-house"></i> Início</a>
-                <hr>
-                <span class="nav-header">Mapas</span>
-                <a class="nav-link" href="{% url 'core_gis:mapa_desmatamento' %}"><i class="bi bi-tree"></i>
-                    Desmatamento</a>
-                <a class="nav-link" href="{% url 'core_gis:mapa_alertas' %}"><i class="bi bi-exclamation-triangle"></i>
-                    Alertas</a>
-                <a class="nav-link" href="{% url 'core_gis:mapa_focos' %}"><i class="bi bi-fire"></i> Focos de Calor</a>
-                <hr>
-                <span class="nav-header">Dashboards</span>
-                <a class="nav-link" href="{% url 'core_gis:dashboard_prodes' %}"><i class="bi bi-graph-up"></i>
-                    PRODES</a>
-                <a class="nav-link" href="{% url 'core_gis:dashboard_deter' %}"><i class="bi bi-graph-down"></i>
-                    DETER</a>
-                <a class="nav-link" href="{% url 'core_gis:dashboard_focos' %}"><i class="bi bi-fire"></i> Focos</a>
-                <hr>
-                <a class="nav-link" href="{% url 'core_gis:lista_publicacoes' %}"><i class="bi bi-newspaper"></i>
-                    Publicações</a>
-                <hr>
-                <a class="nav-link" href="{% url 'core_gis:downloads' %}"><i class="bi bi-download"></i> Downloads</a>
-                <a class="nav-link" href="{% url 'core_gis:web_services' %}"><i class="bi bi-cloud"></i> Web
-                    Services</a>
-                <a class="nav-link" href="{% url 'core_gis:sobre' %}"><i class="bi bi-info-circle"></i> Sobre</a>
-            </nav>
-        </div>
-    </div>
+    </nav>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -210,42 +194,9 @@
     <!-- Footer -->
     <footer class="main-footer">
         <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5><i class="bi bi-link-45deg"></i> Links</h5>
-                    <ul class="footer-links">
-                        <li><a href="https://www.gov.br/inpe" target="_blank">INPE</a></li>
-                        <li><a href="https://terrabrasilis.dpi.inpe.br" target="_blank">TerraBrasilis</a></li>
-                        <li><a href="http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes"
-                                target="_blank">PRODES</a></li>
-                        <li><a href="http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/deter"
-                                target="_blank">DETER</a></li>
-                        <li><a href="https://portovelho.ro.gov.br" target="_blank">Protótipo de Observatório Geoespacial
-                                de Porto Velho - Rondônia</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5><i class="bi bi-geo-alt"></i> Contato</h5>
-                    <address>
-                        <p><i class="bi bi-building"></i> Protótipo de Observatório Geoespacial de Porto Velho -
-                            Rondônia</p>
-                        <p><i class="bi bi-pin-map"></i> BR</p>
-                        <p><i class="bi bi-geo"></i> Porto Velho - RO</p>
-                    </address>
-                </div>
-                <div class="col-md-4">
-                    <h5><i class="bi bi-info-circle"></i> Sobre</h5>
-                    <p>
-                        Observatório de Conflitos Socioambientais e Direitos Humanos é uma plataforma de dados
-                        geográficos
-                        para monitoramento ambiental e territorial do município.
-                    </p>
-                    <p class="license">
-                        <i class="bi bi-cc-circle"></i>
-                        Dados sob licença Creative Commons CC BY-NC-SA 4.0
-                    </p>
-                </div>
-            </div>
+            {% load config_tags %}
+            {% get_configuracao 'rodape_informativo' as rodape %}
+            {{ rodape|safe }}
             <hr>
             <div class="footer-bottom">
                 <div class="row align-items-center">
@@ -258,6 +209,10 @@
                     <div class="col-md-6 text-md-end">
                         <p class="mb-0">
                             Protótipo de Observatório Geoespacial de Porto Velho - Rondônia
+                            {% if ngrok_public_url %}
+                            <br>URL teste:
+                            <a href="{{ ngrok_public_url }}" target="_blank">{{ ngrok_public_url }}</a>
+                            {% endif %}
                         </p>
                     </div>
                 </div>

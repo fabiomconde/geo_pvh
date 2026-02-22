@@ -4,98 +4,11 @@
 <div class="container py-5">
     <div class="row">
         <div class="col-lg-8 mx-auto">
-            <h1 class="mb-4"><i class="bi bi-info-circle"></i> Sobre o Observatório de Conflitos Socioambientais e
-                Direitos Humanos - Porto Velho</h1>
+            <h1 class="mb-4"><i class="bi bi-info-circle"></i> Sobre o Observatório</h1>
 
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">O que é o Observatório de Conflitos Socioambientais e Direitos Humanos -
-                        Porto Velho?</h5>
-                    <p class="card-text">
-                        O Observatório de Conflitos Socioambientais e Direitos Humanos - Porto Velho é uma plataforma
-                        com objetivo implementar um Observatório que integre
-                        monitoramento territorial, formação engajada e produção de subsídios para políticas públicas.
-                    </p>
-                    <p class="card-text">
-                        Enquanto Objetivos Específicos, pretendemos: i) Produzir um diagnóstico socioambiental
-                        atualizado relacionado ao recorte espacial definido para a Linha 1 de financiamento; ii)
-                        Desenvolver metodologias participativas para a gestão territorial municipal; iii) Implementar
-                        um modelo de curricularização da extensão em nível de graduação e pós-graduação em âmbito
-                        da unidade executora, considerando o Planejamento Participativo enquanto prática e método;
-                        iv) Estruturar uma plataforma digital permanente que subsidie diretamente o Observatório, na
-                        qual este instrumento será operacionalizado; v) Produzir subsídios técnicos para incidência
-                        política.
-                    </p>
-                    <p class="card-text">
-                        A plataforma integra dados geográficos com banco de dados municipais para gestão do território e
-                        acesso universal
-                    </p>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Funcionalidades</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <i class="bi bi-check-circle text-success"></i>
-                            <strong>Mapas Interativos:</strong> Visualização de dados geográficos com Leaflet
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check-circle text-success"></i>
-                            <strong>Dashboards:</strong> Gráficos e estatísticas com Chart.js
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check-circle text-success"></i>
-                            <strong>Web Services:</strong> Acesso via WMS, WFS para integração GIS
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check-circle text-success"></i>
-                            <strong>API REST:</strong> Dados em formato GeoJSON para desenvolvedores
-                        </li>
-                        <li class="mb-2">
-                            <i class="bi bi-check-circle text-success"></i>
-                            <strong>Downloads:</strong> Arquivos em formato shapefile e GeoJSON
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Tecnologias Utilizadas</h5>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <ul class="list-unstyled">
-                                <li><i class="bi bi-gear text-primary"></i> Django + GeoDjango</li>
-                                <li><i class="bi bi-database text-primary"></i> PostgreSQL + PostGIS</li>
-                                <li><i class="bi bi-globe text-primary"></i> GeoServer (WMS/WFS)</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <ul class="list-unstyled">
-                                <li><i class="bi bi-map text-primary"></i> Leaflet.js</li>
-                                <li><i class="bi bi-bar-chart text-primary"></i> Chart.js</li>
-                                <li><i class="bi bi-server text-primary"></i> Redis + Nginx</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Fontes de Dados</h5>
-                    <ul>
-                        <li><a href="http://terrabrasilis.dpi.inpe.br" target="_blank">TerraBrasilis - INPE</a></li>
-                        <li><a href="http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes"
-                                target="_blank">PRODES - Programa de Cálculo do Desflorestamento da Amazônia</a></li>
-                        <li><a href="http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/deter" target="_blank">DETER
-                                - Sistema de Detecção do Desmatamento em Tempo Real</a></li>
-                        <li><a href="https://queimadas.dgi.inpe.br" target="_blank">Programa Queimadas - INPE</a></li>
-                    </ul>
-                </div>
-            </div>
+            {% load config_tags %}
+            {% get_configuracao 'sobre' as sobre_config %}
+            {{ sobre_config|safe }}
         </div>
     </div>
 </div>
