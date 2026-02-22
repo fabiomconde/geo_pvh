@@ -15,8 +15,8 @@
         <!-- PRODES Map Card -->
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
-                <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
-                    <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">PRODES</div>
+                <div class="card-image theme-forest-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-forest text-white fw-bold">PRODES</div>
                     <span class="icon-svg card-icon text-white"
                         style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/tree.svg" %}'); mask-image: url('{% static "images/regular/tree.svg" %}'); background-color: currentColor;"></span>
                 </div>
@@ -26,7 +26,7 @@
                         Visualize os polígonos de supressão de vegetação nativa
                         detectados pelo programa PRODES/INPE para Porto Velho.
                     </p>
-                    <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                    <a href="{% url 'core_gis:mapa_desmatamento' %}" class="btn btn-solid-forest w-100 fw-medium">
                         Acessar<span class="icon-svg ms-2 align-middle"
                             style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                     </a>
@@ -37,8 +37,8 @@
         <!-- DETER Map Card -->
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
-                <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
-                    <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">DETER</div>
+                <div class="card-image theme-alert-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-alert text-white fw-bold">DETER</div>
                     <span class="icon-svg card-icon text-white"
                         style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/alert-triangle.svg" %}'); mask-image: url('{% static "images/regular/alert-triangle.svg" %}'); background-color: currentColor;"></span>
                 </div>
@@ -48,7 +48,7 @@
                         Acompanhe os alertas de alteração na cobertura florestal
                         detectados em tempo quase real pelo sistema DETER.
                     </p>
-                    <a href="{% url 'core_gis:mapa_alertas' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                    <a href="{% url 'core_gis:mapa_alertas' %}" class="btn btn-solid-alert w-100 fw-medium">
                         Acessar<span class="icon-svg ms-2 align-middle"
                             style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                     </a>
@@ -59,8 +59,8 @@
         <!-- Fire Spots Map Card -->
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
-                <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
-                    <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">QUEIMADAS</div>
+                <div class="card-image theme-fire-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-fire text-white fw-bold">QUEIMADAS</div>
                     <span class="icon-svg card-icon text-white"
                         style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/fire.svg" %}'); mask-image: url('{% static "images/regular/fire.svg" %}'); background-color: currentColor;"></span>
                 </div>
@@ -70,7 +70,7 @@
                         Consulte as ocorrências e concentração de focos de calor
                         identificados via satélite no município.
                     </p>
-                    <a href="{% url 'core_gis:mapa_focos' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                    <a href="{% url 'core_gis:mapa_focos' %}" class="btn btn-solid-fire w-100 fw-medium">
                         Acessar<span class="icon-svg ms-2 align-middle"
                             style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                     </a>
@@ -81,8 +81,8 @@
         <!-- Districts Map Card -->
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="feature-card map-card h-100 shadow-sm border-0 transition-hover">
-                <div class="card-image bg-secondary position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #495057 0%, #6c757d 100%);">
-                    <div class="card-badge position-absolute top-0 end-0 m-3 badge bg-light text-secondary fw-bold">TERRITÓRIO</div>
+                <div class="card-image theme-docs-gradient position-relative overflow-hidden rounded-top" style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                    <div class="card-badge position-absolute top-0 end-0 m-3 badge theme-docs text-white fw-bold">TERRITÓRIO</div>
                     <span class="icon-svg card-icon text-white"
                         style="width: 64px; height: 64px; -webkit-mask-image: url('{% static "images/regular/map.svg" %}'); mask-image: url('{% static "images/regular/map.svg" %}'); background-color: currentColor;"></span>
                 </div>
@@ -92,7 +92,7 @@
                         Explore a divisão territorial e os limites geográficos
                         dos distritos que compõem Porto Velho.
                     </p>
-                    <a href="{% url 'core_gis:mapa_distritos' %}" class="btn btn-outline-secondary w-100 fw-medium">
+                    <a href="{% url 'core_gis:mapa_distritos' %}" class="btn btn-solid-docs w-100 fw-medium">
                         Acessar<span class="icon-svg ms-2 align-middle"
                             style="width: 14px; height: 14px; -webkit-mask-image: url('{% static "images/regular/arrow-right.svg" %}'); mask-image: url('{% static "images/regular/arrow-right.svg" %}'); background-color: currentColor;"></span>
                     </a>

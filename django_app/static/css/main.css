@@ -7,27 +7,47 @@
 /* CSS Variables */
 :root {
     /* Brand Colors */
-    --primary-color: #1e293b;
-    /* Dark Slate Blue - Textos principais e Navbar */
-    --secondary-color: #334155;
-    /* Slate mais claro - Textos secundários */
-    --accent-color: #f97316;
-    /* Orange - Botões e Destaques */
-    --accent-hover: #ea580c;
-    /* Orange Hover */
+    --primary-color: #110f18;
+    /* Cinza Escuro - Textos principais e Navbar */
+    --secondary-color: #A19E9D;
+    /* Cinza Médio - Textos secundários */
+    --accent-color: #444143;
+    /* Dark Accent - Botões e Destaques */
+    --accent-hover: #A19E9D;
+    /* Light Accent Hover */
 
-    /* Functional Colors */
+    /* Functional Colors (Accessibility / Contrast) */
+    --text-color: #212121;
+    /* Texto Secundário Base - WCAG Legibility */
     --danger-color: #ef4444;
     --warning-color: #f59e0b;
     --success-color: #10b981;
     --info-color: #3b82f6;
 
+    /* Semantic Theme Colors */
+    --theme-prodes-forest: #2E7D32;
+    /* Verde Mata - Desmatamento/Vegetação */
+    --theme-deter-alert: #F59E0B;
+    /* Amarelo Ocre - Alertas */
+    --theme-focos-fire: #E65100;
+    /* Laranja Neutro - Queimadas / Foco */
+    --theme-docs-public: #1565C0;
+    /* Azul Institucional - Conflitos / Documentos */
+    --theme-bg-publicacoes: #F5F5F5;
+    /* Gelo suave para quebra visual - Publicações */
+    --theme-bg-dashboards: #FAF9F6;
+    /* Gelo suave para quebra visual - Dash */
+    --theme-bg-maps: #F5F5F5;
+    /* Beige para quebra visual - Mapas */
+    --theme-bg-data: #FAF9F6;
+    /* Beige para quebra visual - Mapas */
+
     /* Neutrals */
-    --dark-color: #0f172a;
-    --light-color: #f8fafc;
-    /* Background da página */
+    --dark-color: #444143;
+    --light-color: #fffefe;
+    /* Background da página inicial */
     --white-color: #ffffff;
-    --border-color: #e2e8f0;
+    --border-color: #E2E2DA;
 
     /* Layout */
     --header-height: 80px;
@@ -52,7 +72,7 @@ body {
     display: flex;
     flex-direction: column;
     background-color: var(--light-color);
-    color: var(--secondary-color);
+    color: var(--text-color);
     line-height: 1.6;
 }
 
@@ -440,29 +460,43 @@ a:hover {
     box-shadow: var(--shadow-sm);
 }
 
-/* Gradients for Feature Cards Backgrounds */
+/* Semantic Backgrounds for Theme Cards */
+.theme-forest {
+    background-color: var(--theme-prodes-forest);
+    /* For solid elements */
+}
+
+.theme-forest-gradient {
+    background: linear-gradient(135deg, rgba(46, 125, 50, 0.75) 0%, rgba(76, 175, 80, 0.75) 100%);
+}
+
+.theme-alert {
+    background-color: var(--theme-deter-alert);
+}
+
+.theme-alert-gradient {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.75) 0%, rgba(251, 191, 36, 0.75) 100%);
+}
+
+.theme-fire {
+    background-color: var(--theme-focos-fire);
+}
+
+.theme-fire-gradient {
+    background: linear-gradient(135deg, rgba(230, 81, 0, 0.75) 0%, rgba(255, 152, 0, 0.75) 100%);
+}
+
+.theme-docs {
+    background-color: var(--theme-docs-public);
+}
+
+.theme-docs-gradient {
+    background: linear-gradient(135deg, rgba(21, 101, 192, 0.75) 0%, rgba(66, 165, 245, 0.75) 100%);
+}
+
+/* Gradients for Feature Cards Backgrounds (Legacy Overrides) */
 .prodes-bg {
     background: linear-gradient(135deg, #fee2e2 0%, #ffedd5 100%);
-}
-
-.deter-bg {
-    background: linear-gradient(135deg, #fef3c7 0%, #fee2e2 100%);
-}
-
-.focos-bg {
-    background: linear-gradient(135deg, #ffedd5 0%, #fef3c7 100%);
-}
-
-.prodes-bg .card-icon {
-    color: #fecaca;
-}
-
-.deter-bg .card-icon {
-    color: #fde68a;
-}
-
-.focos-bg .card-icon {
-    color: #fed7aa;
 }
 
 .feature-card .card-body {
@@ -519,6 +553,47 @@ a:hover {
     background-color: var(--white-color);
     color: var(--accent-color);
     border-color: var(--accent-color);
+}
+
+/* Call to Action Solid Theme Buttons */
+.btn-solid-forest {
+    background-color: var(--theme-prodes-forest);
+    border-color: var(--theme-prodes-forest);
+    color: #ffffff;
+}
+.btn-solid-forest:hover {
+    background-color: #1B5E20;
+    color: #ffffff;
+}
+
+.btn-solid-alert {
+    background-color: var(--theme-deter-alert);
+    border-color: var(--theme-deter-alert);
+    color: #ffffff;
+}
+.btn-solid-alert:hover {
+    background-color: #D97706;
+    color: #ffffff;
+}
+
+.btn-solid-fire {
+    background-color: var(--theme-focos-fire);
+    border-color: var(--theme-focos-fire);
+    color: #ffffff;
+}
+.btn-solid-fire:hover {
+    background-color: #BF360C;
+    color: #ffffff;
+}
+
+.btn-solid-docs {
+    background-color: var(--theme-docs-public);
+    border-color: var(--theme-docs-public);
+    color: #ffffff;
+}
+.btn-solid-docs:hover {
+    background-color: #0D47A1;
+    color: #ffffff;
 }
 
 /* Footer */
