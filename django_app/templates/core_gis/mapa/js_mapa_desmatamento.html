@@ -1,0 +1,180 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. INICIALIZAÇÃO DO MAPA
+        const map = L.map('map').setView({{ map_center|default:'[-8.76, -63.90]' }}, {{ map_zoom|default:10 }});
+
+        // 2. DEFINIÇÃO DE CAMADAS BASE (MAPAS DE FUNDO)
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '© Esri'
+        });
+
+        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenTopoMap'
+        });
+
+        // Alternar Mapas Base via Radio Buttons
+        document.getElementById('osmLayer').addEventListener('change', () => {
+            map.removeLayer(satelliteLayer); map.removeLayer(topoLayer); osmLayer.addTo(map);
+        });
+        document.getElementById('satelliteLayer').addEventListener('change', () => {
+            map.removeLayer(osmLayer); map.removeLayer(topoLayer); satelliteLayer.addTo(map);
+        });
+        if (document.getElementById('topoLayer')) {
+            document.getElementById('topoLayer').addEventListener('change', () => {
+                map.removeLayer(osmLayer); map.removeLayer(satelliteLayer); topoLayer.addTo(map);
+            });
+        }
+
+        // 3. DEFINIÇÃO DE CAMADAS WMS (GEOSERVER - FALLBACK)
+        const desmatamentoWMS = L.tileLayer.wms("/geoserver/wms", {
+            layers: 'pvh:desmatamento_pvh',
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.1',
+            attribution: "Observatório Geoespacial"
+        });
+
+        const bairrosWMS = L.tileLayer.wms("/geoserver/wms", {
+            layers: 'pvh:bairros_pvh',
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.1',
+            attribution: "Observatório Geoespacial"
+        });
+
+        // 4. VARIÁVEIS PARA ARMAZENAR CAMADAS GEOJSON (API)
+        let desmatamentoGeoJSON;
+        let bairrosGeoJSON;
+
+        // 5. FUNÇÃO PARA CARREGAR DESMATAMENTO (COM FILTRO DE ANO)
+        function loadDesmatamento(year = 'all') {
+            if (desmatamentoGeoJSON) map.removeLayer(desmatamentoGeoJSON);
+            map.removeLayer(desmatamentoWMS);
+
+            let url = '/api/desmatamento/?format=json';
+            if (year !== 'all') url += `&ano=${year}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const geojsonData = data.results ? data.results : data;
+
+                    if (geojsonData.features && geojsonData.features.length > 0) {
+                        desmatamentoGeoJSON = L.geoJSON(geojsonData, {
+                            style: {
+                                fillColor: '#dc3545',
+                                fillOpacity: 0.6,
+                                color: '#b02a37',
+                                weight: 1
+                            },
+                            onEachFeature: (feature, layer) => {
+                                const p = feature.properties;
+                                layer.bindPopup(`
+                                    <strong>Desmatamento PRODES</strong><br>
+                                    Ano: ${p.ano}<br>
+                                    Área: ${p.area_ha ? parseFloat(p.area_ha).toFixed(2) : 'N/A'} ha
+                                `);
+                                layer.on('click', () => showFeatureInfo(p));
+                            }
+                        });
+
+                        if (document.getElementById('desmatamentoLayer').checked) {
+                            desmatamentoGeoJSON.addTo(map);
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Erro API Desmatamento:', err);
+                    if (document.getElementById('desmatamentoLayer').checked) desmatamentoWMS.addTo(map);
+                });
+        }
+
+        // 6. FUNÇÃO PARA CARREGAR BAIRROS
+        function loadBairros() {
+            fetch('/api/bairros/?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    const geojsonData = data.results ? data.results : data;
+                    if (geojsonData.features) {
+                        bairrosGeoJSON = L.geoJSON(geojsonData, {
+                            style: {
+                                fillColor: '#0d6efd',
+                                fillOpacity: 0.3,
+                                color: '#0d6efd',
+                                weight: 2
+                            },
+                            onEachFeature: (feature, layer) => {
+                                layer.bindPopup(`<strong>Bairro: ${feature.properties.nome}</strong><br>Zona: ${feature.properties.zona}`);
+                            }
+                        });
+
+                        if (document.getElementById('bairrosLayer') && document.getElementById('bairrosLayer').checked) {
+                            bairrosGeoJSON.addTo(map);
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Erro API Bairros:', err);
+                    if (document.getElementById('bairrosLayer') && document.getElementById('bairrosLayer').checked) bairrosWMS.addTo(map);
+                });
+        }
+
+        // 7. CONTROLES DE INTERAÇÃO (CHECKBOXES E FILTROS)
+        if (document.getElementById('desmatamentoLayer')) {
+            document.getElementById('desmatamentoLayer').addEventListener('change', function () {
+                if (this.checked) {
+                    if (desmatamentoGeoJSON) desmatamentoGeoJSON.addTo(map);
+                    else desmatamentoWMS.addTo(map);
+                } else {
+                    if (desmatamentoGeoJSON) map.removeLayer(desmatamentoGeoJSON);
+                    map.removeLayer(desmatamentoWMS);
+                }
+            });
+        }
+
+        if (document.getElementById('bairrosLayer')) {
+            document.getElementById('bairrosLayer').addEventListener('change', function () {
+                if (this.checked) {
+                    if (bairrosGeoJSON) bairrosGeoJSON.addTo(map);
+                    else bairrosWMS.addTo(map);
+                } else {
+                    if (bairrosGeoJSON) map.removeLayer(bairrosGeoJSON);
+                    map.removeLayer(bairrosWMS);
+                }
+            });
+        }
+
+        if (document.getElementById('yearFilter')) {
+            document.getElementById('yearFilter').addEventListener('change', function () {
+                loadDesmatamento(this.value);
+            });
+        }
+
+        document.getElementById('zoomToPVH').addEventListener('click', () => {
+            map.setView({{ map_center|default:'[-8.76, -63.90]' }}, {{ map_zoom|default:10 }});
+        });
+
+        // 9. PAINEL DE INFORMAÇÕES LATERAL
+        function showFeatureInfo(props) {
+            const infoPanel = document.getElementById('featureInfo');
+            const details = document.getElementById('featureDetails');
+            if (infoPanel && details) {
+                details.innerHTML = `
+                    <p class="mb-1"><strong>Ano:</strong> ${props.ano}</p>
+                    <p class="mb-1"><strong>Área:</strong> ${props.area_ha ? parseFloat(props.area_ha).toFixed(2) : 'N/A'} ha</p>
+                    <p class="mb-1"><strong>Classe:</strong> ${props.classe || 'N/A'}</p>
+                    <p class="mb-0"><strong>Fonte:</strong> ${props.fonte || 'PRODES/INPE'}</p>
+                `;
+                infoPanel.classList.remove('d-none');
+            }
+        }
+
+        L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
+        loadDesmatamento();
+        loadBairros();
+    });
+</script>

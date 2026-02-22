@@ -1,0 +1,96 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Map
+        const map = L.map('map').setView({{ map_center|default:'[-8.7619, -63.9039]' }}, {{ map_zoom|default:8 }});
+
+        // Base Layer (OSM)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Fetch Districts from Django API
+        const distritosUrl = "{% url 'core_gis:distritos_geojson' %}";
+        const limiteUrl = "{% url 'core_gis:limite_pvh_geojson' %}";
+
+        let limiteBounds = null;
+
+        // 1. Fetch Limite Municipal first (to be background)
+        fetch(limiteUrl)
+            .then(response => response.json())
+            .then(data => {
+                const limiteLayer = L.geoJSON(data, {
+                    style: function (feature) {
+                        return {
+                            color: "#3388ff",
+                            weight: 3,
+                            opacity: 0.8,
+                            fillOpacity: 0.1,
+                            fillColor: "#3388ff",
+                            dashArray: '5, 5'
+                        };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        if (feature.properties && feature.properties.nome) {
+                            layer.bindPopup("<strong>" + feature.properties.nome + "</strong>");
+                        }
+                    }
+                }).addTo(map);
+                
+                // Adjust viewport to fit the municipal limits perfectly
+                limiteBounds = limiteLayer.getBounds();
+                map.fitBounds(limiteBounds);
+
+                // 2. Then fetch Districts Points (to be on top)
+                return fetch(distritosUrl);
+            })
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data, {
+                    pointToLayer: function (feature, latlng) {
+                        return L.marker(latlng);
+                    },
+                    onEachFeature: function (feature, layer) {
+                        const props = feature.properties;
+                        const content = `
+                            <div class="district-popup">
+                                <h5 class="mb-2" style="font-size: 1.1rem;">${props.nome}</h5>
+                                <table class="table table-sm table-borderless mb-0" style="font-size: 0.85rem;">
+                                    <tr><td class="px-0 py-1 text-muted"><strong>População:</strong></td><td class="px-0 py-1 text-end d-inline-block">${props.populacao_2022}</td></tr>
+                                    <tr><td class="px-0 py-1 text-muted"><strong>Distância:</strong></td><td class="px-0 py-1 text-end">${props.distancia_sede}</td></tr>
+                                    <tr><td colspan="2" class="px-0 py-1"><small class="text-muted d-block mt-1" style="line-height: 1.2;">${props.caracteristicas}</small></td></tr>
+                                </table>
+                            </div>
+                        `;
+                        layer.bindPopup(content);
+
+                        layer.on('click', () => {
+                            const infoPanel = document.getElementById('districtInfo');
+                            const details = document.getElementById('featureDetails');
+                            if(infoPanel && details) {
+                                details.innerHTML = `
+                                    <p class="mb-1"><strong>Distrito:</strong> ${props.nome}</p>
+                                    <p class="mb-1"><strong>População:</strong> ${props.populacao_2022}</p>
+                                    <p class="mb-1"><strong>Distância à Sede:</strong> ${props.distancia_sede}</p>
+                                    <p class="mb-0 text-muted"><small>${props.caracteristicas}</small></p>
+                                `;
+                                infoPanel.classList.remove('d-none');
+                            }
+                        });
+                    }
+                }).addTo(map);
+            })
+            .catch(function (error) {
+                console.error('Error loading data:', error);
+            });
+
+        document.getElementById('zoomToPVH').addEventListener('click', function () {
+            if (limiteBounds) {
+                map.fitBounds(limiteBounds);
+            } else {
+                map.setView({{ map_center|default:'[-8.7619, -63.9039]' }}, {{ map_zoom|default:8 }});
+            }
+        });
+
+        L.control.scale({ metric: true, imperial: false }).addTo(map);
+    });
+</script>

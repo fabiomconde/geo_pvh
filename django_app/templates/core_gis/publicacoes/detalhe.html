@@ -11,9 +11,6 @@
     <article class="pub-detail-article">
         <!-- Metadata -->
         <div class="pub-detail-meta">
-            {% if publicacao.fonte_original %}
-            <span><i class="bi bi-at"></i> {{ publicacao.fonte_original }}</span>
-            {% endif %}
             {% if publicacao.data_publicacao %}
             <span><i class="bi bi-calendar3"></i> {{ publicacao.data_publicacao|date:"d \d\e F \d\e Y" }}</span>
             <span><i class="bi bi-clock"></i> {{ publicacao.data_publicacao|date:"H:i" }}</span>
@@ -47,7 +44,55 @@
 
         <!-- Body Content -->
         <div class="pub-detail-body">
+            {% with primeira_imagem=publicacao.imagens.first %}
+            {% if primeira_imagem %}
+            <div class="pub-detail-main-image text-center mb-4">
+                <img src="{{ primeira_imagem.imagem.url }}" alt="{{ primeira_imagem.legenda|default:publicacao.titulo }}" class="img-fluid rounded shadow-sm" style="max-height: 500px; object-fit: contain;">
+                {% if primeira_imagem.legenda %}
+                <p class="text-muted mt-2 fw-medium" style="font-size: 0.9rem;">{{ primeira_imagem.legenda }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
             {{ publicacao.corpo_texto|safe }}
+
+            {% if publicacao.imagens.count > 1 %}
+            <div class="pub-detail-carousel mt-5 mb-4">
+                <h4 class="mb-3 text-dark fw-bold" style="font-size: 1.25rem;">Galeria de Imagens</h4>
+                <div id="carouselPublicacao" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        {% for img in publicacao.imagens.all %}
+                        {% if not forloop.first %}
+                        <button type="button" data-bs-target="#carouselPublicacao" data-bs-slide-to="{{ forloop.counter0|add:'-1' }}" {% if forloop.counter == 2 %}class="active"{% endif %}></button>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="carousel-inner rounded shadow-sm bg-light" style="border: 1px solid #dee2e6;">
+                        {% for img in publicacao.imagens.all %}
+                        {% if not forloop.first %}
+                        <div class="carousel-item {% if forloop.counter == 2 %}active{% endif %}">
+                            <img src="{{ img.imagem.url }}" class="d-block w-100" alt="{{ img.legenda|default:publicacao.titulo }}" style="height: 400px; object-fit: contain;">
+                            {% if img.legenda %}
+                            <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.6); border-radius: 8px; padding: 10px;">
+                                <p class="mb-0">{{ img.legenda }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselPublicacao" data-bs-slide="prev" style="width: 50px;">
+                        <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: rgba(0,0,0,0.5); padding: 20px; border-radius: 5px;"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselPublicacao" data-bs-slide="next" style="width: 50px;">
+                        <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: rgba(0,0,0,0.5); padding: 20px; border-radius: 5px;"></span>
+                        <span class="visually-hidden">Próxima</span>
+                    </button>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         {% if publicacao.anexo_pdf %}
@@ -57,6 +102,11 @@
             </a>
         </div>
         {% endif %}
+        <div class="pub-detail-meta">
+            {% if publicacao.fonte_original %}
+            <span><i class="bi bi-at"></i>Fonte: {{ publicacao.fonte_original }}</span>
+            {% endif %}
+        </div>        
 
         <hr class="pub-detail-divider">
 

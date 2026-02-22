@@ -38,16 +38,24 @@ Desenvolvido com arquitetura similar ao [TerraBrasilis](https://terrabrasilis.dp
 - **PRODES**: Mapa de desmatamento com polígonos de supressão de vegetação
 - **DETER**: Mapa de alertas de alteração na cobertura florestal
 - **Focos de Calor**: Mapa de queimadas detectadas por satélites
+- **Mapas Dinâmicos**: Interface de visualização modular e reutilizável por diferentes tipos de dados.
 
 ### Dashboards
 - Gráficos de evolução temporal do desmatamento
 - Estatísticas por ano, classe e período
 - Indicadores de monitoramento ambiental
+- **Dashboards Dinâmicos**: Rendering inteligente, gerando a interface dinamicamente conforme configuração da view.
 
 ### Acesso a Dados
 - Downloads em formato GeoJSON e Shapefile
 - Web Services (WMS/WFS) compatíveis com INDE/OGC
 - API REST com suporte a GeoJSON
+
+### Gestão de Conteúdo (CMS)
+- **Home Dinâmica**: Organização, criação e personalização das seções e cards da página inicial diretamente pelo Admin Django.
+- **Configurações Globais**: Modificação de fragmentos de texto do site (ex: seção Sobre, footer) em tempo real via banco de dados.
+- **Editor Avançado**: Integração aprofundada do **CKEditor 5** com permissão para uso de tags e classes CSS puras do Bootstrap.
+- **Publicações Expandidas**: Suporte a galerias de imagens (`PublicacaoImagem`) e associação complexa de atores e conflitos.
 
 ## Requisitos
 
@@ -131,7 +139,14 @@ docker-compose exec django python manage.py createsuperuser
 
 # Executar shell do Django
 docker-compose exec django python manage.py shell
+```
 
+### Gerenciamento de Banco de Dados
+```bash
+# Reset completo de ambiente (CUIDADO: apaga dados e recria arquitetura)
+# Recria schemas, migrações Django, superuser admin, e popula o banco novamente
+chmod +x reset_db.sh
+./reset_db.sh
 ```
 
 

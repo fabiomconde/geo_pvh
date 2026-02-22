@@ -1,7 +1,21 @@
 from django.contrib.gis.db import models
+from django.contrib.auth.models import User
 from django_ckeditor_5.fields import CKEditor5Field 
 
+class Configuracao(models.Model):
+    """Configurações dinâmicas de textos e informações do sistema"""
+    identificador = models.CharField("Identificador", max_length=100, unique=True, help_text="Ex: sobre, mensagem_inicio, rodape_informativo")
+    corpo_texto = CKEditor5Field("Conteúdo", config_name='extends')
+    data_criacao = models.DateTimeField("Data de Criação", auto_now_add=True)
+    data_alteracao = models.DateTimeField("Data de Alteração", auto_now=True)
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Usuário")
 
+    class Meta:
+        verbose_name = "Configuração do Sistema"
+        verbose_name_plural = "Configurações do Sistema"
+
+    def __str__(self):
+        return self.identificador 
 
 class MunicipioRO(models.Model):
     """Municípios de Rondônia"""
@@ -323,3 +337,66 @@ class Publicacao(models.Model):
 
     def __str__(self):
         return self.titulo
+
+
+class PublicacaoImagem(models.Model):
+    publicacao = models.ForeignKey(Publicacao, related_name='imagens', on_delete=models.CASCADE)
+    imagem = models.ImageField("Imagem", upload_to='publicacoes/imagens/')
+    ordem = models.PositiveIntegerField("Ordem", default=0, help_text="Define a ordem de exibição. A primeira (menor número) será a capa da publicação.")
+    legenda = models.CharField("Legenda", max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Imagem da Publicação"
+        verbose_name_plural = "Imagens da Publicação"
+        ordering = ['ordem']
+
+    def __str__(self):
+        return f"Imagem {self.ordem} - {self.publicacao.titulo}"
+
+
+# =============================================================================
+# 5. CONTEÚDOS DINÂMICOS (HOME)
+# =============================================================================
+
+class SecaoHome(models.Model):
+    TIPO_CHOICES = [
+        ('publicacao', 'Publicação'),
+        ('dashboard', 'Dashboard'),
+        ('mapa', 'Mapa Interativo'),
+    ]
+    
+    titulo = models.CharField("Título", max_length=200)
+    subtitulo = models.CharField("Subtítulo", max_length=255, blank=True, null=True)
+    tipo = models.CharField("Tipo da Seção", max_length=20, choices=TIPO_CHOICES, default='publicacao')
+    icone = models.CharField("Ícone (SVG)", max_length=100, help_text="Nome do arquivo SVG do ícone (ex: 'chart-line.svg')")
+    cor_fundo = models.CharField("Variável de Cor do Fundo", max_length=100, default='var(--theme-bg-white)', help_text="Cor ou variável CSS de fundo da seção")
+    ordem = models.PositiveIntegerField("Ordem de Exibição", default=0)
+    url = models.CharField("URL", default='#', max_length=255, help_text="URL ou nome da rota (ex: 'core_gis:lista_mapas')")
+
+    class Meta:
+        verbose_name = "Seção da Home"
+        verbose_name_plural = "Seções da Home"
+        ordering = ['ordem']
+
+    def __str__(self):
+        return f"{self.titulo} ({self.get_tipo_display()})"
+
+class CardSecao(models.Model):
+    secao = models.ForeignKey(SecaoHome, related_name='cards', on_delete=models.CASCADE, verbose_name="Seção")
+    titulo = models.CharField("Título do Card", max_length=200)
+    subtitulo = models.TextField("Subtítulo/Descrição", blank=True, null=True)
+    url = models.CharField("URL", max_length=255, help_text="URL ou nome da rota (ex: 'core_gis:lista_mapas')")
+    icone = models.CharField("Ícone (SVG)", max_length=100, help_text="Nome do arquivo SVG do ícone da badge")
+    texto_botao = models.CharField("Texto do Botão", max_length=100, default="Acessar")
+    btn_class = models.CharField("Classe CSS do Botão", max_length=50, default="btn-primary", help_text="ex: btn-primary")
+    badge_text = models.CharField("Texto da Badge", max_length=50, blank=True, null=True)
+    badge_class = models.CharField("Classe CSS da Badge", max_length=50, blank=True, null=True, help_text="ex: theme-forest")
+    ordem = models.PositiveIntegerField("Ordem de Exibição", default=0)
+
+    class Meta:
+        verbose_name = "Card da Seção"
+        verbose_name_plural = "Cards da Seção"
+        ordering = ['ordem']
+
+    def __str__(self):
+        return f"{self.titulo} - {self.secao.titulo}"

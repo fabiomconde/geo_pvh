@@ -1,0 +1,82 @@
+/* Custom scoped CSS for CKEditor5 inside Django Admin to replicate the frontend visually without breaking the admin */
+
+/* Bootstrap Helpers for the editor */
+.ck-content .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    margin-bottom: 1.5rem;
+}
+
+.ck-content .card-body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+}
+
+.ck-content .card-title {
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.ck-content .card-text:last-child {
+    margin-bottom: 0;
+}
+
+.ck-content .text-success {
+    color: #198754 !important;
+}
+
+.ck-content .text-primary {
+    color: #0d6efd !important;
+}
+
+.ck-content .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: calc(-1 * var(--bs-gutter-y));
+    margin-right: calc(-.5 * var(--bs-gutter-x));
+    margin-left: calc(-.5 * var(--bs-gutter-x));
+}
+
+.ck-content .col-md-6 {
+    flex: 0 0 auto;
+    width: 50%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.ck-content .col-md-4 {
+    flex: 0 0 auto;
+    width: 33.33333333%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.ck-content .list-unstyled {
+    padding-left: 0;
+    list-style: none;
+}
+
+.ck-content .mb-2 { margin-bottom: 0.5rem !important; }
+.ck-content .mb-4 { margin-bottom: 1.5rem !important; }
+
+/* Dashboard Typography Highlights */
+.ck-content h5 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.ck-content p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}

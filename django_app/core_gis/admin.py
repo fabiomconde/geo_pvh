@@ -4,8 +4,20 @@ from .models import (
     MunicipioRO, BairroPVH, DesmatamentoPVH,
     AlertaDETER, FocoCalor, AreaProtegida, DistritoPVH,
     TipoDocumento, FaseConflito, TipoTerritorio, Bioma, TipoAtor, PapelAtor, SetorEconomico, DireitoAfetado, TipoViolacao,
-    Localizacao, Ator, Conflito, EnvolvimentoAtor, Publicacao
+    Localizacao, Ator, Conflito, EnvolvimentoAtor, Publicacao, PublicacaoImagem, Configuracao,
+    SecaoHome, CardSecao
 )
+
+@admin.register(Configuracao)
+class ConfiguracaoAdmin(admin.ModelAdmin):
+    list_display = ('identificador', 'data_alteracao', 'usuario')
+    search_fields = ('identificador',)
+    readonly_fields = ('data_criacao', 'data_alteracao')
+
+    def save_model(self, request, obj, form, change):
+        if not obj.usuario:
+            obj.usuario = request.user
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(MunicipioRO)
@@ -115,10 +127,27 @@ class ConflitoAdmin(admin.ModelAdmin):
     inlines = [EnvolvimentoAtorInline]
     filter_horizontal = ('localizacoes', 'direitos_afetados')
 
+class PublicacaoImagemInline(admin.TabularInline):
+    model = PublicacaoImagem
+    extra = 1
+
 @admin.register(Publicacao)
 class PublicacaoAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'tipo_documento', 'data_fato', 'is_publicado', 'is_restrito')
     list_filter = ('tipo_documento', 'is_publicado', 'is_restrito', 'data_fato')
     search_fields = ('titulo', 'fonte_original')
     filter_horizontal = ('atores_citados', 'violacoes_denunciadas')
+    inlines = [PublicacaoImagemInline]
     # O RichTextField será renderizado automaticamente no form padrão
+
+
+class CardSecaoInline(admin.StackedInline):
+    model = CardSecao
+    extra = 1
+
+@admin.register(SecaoHome)
+class SecaoHomeAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'tipo', 'ordem', 'cor_fundo')
+    list_editable = ('tipo', 'ordem', 'cor_fundo')
+    search_fields = ('titulo', 'subtitulo')
+    inlines = [CardSecaoInline]

@@ -1,0 +1,86 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const map = L.map('map').setView({{ map_center|default:'[-8.76, -63.90]' }}, {{ map_zoom|default:10 }});
+
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '© Esri'
+        });
+
+        document.getElementById('osmLayer').addEventListener('change', function () {
+            map.removeLayer(satelliteLayer);
+            osmLayer.addTo(map);
+        });
+
+        document.getElementById('satelliteLayer').addEventListener('change', function () {
+            map.removeLayer(osmLayer);
+            satelliteLayer.addTo(map);
+        });
+
+        // Load alerts from API
+        let alertasGeoJSON;
+        fetch('/api/alertas/?format=json')
+            .then(response => response.json())
+            .then(data => {
+                alertasGeoJSON = L.geoJSON(data, {
+                    style: function (feature) {
+                        const classe = feature.properties.classe;
+                        let color = '#ffc107';
+                        if (classe === 'DEGRADACAO') color = '#ff9800';
+                        if (classe === 'MINERACAO') color = '#9c27b0';
+                        return {
+                            fillColor: color,
+                            fillOpacity: 0.6,
+                            color: color,
+                            weight: 2
+                        };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        const props = feature.properties;
+                        layer.bindPopup(`
+                            <strong>Alerta DETER</strong><br>
+                            Data: ${props.data_alerta}<br>
+                            Classe: ${props.classe}<br>
+                            Área: ${props.area_ha ? props.area_ha.toFixed(2) + ' ha' : 'N/A'}<br>
+                            Satélite: ${props.satelite || 'N/A'}
+                        `);
+                        
+                        layer.on('click', () => {
+                            const infoPanel = document.getElementById('featureInfo');
+                            const details = document.getElementById('featureDetails');
+                            if(infoPanel && details) {
+                                details.innerHTML = `
+                                    <p class="mb-1"><strong>Data:</strong> ${props.data_alerta}</p>
+                                    <p class="mb-1"><strong>Classe:</strong> ${props.classe}</p>
+                                    <p class="mb-1"><strong>Área:</strong> ${props.area_ha ? props.area_ha.toFixed(2) + ' ha' : 'N/A'}</p>
+                                    <p class="mb-0"><strong>Satélite:</strong> ${props.satelite || 'N/A'}</p>
+                                `;
+                                infoPanel.classList.remove('d-none');
+                            }
+                        });
+                    }
+                });
+                alertasGeoJSON.addTo(map);
+            })
+            .catch(err => console.log('Error loading alerts:', err));
+
+        if (document.getElementById('alertasLayer')) {
+            document.getElementById('alertasLayer').addEventListener('change', function () {
+                if (this.checked && alertasGeoJSON) {
+                    alertasGeoJSON.addTo(map);
+                } else if (alertasGeoJSON) {
+                    map.removeLayer(alertasGeoJSON);
+                }
+            });
+        }
+
+        document.getElementById('zoomToPVH').addEventListener('click', function () {
+            map.setView({{ map_center|default:'[-8.76, -63.90]' }}, {{ map_zoom|default:10 }});
+        });
+
+        L.control.scale({ metric: true, imperial: false }).addTo(map);
+    });
+</script>
