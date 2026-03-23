@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0"><i class="bi bi-grid-1x2"></i> Gestão de Dashboards</h2>
+            <p class="text-muted">Gerencie os painéis dinâmicos de dados do sistema.</p>
+        </div>
+        <a href="{% url 'core_gis:criar_dashboard' %}" class="btn btn-primary btn-lg shadow-sm">
+            <i class="bi bi-plus-lg"></i> Novo Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Título / Subtítulo</th>
+                            <th>Tema</th>
+                            <th>Status</th>
+                            <th>Link Público</th>
+                            <th class="text-end pe-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dash in dashboards %}
+                        <tr>
+                            <td class="ps-4">
+                                <strong class="d-block text-dark">{{ dash.titulo }}</strong>
+                                <small class="text-muted">{{ dash.subtitulo|default:"Sem subtítulo" }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border"><i class="bi bi-palette"></i> {{ dash.tema_class }}</span>
+                            </td>
+                            <td>
+                                {% if dash.ativo %}
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'core_gis:visualizar_dashboard' dash.slug %}" target="_blank" class="small text-decoration-none">
+                                    /dashboard/{{ dash.slug }}/
+                                </a>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group">
+                                    <a href="{% url 'core_gis:editar_dashboard' dash.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                    <!-- O botão apenas aponta para o ID do modal -->
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ dash.id }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">Nenhum dashboard encontrado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FORA DA TABELA: Criamos os modais em um loop separado no final do arquivo -->
+{% for dash in dashboards %}
+<div class="modal fade" id="deleteModal{{ dash.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ dash.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-danger fw-bold" id="deleteModalLabel{{ dash.id }}">
+                    <i class="bi bi-exclamation-triangle"></i> Excluir Dashboard
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir o dashboard <strong>"{{ dash.titulo }}"</strong>?<br>
+                <small class="text-muted">Esta ação removerá todos os dados e não pode ser desfeita.</small>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                <form action="{% url 'core_gis:excluir_dashboard' dash.id %}" method="POST" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Sim, Excluir Definitivamente</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

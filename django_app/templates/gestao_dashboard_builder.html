@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard_builder.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-tools"></i> {% if dashboard %}Editar Dashboard: {{ dashboard.titulo }}{% else %}Criar Dashboard Dinâmico{% endif %}</h2>
+        <button type="submit" form="builderForm" class="btn btn-success btn-lg">
+            <i class="bi bi-save"></i> Salvar Dashboard
+        </button>
+    </div>
+
+    <!-- CORREÇÃO 1: A ACTION DO FORMULÁRIO AGORA É DINÂMICA -->
+    <form id="builderForm" method="POST" enctype="multipart/form-data" action="{% if dashboard %}{% url 'core_gis:editar_dashboard' dashboard.id %}{% else %}{% url 'core_gis:criar_dashboard' %}{% endif %}">
+        {% csrf_token %}
+        
+        <!-- Configurações Gerais -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Configurações Gerais</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Título do Dashboard</label>
+                        <input type="text" name="dash_titulo" value="{{ dashboard.titulo|default:'' }}" class="form-control" placeholder="Ex: Monitoramento PRODES" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Subtítulo (Opcional)</label>
+                        <input type="text" name="dash_subtitulo" value="{{ dashboard.subtitulo|default:'' }}" class="form-control" placeholder="Descrição curta">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tema de Cores</label>
+                        <select name="dash_tema" class="form-select">
+                            <option value="theme-default" {% if dashboard.tema_class == 'theme-default' %}selected{% endif %}>Padrão (Azul)</option>
+                            <option value="theme-prodes" {% if dashboard.tema_class == 'theme-prodes' %}selected{% endif %}>Aviso/Desmatamento (Vermelho)</option>
+                            <option value="theme-deter" {% if dashboard.tema_class == 'theme-deter' %}selected{% endif %}>Alerta (Amarelo)</option>
+                            <option value="theme-focos" {% if dashboard.tema_class == 'theme-focos' %}selected{% endif %}>Fogo/Calor (Laranja)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Área de Construção -->
+        <h5 class="mb-3">Estrutura do Dashboard</h5>
+        <div id="builder-canvas" class="builder-canvas">
+            <!-- As linhas dinâmicas serão injetadas aqui pelo JS -->
+        </div>
+
+        <!-- Botão Adicionar Linha -->
+        <div class="text-center mt-4">
+            <button type="button" class="btn btn-outline-primary btn-lg border-dashed w-100 py-4" data-bs-toggle="modal" data-bs-target="#modalLayoutLinha">
+                <i class="bi bi-plus-circle fs-3 d-block mb-2"></i>
+                Adicionar Nova Linha
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal para Escolher o Tipo de Linha -->
+<div class="modal fade" id="modalLayoutLinha" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">O que você deseja adicionar nesta linha?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="layout-option" onclick="adicionarLinha('tabela_1')">
+                            <i class="bi bi-table fs-1 text-primary"></i>
+                            <h6 class="mt-3">1 Tabela de Dados</h6>
+                            <p class="text-muted small">Tabela ampla ocupando 100% da tela.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="layout-option" onclick="adicionarLinha('grafico_1')">
+                            <i class="bi bi-bar-chart fs-1 text-success"></i>
+                            <h6 class="mt-3">1 Gráfico Grande</h6>
+                            <p class="text-muted small">Gráfico amplo ocupando 100% da tela.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="layout-option" onclick="adicionarLinha('grafico_2')">
+                            <i class="bi bi-pie-chart fs-1 text-warning"></i>
+                            <h6 class="mt-3">2 Gráficos Lado a Lado</h6>
+                            <p class="text-muted small">Dois gráficos dividindo o espaço 50/50.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="layout-option" onclick="adicionarLinha('quadros')">
+                            <i class="bi bi-grid-1x2 fs-1 text-danger"></i>
+                            <h6 class="mt-3">Quadros Numéricos (Stat Cards)</h6>
+                            <p class="text-muted small">Adicione até 6 quadros com ícones e valores.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================================= -->
+<!-- TEMPLATES OCULTOS (CORRIGIDOS COM OS CAMPOS OLD_ID) -->
+<!-- ======================================================================= -->
+
+<template id="tpl-linha-base">
+    <div class="builder-row card mb-4 shadow-sm" id="row_{ROW_ID}">
+        <input type="hidden" name="linhas[{ROW_ID}][tipo]" value="{TIPO_LINHA}">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center cursor-move">
+            <strong><i class="bi bi-arrows-move text-muted me-2"></i> {TITULO_LINHA}</strong>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="removerLinha('row_{ROW_ID}')">
+                <i class="bi bi-trash"></i> Remover Linha
+            </button>
+        </div>
+        <div class="card-body row g-4 builder-row-content"></div>
+    </div>
+</template>
+
+<template id="tpl-bloco-tabela">
+    <div class="col-12">
+        <div class="p-3 border rounded bg-white">
+            <h6 class="text-primary mb-3"><i class="bi bi-table"></i> Configurar Tabela</h6>
+            <!-- CORREÇÃO 2: OLD ID -->
+            <input type="hidden" name="linhas[{ROW_ID}][col][0][old_id]" value="">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label>Título da Tabela</label>
+                    <input type="text" name="linhas[{ROW_ID}][col][0][titulo]" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label>Arquivo de Dados (.csv)</label>
+                    <input type="file" name="linhas[{ROW_ID}][col][0][csv]" class="form-control" accept=".csv">
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-bloco-grafico">
+    <div class="{COL_CLASS}">
+        <div class="p-3 border rounded bg-white h-100">
+            <h6 class="text-success mb-3"><i class="bi bi-bar-chart"></i> Configurar Gráfico</h6>
+            <!-- CORREÇÃO 2: OLD ID -->
+            <input type="hidden" name="linhas[{ROW_ID}][col][{COL_IDX}][old_id]" value="">
+            <div class="row g-3">
+                <div class="col-md-12">
+                    <label>Título do Gráfico</label>
+                    <input type="text" name="linhas[{ROW_ID}][col][{COL_IDX}][titulo]" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label>Tipo de Gráfico</label>
+                    <select name="linhas[{ROW_ID}][col][{COL_IDX}][tipo]" class="form-select">
+                        <option value="bar">Barras</option>
+                        <option value="line">Linhas</option>
+                        <option value="pie">Pizza</option>
+                        <option value="doughnut">Rosca</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label>Arquivo de Dados (.csv)</label>
+                    <input type="file" name="linhas[{ROW_ID}][col][{COL_IDX}][csv]" class="form-control" accept=".csv">
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-bloco-quadros">
+    <div class="col-12">
+        <div class="p-3 border rounded bg-white">
+            <div class="d-flex justify-content-between mb-3">
+                <h6 class="text-danger mb-0"><i class="bi bi-grid"></i> Quadros Numéricos</h6>
+                <button type="button" class="btn btn-sm btn-primary" onclick="adicionarQuadro('{ROW_ID}')">
+                    + Adicionar Quadro (Max 6)
+                </button>
+            </div>
+            <div class="row g-3" id="quadros_container_{ROW_ID}"></div>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-item-quadro">
+    <div class="col-md-4 quadro-item" id="quadro_{ROW_ID}_{QUADRO_IDX}">
+        <div class="card bg-light border-0">
+            <div class="card-body position-relative p-2">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2" onclick="removerQuadro('quadro_{ROW_ID}_{QUADRO_IDX}', '{ROW_ID}')"></button>
+                <div class="mb-2">
+                    <label class="form-label small">Título (Ex: Focos Ativos)</label>
+                    <input type="text" name="linhas[{ROW_ID}][quadros][{QUADRO_IDX}][titulo]" class="form-control form-control-sm" required>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small">Valor (Ex: 1.250)</label>
+                    <input type="text" name="linhas[{ROW_ID}][quadros][{QUADRO_IDX}][valor]" class="form-control form-control-sm" required>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small">Ícone (bi-X)</label>
+                        <input type="text" name="linhas[{ROW_ID}][quadros][{QUADRO_IDX}][icone]" class="form-control form-control-sm" value="bi-info-circle">
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small">Cor</label>
+                        <select name="linhas[{ROW_ID}][quadros][{QUADRO_IDX}][cor]" class="form-select form-select-sm">
+                            <option value="text-primary">Azul</option>
+                            <option value="text-danger">Vermelho</option>
+                            <option value="text-warning">Amarelo</option>
+                            <option value="text-success">Verde</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/dashboard_builder.js' %}?v=4"></script>
+
+<!-- SCRIPT DE INICIALIZAÇÃO PARA EDIÇÃO -->
+{% if dashboard %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        {% for linha in dashboard.linhas.all %}
+            {% with cols=linha.colunas.all %}
+            {% with primeira_col=cols.0 %}
+                
+                {% if primeira_col.tipo_conteudo == 'tabela' %}
+                    adicionarLinha('tabela_1', {
+                        cols:[{ old_id: "{{ primeira_col.tabela.id }}", titulo: "{{ primeira_col.tabela.titulo|escapejs }}" }]
+                    });
+
+                {% elif primeira_col.tipo_conteudo == 'grafico' %}
+                    {% if cols|length == 1 %}
+                        adicionarLinha('grafico_1', {
+                            cols:[{ old_id: "{{ primeira_col.grafico.id }}", titulo: "{{ primeira_col.grafico.titulo|escapejs }}", tipo: "{{ primeira_col.grafico.tipo }}" }]
+                        });
+                    {% else %}
+                        adicionarLinha('grafico_2', {
+                            cols:[
+                                {% for col in cols %}
+                                { old_id: "{{ col.grafico.id }}", titulo: "{{ col.grafico.titulo|escapejs }}", tipo: "{{ col.grafico.tipo }}" }{% if not forloop.last %},{% endif %}
+                                {% endfor %}
+                            ]
+                        });
+                    {% endif %}
+
+                {% elif primeira_col.tipo_conteudo == 'quadros' %}
+                    let rowId_{{ linha.id }} = adicionarLinha('quadros', { isEdit: true });
+                    {% for quadro in primeira_col.quadros.all %}
+                        adicionarQuadro(rowId_{{ linha.id }}, {
+                            titulo: "{{ quadro.titulo|escapejs }}", valor: "{{ quadro.valor|escapejs }}", icone: "{{ quadro.icone|escapejs }}", cor: "{{ quadro.icone_cor|escapejs }}"
+                        });
+                    {% endfor %}
+                {% endif %}
+
+            {% endwith %}
+            {% endwith %}
+        {% endfor %}
+    });
+</script>
+{% endif %}
+{% endblock %}

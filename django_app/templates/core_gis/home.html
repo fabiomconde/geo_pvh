@@ -209,6 +209,8 @@
         // Initialize mini map in hero section
         if (document.getElementById('miniMap')) {
             const miniMap = L.map('miniMap', {
+                center: [-8.76116, -63.9004], // Coordinates for Porto Velho
+                zoom: 10,
                 zoomControl: false,
                 attributionControl: false,
                 dragging: false,
@@ -223,20 +225,24 @@
             fetch('/api/limite-pvh-geojson/')
                 .then(response => response.json())
                 .then(data => {
-                    const geoJsonLayer = L.geoJSON(data, {
-                        style: function (feature) {
-                            return {
-                                color: '#3b82f6', // blue stroke
-                                weight: 2,
-                                opacity: 1,
-                                fillOpacity: 0.1,
-                                fillColor: '#3b82f6', // blue fill
-                                dashArray: '5, 5'     // dashed border style like reference map
-                            };
+                    if (data && data.features && data.features.length > 0) {
+                        const geoJsonLayer = L.geoJSON(data, {
+                            style: function (feature) {
+                                return {
+                                    color: '#3b82f6', // blue stroke
+                                    weight: 2,
+                                    opacity: 1,
+                                    fillOpacity: 0.1,
+                                    fillColor: '#3b82f6', // blue fill
+                                    dashArray: '5, 5'     // dashed border style like reference map
+                                };
+                            }
+                        }).addTo(miniMap);
+                        // Adjust map to fit the entire polygon
+                        if (geoJsonLayer.getBounds().isValid()) {
+                            miniMap.fitBounds(geoJsonLayer.getBounds(), { padding: [10, 10] });
                         }
-                    }).addTo(miniMap);
-                    // Adjust map to fit the entire polygon
-                    miniMap.fitBounds(geoJsonLayer.getBounds(), { padding: [10, 10] });
+                    }
                 })
                 .catch(error => console.error('Error loading Porto Velho limits:', error));
         }
