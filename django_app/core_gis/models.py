@@ -145,8 +145,7 @@ class DistritoPVH(models.Model):
     populacao_2022 = models.CharField(max_length=50, blank=True, null=True)
     distancia_sede = models.CharField(max_length=50, blank=True, null=True)
     caracteristicas = models.TextField(blank=True, null=True)
-    # Using PointField for compatibility with load script
-    geom = models.PointField(srid=4326, null=True)
+    geom = models.MultiPolygonField(srid=4326, null=True)
 
     class Meta:
         managed = True
@@ -400,3 +399,151 @@ class CardSecao(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.secao.titulo}"
+
+
+from django.db import models
+from django.core.validators import FileExtensionValidator
+import csv
+import io
+
+# =============================================================================
+# DASHBOARD DINÂMICO
+# =============================================================================
+
+class DashboardDinamico(models.Model):
+    titulo = models.CharField("Título do Dashboard", max_length=200)
+    subtitulo = models.CharField("Subtítulo", max_length=255, blank=True, null=True)
+    slug = models.SlugField("URL Slug", unique=True)
+    tema_class = models.CharField("Tema CSS", max_length=50, default="theme-default", help_text="Ex: theme-deter, theme-prodes")
+    icone_header = models.CharField("Ícone do Cabeçalho", max_length=50, default="bi-graph-up")
+    ativo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.titulo
+
+class Linha(models.Model):
+    dashboard = models.ForeignKey(DashboardDinamico, related_name='linhas', on_delete=models.CASCADE)
+    ordem = models.PositiveIntegerField("Ordem", default=0)
+
+    class Meta:
+        ordering = ['ordem']
+
+    def __str__(self):
+        return f"Linha {self.ordem} - {self.dashboard.titulo}"
+
+class Coluna(models.Model):
+    TIPO_CONTEUDO =[
+        ('quadros', 'Lista de Quadros (Stat Cards)'),
+        ('tabela', 'Tabela de Dados'),
+        ('grafico', 'Gráfico'),
+    ]
+    TAMANHO_CHOICES =[
+        ('col-12', 'Largura Total (100%)'),
+        ('col-lg-8', 'Larga (66%)'),
+        ('col-lg-6', 'Metade (50%)'),
+        ('col-lg-4', 'Estreita (33%)'),
+        ('col-lg-3', 'Muito Estreita (25%)'),
+    ]
+
+    linha = models.ForeignKey(Linha, related_name='colunas', on_delete=models.CASCADE)
+    tamanho_css = models.CharField("Tamanho da Coluna", max_length=20, choices=TAMANHO_CHOICES, default='col-lg-6')
+    tipo_conteudo = models.CharField("Tipo de Conteúdo", max_length=20, choices=TIPO_CONTEUDO)
+    ordem = models.PositiveIntegerField("Ordem na Linha", default=0)
+
+    class Meta:
+        ordering = ['ordem']
+
+    def __str__(self):
+        return f"Coluna ({self.get_tamanho_css_display()}) - {self.get_tipo_conteudo_display()}"
+
+# --- Componentes Internos das Colunas ---
+
+class Quadro(models.Model):
+    """Corresponde aos 'Stat Cards' com números"""
+    coluna = models.ForeignKey(Coluna, related_name='quadros', on_delete=models.CASCADE)
+    titulo = models.CharField("Título/Label", max_length=100)
+    valor = models.CharField("Valor (Número ou Texto)", max_length=50)
+    icone = models.CharField("Ícone (Bootstrap Icons)", max_length=50, default="bi-bar-chart")
+    icone_cor = models.CharField("Cor do Ícone (Classe CSS)", max_length=50, default="text-primary", help_text="Ex: text-danger, text-success")
+    ordem = models.PositiveIntegerField("Ordem", default=0)
+
+    class Meta:
+        ordering = ['ordem']
+
+class TabelaDinamica(models.Model):
+    """Aceita upload de CSV e converte para JSON Editável"""
+    coluna = models.OneToOneField(Coluna, related_name='tabela', on_delete=models.CASCADE)
+    titulo = models.CharField("Título da Tabela", max_length=200)
+    icone = models.CharField("Ícone", max_length=50, default="bi-table")
+    
+    # Upload do CSV (Apenas para importação inicial)
+    arquivo_csv = models.FileField("Importar CSV", upload_to='dashboards/csv/', blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=['csv'])])
+    
+    # Dados reais salvos no banco para edição
+    cabecalhos = models.JSONField("Cabeçalhos da Tabela", default=list, blank=True)
+    linhas_dados = models.JSONField("Dados das Linhas", default=list, blank=True)
+
+    def save(self, *args, **kwargs):
+        # Lógica para converter CSV em JSON no momento do salvamento
+        if self.arquivo_csv and not self.linhas_dados:
+            self.arquivo_csv.seek(0)
+            decoded_file = self.arquivo_csv.read().decode('utf-8')
+            reader = csv.reader(io.StringIO(decoded_file))
+            data = list(reader)
+            if data:
+                self.cabecalhos = data[0] # Primeira linha é o cabeçalho
+                self.linhas_dados = data[1:] # Restante são os dados
+            self.arquivo_csv = None # Limpa o arquivo após importar
+        super().save(*args, **kwargs)
+
+class GraficoDinamico(models.Model):
+    TIPO_GRAFICO =[
+        ('bar', 'Gráfico de Barras (Bar)'),
+        ('line', 'Gráfico de Linhas (Line)'),
+        ('pie', 'Gráfico de Pizza (Pie)'),
+        ('doughnut', 'Gráfico de Rosca (Doughnut)'),
+    ]
+
+    coluna = models.OneToOneField(Coluna, related_name='grafico', on_delete=models.CASCADE)
+    titulo = models.CharField("Título do Gráfico", max_length=200)
+    tipo = models.CharField("Tipo do Gráfico", max_length=20, choices=TIPO_GRAFICO, default='bar')
+    
+    arquivo_csv = models.FileField("Importar Dados via CSV", upload_to='dashboards/csv/', blank=True, null=True, validators=[FileExtensionValidator(allowed_extensions=['csv'])])
+    
+    # Estrutura JSON padrão do Chart.js
+    labels = models.JSONField("Rótulos (Eixo X)", default=list, blank=True)
+    datasets = models.JSONField("Conjunto de Dados", default=list, blank=True)
+
+    #No método save do GraficoDinamico:
+    def save(self, *args, **kwargs):
+        if self.arquivo_csv:
+            self.arquivo_csv.seek(0)
+            content = self.arquivo_csv.read().decode('utf-8')
+            try:
+                # Isso descobre se o arquivo usa , ou ; automaticamente
+                dialect = csv.Sniffer().sniff(content[:1024])
+                delimiter = dialect.delimiter
+            except:
+                delimiter = ',' 
+                
+            reader = csv.reader(io.StringIO(content), delimiter=delimiter)
+            data = [row for row in list(reader) if any(row)]
+            
+            if len(data) > 1:
+                headers = [h.strip() for h in data[0]]
+                self.labels = [row[0].strip() for row in data[1:]]
+                
+                novos_datasets = []
+                for i in range(1, len(headers)):
+                    valores = []
+                    for row in data[1:]:
+                        # Trata números com vírgula (ex: 35,00 -> 35.00)
+                        val = row[i].replace(',', '.').strip()
+                        try:
+                            valores.append(float(val))
+                        except:
+                            valores.append(0.0)
+                    novos_datasets.append({"label": headers[i], "data": valores})
+                self.datasets = novos_datasets
+                self.arquivo_csv = None # Limpa o arquivo após processar
+        super().save(*args, **kwargs)

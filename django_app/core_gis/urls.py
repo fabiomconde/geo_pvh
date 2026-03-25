@@ -37,4 +37,14 @@ urlpatterns = [
     path('dados/estatisticas/', views.estatisticas_gerais, name='estatisticas_gerais'),
     path('api/distritos-geojson/', views.distritos_geojson, name='distritos_geojson'),
     path('api/limite-pvh-geojson/', views.limite_pvh_geojson, name='limite_pvh_geojson'),
+
+    # Rota para abrir o construtor visual e processar o salvamento
+    # Rotas de Gestão
+    path('dashboards/gestao/', views.listar_dashboards, name='listar_dashboards'),
+    path('dashboards/criar/', views.criar_editar_dashboard, name='criar_dashboard'),
+    path('dashboards/editar/<int:id>/', views.criar_editar_dashboard, name='editar_dashboard'),
+    path('dashboards/excluir/<int:id>/', views.excluir_dashboard, name='excluir_dashboard'),
+    
+    # Rota para o usuário final visualizar o dashboard gerado
+    path('dashboard/<slug:slug>/', views.visualizar_dashboard, name='visualizar_dashboard'),    
 ]
