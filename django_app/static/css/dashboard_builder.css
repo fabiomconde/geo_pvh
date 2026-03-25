@@ -1,0 +1,62 @@
+/* Container de Construção */
+.builder-canvas {
+    min-height: 100px;
+    margin-bottom: 2rem;
+}
+
+/* Opções de Layout no Modal */
+.layout-option {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 100%;
+    background-color: #f8fafc;
+}
+
+.layout-option:hover {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.layout-option i {
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Botão pontilhado grande */
+.border-dashed {
+    border: 2px dashed #cbd5e1 !important;
+    color: #64748b;
+    background: #f8fafc;
+    transition: all 0.2s;
+}
+
+.border-dashed:hover {
+    border-color: #3b82f6 !important;
+    color: #3b82f6;
+    background: #eff6ff;
+}
+
+/* Linhas e Quadros */
+.builder-row {
+    animation: fadeIn 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.cursor-move {
+    cursor: move; /* Dica visual caso no futuro implemente sortable JS */
+}
+
+.quadro-item {
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

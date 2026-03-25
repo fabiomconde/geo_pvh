@@ -1,7 +1,9 @@
-"""
-Views for PVH GeoPortal
-"""
-from django.shortcuts import render
+import re
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.utils.text import slugify
+from .models import DashboardDinamico, Linha, Coluna, Quadro, TabelaDinamica, GraficoDinamico
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Sum, Count, Avg
 from django.views.decorators.cache import cache_page
@@ -693,3 +695,274 @@ def lista_mapas(request):
 def lista_dashboards(request):
     """Página hub listando todos os dashboards disponíveis"""
     return render(request, 'core_gis/lista_dashboards.html')
+
+
+
+def criar_dashboard(request):
+    if request.method == 'POST':
+        try:
+            # 1. Dados Gerais do Dashboard
+            titulo = request.POST.get('dash_titulo')
+            subtitulo = request.POST.get('dash_subtitulo', '')
+            tema = request.POST.get('dash_tema', 'theme-default')
+            
+            # Gera um slug único baseado no título (Ex: Monitoramento Prodes -> monitoramento-prodes)
+            slug_base = slugify(titulo)
+            slug = slug_base
+            contador = 1
+            while DashboardDinamico.objects.filter(slug=slug).exists():
+                slug = f"{slug_base}-{contador}"
+                contador += 1
+            
+            # Cria o Dashboard (Pai)
+            dashboard = DashboardDinamico.objects.create(
+                titulo=titulo,
+                subtitulo=subtitulo,
+                slug=slug,
+                tema_class=tema
+            )
+            
+            # 2. Processar Linhas (descobrindo os IDs gerados pelo JavaScript)
+            # Extraímos os IDs olhando para as chaves do POST (ex: "linhas[1][tipo]" -> ID: 1)
+            row_ids = set()
+            for key in request.POST.keys():
+                match = re.match(r'linhas\[(\d+)\]', key)
+                if match:
+                    row_ids.add(int(match.group(1)))
+            
+            # Ordena os IDs para garantir que as linhas fiquem na ordem que o usuário inseriu na tela
+            row_ids = sorted(list(row_ids))
+            
+            # 3. Iterar sobre cada Linha e seus Componentes
+            for ordem_linha, row_id in enumerate(row_ids):
+                tipo_layout = request.POST.get(f'linhas[{row_id}][tipo]')
+                
+                # Salva a Linha
+                linha = Linha.objects.create(dashboard=dashboard, ordem=ordem_linha)
+                
+                # ==== LAYOUT: 1 TABELA ====
+                if tipo_layout == 'tabela_1':
+                    col = Coluna.objects.create(linha=linha, tamanho_css='col-12', tipo_conteudo='tabela', ordem=0)
+                    tabela = TabelaDinamica(coluna=col)
+                    tabela.titulo = request.POST.get(f'linhas[{row_id}][col][0][titulo]')
+                    tabela.arquivo_csv = request.FILES.get(f'linhas[{row_id}][col][0][csv]')
+                    tabela.save() # O método save() do model vai converter o CSV para JSON neste momento!
+                    
+                # ==== LAYOUT: 1 GRÁFICO GRANDE ====
+                elif tipo_layout == 'grafico_1':
+                    col = Coluna.objects.create(linha=linha, tamanho_css='col-12', tipo_conteudo='grafico', ordem=0)
+                    grafico = GraficoDinamico(coluna=col)
+                    grafico.titulo = request.POST.get(f'linhas[{row_id}][col][0][titulo]')
+                    grafico.tipo = request.POST.get(f'linhas[{row_id}][col][0][tipo]')
+                    grafico.arquivo_csv = request.FILES.get(f'linhas[{row_id}][col][0][csv]')
+                    grafico.save() # Converte CSV para Chart.js structure no model
+                    
+                # ==== LAYOUT: 2 GRÁFICOS (50% / 50%) ====
+                elif tipo_layout == 'grafico_2':
+                    for col_idx in [0, 1]:
+                        col = Coluna.objects.create(linha=linha, tamanho_css='col-lg-6', tipo_conteudo='grafico', ordem=col_idx)
+                        grafico = GraficoDinamico(coluna=col)
+                        grafico.titulo = request.POST.get(f'linhas[{row_id}][col][{col_idx}][titulo]')
+                        grafico.tipo = request.POST.get(f'linhas[{row_id}][col][{col_idx}][tipo]')
+                        grafico.arquivo_csv = request.FILES.get(f'linhas[{row_id}][col][{col_idx}][csv]')
+                        grafico.save()
+                        
+                # ==== LAYOUT: QUADROS (STAT CARDS) ====
+                elif tipo_layout == 'quadros':
+                    col = Coluna.objects.create(linha=linha, tamanho_css='col-12', tipo_conteudo='quadros', ordem=0)
+                    
+                    # Como podem haver até 6 quadros, precisamos achar os IDs de cada quadro dessa linha
+                    quadro_idxs = set()
+                    for key in request.POST.keys():
+                        match = re.match(fr'linhas\[{row_id}\]\[quadros\]\[(\d+)\]', key)
+                        if match:
+                            quadro_idxs.add(int(match.group(1)))
+                    
+                    quadro_idxs = sorted(list(quadro_idxs))
+                    
+                    # Salva cada quadro individualmente e amarra à Coluna pai
+                    for ordem_quadro, q_idx in enumerate(quadro_idxs):
+                        Quadro.objects.create(
+                            coluna=col,
+                            ordem=ordem_quadro,
+                            titulo=request.POST.get(f'linhas[{row_id}][quadros][{q_idx}][titulo]'),
+                            valor=request.POST.get(f'linhas[{row_id}][quadros][{q_idx}][valor]'),
+                            icone=request.POST.get(f'linhas[{row_id}][quadros][{q_idx}][icone]', 'bi-info-circle'),
+                            icone_cor=request.POST.get(f'linhas[{row_id}][quadros][{q_idx}][cor]', 'text-primary')
+                        )
+
+            messages.success(request, 'Dashboard criado com sucesso!')
+            # Redireciona para visualizar o dashboard pronto
+            return redirect('core_gis:visualizar_dashboard', slug=dashboard.slug)
+            
+        except Exception as e:
+            messages.error(request, f'Erro ao processar o Dashboard: {str(e)}')
+            # Em caso de erro, recarrega a página de construção
+            return redirect('core_gis:criar_dashboard')
+
+    # Se for GET (Acessar a página normalmente)
+    return render(request, 'gestao_dashboard_builder.html')
+
+def visualizar_dashboard(request, slug):
+    """View para o usuário final consumir o Dashboard"""
+    
+    # Pre-fetch para otimizar as consultas ao banco e não sobrecarregar
+    dashboard = get_object_or_404(
+        DashboardDinamico.objects.prefetch_related(
+            'linhas__colunas__quadros',
+            'linhas__colunas__tabela',
+            'linhas__colunas__grafico'
+        ), 
+        slug=slug, 
+        ativo=True
+    )
+    
+    return render(request, 'render_dashboard.html', {'dashboard': dashboard})
+
+
+def listar_dashboards(request):
+    dashboards = DashboardDinamico.objects.all().order_by('-id')
+    return render(request, 'listar_dashboards.html', {'dashboards': dashboards})
+
+def excluir_dashboard(request, id):
+    if request.method == 'POST':
+        dash = get_object_or_404(DashboardDinamico, id=id)
+        dash.delete()
+        messages.success(request, f'Dashboard "{dash.titulo}" excluído com sucesso!')
+    return redirect('core_gis:listar_dashboards')
+
+def criar_editar_dashboard(request, id=None):
+    """View unificada que gerencia a criação de um novo ou a edição de um existente"""
+    dashboard = None
+    if id:
+        dashboard = get_object_or_404(DashboardDinamico, id=id)
+
+    if request.method == 'POST':
+        try:
+            titulo = request.POST.get('dash_titulo')
+            subtitulo = request.POST.get('dash_subtitulo', '')
+            tema = request.POST.get('dash_tema', 'theme-default')
+
+            if not dashboard:
+                # Criando um novo (lógica do slug)
+                slug_base = slugify(titulo)
+                slug = slug_base
+                contador = 1
+                while DashboardDinamico.objects.filter(slug=slug).exists():
+                    slug = f"{slug_base}-{contador}"
+                    contador += 1
+                
+                dashboard = DashboardDinamico.objects.create(
+                    titulo=titulo, subtitulo=subtitulo, slug=slug, tema_class=tema
+                )
+            else:
+                # Atualizando existente
+                dashboard.titulo = titulo
+                dashboard.subtitulo = subtitulo
+                dashboard.tema_class = tema
+                dashboard.save()
+
+                # Na edição via construtor, a forma mais segura de lidar com exclusões parciais
+                # é limpar as linhas existentes e recriá-las. 
+                # (NOTA: Se o usuário não enviou um novo CSV na edição, precisamos preservar o JSON antigo. 
+                # Veremos como lidar com isso abaixo)
+
+            # Para capturar os IDs das linhas geradas pelo JS no POST
+            row_ids = set()
+            for key in request.POST.keys():
+                match = re.match(r'linhas\[(\d+)\]', key)
+                if match:
+                    row_ids.add(int(match.group(1)))
+            row_ids = sorted(list(row_ids))
+
+            # Para edição: vamos guardar os dados JSON antigos em memória antes de apagar as linhas,
+            # mapeados pelo ID do componente antigo (enviado via input hidden)
+            json_cache_tabelas = {}
+            json_cache_graficos = {}
+            if id:
+                for linha in dashboard.linhas.all():
+                    for col in linha.colunas.all():
+                        if col.tipo_conteudo == 'tabela' and hasattr(col, 'tabela'):
+                            json_cache_tabelas[str(col.tabela.id)] = (col.tabela.cabecalhos, col.tabela.linhas_dados)
+                        elif col.tipo_conteudo == 'grafico' and hasattr(col, 'grafico'):
+                            json_cache_graficos[str(col.grafico.id)] = (col.grafico.labels, col.grafico.datasets)
+                
+                # Agora limpamos as linhas para recriar conforme a nova ordem do Front-End
+                dashboard.linhas.all().delete()
+
+            # --- RECRIANDO / SALVANDO AS LINHAS E COMPONENTES ---
+            for ordem_linha, row_id in enumerate(row_ids):
+                tipo_layout = request.POST.get(f'linhas[{row_id}][tipo]')
+                linha = Linha.objects.create(dashboard=dashboard, ordem=ordem_linha)
+
+                # ============ TABELA ============
+                if tipo_layout == 'tabela_1':
+                    col = Coluna.objects.create(linha=linha, tamanho_css='col-12', tipo_conteudo='tabela', ordem=0)
+                    tabela = TabelaDinamica(coluna=col)
+                    tabela.titulo = request.POST.get(f'linhas[{row_id}][col][0][titulo]')
+                    
+                    csv_file = request.FILES.get(f'linhas[{row_id}][col][0][csv]')
+                    old_id = request.POST.get(f'linhas[{row_id}][col][0][old_id]')
+
+                    if csv_file:
+                        tabela.arquivo_csv = csv_file # Vai ser convertido no save() do model
+                    elif old_id and old_id in json_cache_tabelas:
+                        # Recupera o JSON antigo caso não tenha enviado novo CSV
+                        tabela.cabecalhos, tabela.linhas_dados = json_cache_tabelas[old_id]
+                    
+                    tabela.save()
+
+                # ============ GRÁFICOS (1 ou 2) ============
+                elif 'grafico' in tipo_layout:
+                    qtd = 1 if tipo_layout == 'grafico_1' else 2
+                    css_class = 'col-12' if qtd == 1 else 'col-lg-6'
+
+                    for col_idx in range(qtd):
+                        col = Coluna.objects.create(linha=linha, tamanho_css=css_class, tipo_conteudo='grafico', ordem=col_idx)
+                        grafico = GraficoDinamico(coluna=col)
+                        grafico.titulo = request.POST.get(f'linhas[{row_id}][col][{col_idx}][titulo]')
+                        grafico.tipo = request.POST.get(f'linhas[{row_id}][col][{col_idx}][tipo]')
+                        
+                        csv_file = request.FILES.get(f'linhas[{row_id}][col][{col_idx}][csv]')
+                        old_id = request.POST.get(f'linhas[{row_id}][col][{col_idx}][old_id]')
+
+                        if csv_file:
+                            grafico.arquivo_csv = csv_file
+                        elif old_id and old_id in json_cache_graficos:
+                            grafico.labels, grafico.datasets = json_cache_graficos[old_id]
+                        
+                        grafico.save()
+
+                # ============ QUADROS NUMÉRICOS ============
+                elif tipo_layout == 'quadros':
+                    col = Coluna.objects.create(linha=linha, tamanho_css='col-12', tipo_conteudo='quadros', ordem=0)
+                    
+                    quadro_idxs = set()
+                    for key in request.POST.keys():
+                        match = re.match(fr'linhas\[{row_id}\]\[quadros\]\[(\d+)\]', key)
+                        if match:
+                            quadro_idxs.add(int(match.group(1)))
+                    
+                    for ordem_quadro, q_idx in enumerate(sorted(list(quadro_idxs))):
+                        Quadro.objects.create(
+                            coluna=col,
+                            ordem=ordem_quadro,
+                            titulo=request.POST.get(f'linhas[{row_id}][quadros][{q_idx}][titulo]'),
+                            valor=request.POST.get(f'linhas[{row_id}][quadros][{q_idx}][valor]'),
+                            icone=request.POST.get(f'linhas[{row_id}][quadros][{q_idx}][icone]', 'bi-info-circle'),
+                            icone_cor=request.POST.get(f'linhas[{row_id}][quadros][{q_idx}][cor]', 'text-primary')
+                        )
+
+            msg = 'atualizado' if id else 'criado'
+            messages.success(request, f'Dashboard {msg} com sucesso!')
+            return redirect('core_gis:listar_dashboards')
+
+        except Exception as e:
+            messages.error(request, f'Erro ao processar: {str(e)}')
+            return redirect('core_gis:editar_dashboard', id=id) if id else redirect('core_gis:criar_dashboard')
+
+    # Se for requisição GET, processar o formulário em branco (Criar) ou Preenchido (Editar)
+    context = {}
+    if dashboard:
+        context['dashboard'] = dashboard
+    return render(request, 'gestao_dashboard_builder.html', context)

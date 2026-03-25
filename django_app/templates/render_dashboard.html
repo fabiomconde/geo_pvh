@@ -1,0 +1,100 @@
+{% extends 'core_gis/dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block wrapper_class %}{{ dashboard.tema_class }}{% endblock %}
+{% block sidebar_title %}{{ dashboard.titulo }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="dashboard-header mb-4">
+    <h1><i class="bi {{ dashboard.icone_header }}"></i> {{ dashboard.titulo }}</h1>
+    {% if dashboard.subtitulo %}<p class="mb-0">{{ dashboard.subtitulo }}</p>{% endif %}
+</div>
+
+<!-- Iterando sobre as Linhas do Dashboard -->
+{% for linha in dashboard.linhas.all %}
+<div class="row g-4 mb-4">
+    
+    <!-- Iterando sobre as Colunas de cada Linha -->
+    {% for coluna in linha.colunas.all %}
+    <div class="{{ coluna.tamanho_css }}">
+        
+        <!-- TIPO 1: QUADROS (Cards Numéricos) -->
+        {% if coluna.tipo_conteudo == 'quadros' %}
+        <div class="row g-3 h-100">
+            {% for quadro in coluna.quadros.all %}
+            <div class="col-12 col-sm-6 {% if coluna.tamanho_css == 'col-12' %}col-md-3{% endif %}">
+                <div class="stat-card">
+                    <i class="bi {{ quadro.icone }} {{ quadro.icone_cor }}"></i>
+                    <div class="stat-content">
+                        <div class="stat-value">{{ quadro.valor }}</div>
+                        <div class="text-muted">{{ quadro.titulo }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- TIPO 2: TABELA DINÂMICA -->
+        {% elif coluna.tipo_conteudo == 'tabela' %}
+        <div class="table-card h-100">
+            <div class="p-3 border-bottom">
+                <h5 class="mb-0"><i class="bi {{ coluna.tabela.icone }}"></i> {{ coluna.tabela.titulo }}</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            {% for cabecalho in coluna.tabela.cabecalhos %}
+                            <th>{{ cabecalho }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in coluna.tabela.linhas_dados %}
+                        <tr>
+                            {% for celula in row %}
+                            <td>{{ celula }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TIPO 3: GRÁFICOS DINÂMICOS -->
+        {% elif coluna.tipo_conteudo == 'grafico' %}
+        <div class="chart-card h-100">
+            <h5 class="mb-3">{{ coluna.grafico.titulo }}</h5>
+            <div class="chart-container" style="position: relative; height: 350px; width: 100%;">
+                
+                <!-- CORREÇÃO: Montando os IDs corretamente antes de gerar o JSON -->
+                {% with col_id_str=coluna.id|stringformat:"s" %}
+                    {% with label_id="labels_"|add:col_id_str dataset_id="datasets_"|add:col_id_str %}
+                        {{ coluna.grafico.labels|json_script:label_id }}
+                        {{ coluna.grafico.datasets|json_script:dataset_id }}
+                    {% endwith %}
+                {% endwith %}
+                
+                <canvas class="dynamic-chart" 
+                        data-tipo="{{ coluna.grafico.tipo }}" 
+                        data-id="{{ coluna.id }}">
+                </canvas>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<!-- 1. Garanta que o CDN do Chart.js está aqui! -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- 2. O seu script customizado que vai desenhar -->
+<script src="{% static 'js/charts_dinamicos.js' %}?v=1"></script>
+{% endblock %}
