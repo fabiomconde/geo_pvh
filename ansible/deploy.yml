@@ -1,3 +1,4 @@
+---
 - name: Deploy PVH Geoportal App
   hosts: all
   become: no
