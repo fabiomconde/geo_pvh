@@ -31,7 +31,7 @@ media/
 
 # --- DOCKER ---
 # Não precisamos enviar os arquivos de configuração para dentro da imagem
-docker-compose*
+# docker-compose*
 Dockerfile
 .dockerignore
 

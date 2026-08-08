@@ -1,0 +1,15 @@
+services:
+  django:
+    environment:
+      - POSTGRES_HOST=meubanco_postgres
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
+networks:
+  default:
+    name: rede_proxy
+    external: true
+    
+
