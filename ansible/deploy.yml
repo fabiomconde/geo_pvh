@@ -3,8 +3,8 @@
   hosts: all
   become: no
   vars:
-    app_dir: /srv/servidor_principal/apps/pvh_geoportal
-    repo_dir: /srv/servidor_principal/apps/pvh_geoportal
+    app_dir: /srv/servidor_principal/apps/geo_pvh
+    repo_dir: /srv/servidor_principal/apps/geo_pvh
 
   tasks:
     - name: Forçar descarte de alterações locais e puxar código
