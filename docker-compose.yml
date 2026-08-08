@@ -62,7 +62,7 @@ services:
   # Django Application
   django:
     build:
-      context: ./django_app
+      context: .
       dockerfile: Dockerfile
     container_name: pvh_django
     environment:

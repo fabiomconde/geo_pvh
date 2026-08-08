@@ -965,4 +965,18 @@ def criar_editar_dashboard(request, id=None):
     context = {}
     if dashboard:
         context['dashboard'] = dashboard
+        
+    # Lendo o tutorial em Markdown
+    try:
+        from django.conf import settings
+        import os
+        md_path = os.path.join(settings.BASE_DIR, 'exemplo_csv', 'exemplo.md')
+        if os.path.exists(md_path):
+            with open(md_path, 'r', encoding='utf-8') as f:
+                context['tutorial_md'] = f.read()
+        else:
+            context['tutorial_md'] = "Arquivo de tutorial não encontrado."
+    except Exception as e:
+        context['tutorial_md'] = f"Erro ao carregar tutorial: {e}"
+        
     return render(request, 'gestao_dashboard_builder.html', context)

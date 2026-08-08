@@ -9,24 +9,6 @@
 {% block content %}
 <div class="dashboard-wrapper {% block wrapper_class %}{% endblock %}">
     <!-- Sidebar -->
-    <nav id="dashboardSidebar" class="dashboard-sidebar">
-        <div class="sidebar-header">
-            <h5 class="mb-0">
-                {% block sidebar_title %}Dashboard{% endblock %}
-            </h5>
-        </div>
-
-        <div class="sidebar-content">
-            {% block sidebar_filters %}
-            <!-- Default Filters Structure -->
-            <div class="filter-section">
-                <h6 class="filter-title">Filtros</h6>
-                <!-- Content will be injected by child templates -->
-            </div>
-            {% endblock %}
-        </div>
-
-    </nav>
 
     <!-- Main Content -->
     <div class="dashboard-main">
