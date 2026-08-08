@@ -10,7 +10,7 @@
     - name: Forçar descarte de alterações locais e puxar código
       ansible.builtin.shell: |
         git reset --hard HEAD
-        git pull origin confi_remoto
+        git pull confi_remoto
       args:
         chdir: "{{ repo_dir }}"
 
@@ -24,9 +24,3 @@
       ansible.builtin.shell: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
       args:
         chdir: "{{ app_dir }}"
-
-    - name: Rodar migrações do Banco de Dados
-      ansible.builtin.shell: docker exec pvh_django python manage.py migrate
-      
-    - name: Coletar Arquivos Estáticos (CSS/JS)
-      ansible.builtin.shell: docker exec pvh_django python manage.py collectstatic --noinput
