@@ -1,10 +1,11 @@
 ---
-- name: Deploy Política Intel Django App
+- name: Deploy PVH Geoportal App
   hosts: all
   become: no  # O usuário dev já está no grupo docker, não precisa de root
   vars:
-    app_dir: /srv/servidor_principal/apps/rede_social/politica_intel
-    repo_dir: /srv/servidor_principal/apps/rede_social
+    # Caminhos do projeto no servidor remoto
+    app_dir: /srv/servidor_principal/apps/pvh_geoportal
+    repo_dir: /srv/servidor_principal/apps/pvh_geoportal
 
   tasks:
     - name: Forçar descarte de alterações locais e puxar código mais recente
@@ -26,7 +27,7 @@
         chdir: "{{ app_dir }}"
 
     - name: Rodar migrações do Banco de Dados
-      ansible.builtin.shell: docker exec app_politica_intel python manage.py migrate
+      ansible.builtin.shell: docker exec pvh_django python manage.py migrate
       
     - name: Coletar Arquivos Estáticos (CSS/JS)
-      ansible.builtin.shell: docker exec app_politica_intel python manage.py collectstatic --noinput
+      ansible.builtin.shell: docker exec pvh_django python manage.py collectstatic --noinput
