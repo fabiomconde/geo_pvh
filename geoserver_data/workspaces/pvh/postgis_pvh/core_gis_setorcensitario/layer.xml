@@ -1,0 +1,16 @@
+<layer>
+  <name>core_gis_setorcensitario</name>
+  <id>LayerInfoImpl--11640a89:19c6899feb5:-7ffb</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-33b0cc86:19c339d3765:-7ffe</id>
+  </defaultStyle>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl--11640a89:19c6899feb5:-7ffc</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2026-02-16 22:38:52.628 UTC</dateCreated>
+</layer>

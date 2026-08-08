@@ -2,8 +2,7 @@
 # Ignoramos a pasta inteira para que o Docker nem tente ler os metadados
 postgres_data/
 redis_data/
-geoserver_data/
-data_source/
+
 
 # --- PYTHON ---
 __pycache__/

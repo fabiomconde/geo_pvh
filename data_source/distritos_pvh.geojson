@@ -1,0 +1,213 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.8735438,
+          -8.7494525
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Porto Velho",
+        "populacao_2022": "460.434",
+        "distancia_sede": "0 km",
+        "caracteristicas": "Área urbana central, sede do poder público, comércio e serviços"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -65.2603977,
+          -9.6270097
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Abunã",
+        "populacao_2022": "2.385",
+        "distancia_sede": "180 km",
+        "caracteristicas": "Distrito às margens do Rio Madeira, comunidade tradicional, pesca artesanal"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -62.8731631,
+          -8.0225772
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Calama",
+        "populacao_2022": "2.312",
+        "distancia_sede": "250 km",
+        "caracteristicas": "Distrito ribeirinho, acesso fluvial, economia extrativista"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -62.6323048,
+          -8.4414457
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Demarcação",
+        "populacao_2022": "845",
+        "distancia_sede": "300 km",
+        "caracteristicas": "Distrito com presença de comunidades quilombolas"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -66.2351356,
+          -9.653173
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Extrema",
+        "populacao_2022": "7.171",
+        "distancia_sede": "210 km",
+        "caracteristicas": "Distrito fronteiriço, agricultura familiar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -65.4984181,
+          -9.5521127
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Fortaleza do Abunã",
+        "populacao_2022": "474",
+        "distancia_sede": "190 km",
+        "caracteristicas": "Distrito com forte presença de assentamentos rurais"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.5414655,
+          -9.464555
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Jaci-Paraná",
+        "populacao_2022": "11.671",
+        "distancia_sede": "100 km",
+        "caracteristicas": "Distrito com conflitos fundiários, pecuária"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64.7990001,
+          -9.682132
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Mutum-Paraná",
+        "populacao_2022": "7.509",
+        "distancia_sede": "150 km",
+        "caracteristicas": "Distrito com comunidades ribeirinhas, pesca"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.3041032,
+          -8.0920961
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Nazaré",
+        "populacao_2022": "607",
+        "distancia_sede": "140 km",
+        "caracteristicas": "Distrito com comunidades tradicionais"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -66.6171597,
+          -9.7650724
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Nova Califórnia",
+        "populacao_2022": "5.216",
+        "distancia_sede": "280 km",
+        "caracteristicas": "Distrito com projetos de assentamento"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.4992779,
+          -8.435939
+        ]
+      },
+      "properties": {
+        "nm_distrito": "São Carlos",
+        "populacao_2022": "1.171",
+        "distancia_sede": "130 km",
+        "caracteristicas": "Distrito com presença indígena"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -65.8355346,
+          -9.6195192
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Vista Alegre do Abunã",
+        "populacao_2022": "8.260",
+        "distancia_sede": "170 km",
+        "caracteristicas": "Distrito agrícola, produção familiar"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -63.966471,
+          -9.6306441
+        ]
+      },
+      "properties": {
+        "nm_distrito": "Rio Pardo",
+        "populacao_2022": "800",
+        "distancia_sede": "320 km",
+        "caracteristicas": "Comunidade rural, agricultura familiar, acesso fluvial e terrestre"
+      }
+    }
+  ]
+}
