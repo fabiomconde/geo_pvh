@@ -1,0 +1,32 @@
+---
+- name: Deploy Política Intel Django App
+  hosts: all
+  become: no  # O usuário dev já está no grupo docker, não precisa de root
+  vars:
+    app_dir: /srv/servidor_principal/apps/rede_social/politica_intel
+    repo_dir: /srv/servidor_principal/apps/rede_social
+
+  tasks:
+    - name: Forçar descarte de alterações locais e puxar código mais recente
+      ansible.builtin.shell: |
+        git reset --hard HEAD
+        git pull origin main
+      args:
+        chdir: "{{ repo_dir }}"
+
+    - name: Gerar arquivo .env seguro no servidor
+      ansible.builtin.copy:
+        content: "{{ lookup('env', 'DOTENV_SECRET') }}"
+        dest: "{{ app_dir }}/.env"
+        mode: '0600'
+
+    - name: Reconstruir a imagem e subir os containers (Docker Compose)
+      ansible.builtin.shell: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+      args:
+        chdir: "{{ app_dir }}"
+
+    - name: Rodar migrações do Banco de Dados
+      ansible.builtin.shell: docker exec app_politica_intel python manage.py migrate
+      
+    - name: Coletar Arquivos Estáticos (CSS/JS)
+      ansible.builtin.shell: docker exec app_politica_intel python manage.py collectstatic --noinput
