@@ -1,17 +1,16 @@
 ---
 - name: Deploy PVH Geoportal App
   hosts: all
-  become: no  # O usuário dev já está no grupo docker, não precisa de root
+  become: no
   vars:
-    # Caminhos do projeto no servidor remoto
     app_dir: /srv/servidor_principal/apps/pvh_geoportal
     repo_dir: /srv/servidor_principal/apps/pvh_geoportal
 
   tasks:
-    - name: Forçar descarte de alterações locais e puxar código mais recente
+    - name: Forçar descarte de alterações locais e puxar código
       ansible.builtin.shell: |
         git reset --hard HEAD
-        git pull origin main
+        git pull origin confi_remoto
       args:
         chdir: "{{ repo_dir }}"
 
@@ -21,7 +20,7 @@
         dest: "{{ app_dir }}/.env"
         mode: '0600'
 
-    - name: Reconstruir a imagem e subir os containers (Docker Compose)
+    - name: Reconstruir a imagem e subir os containers
       ansible.builtin.shell: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
       args:
         chdir: "{{ app_dir }}"

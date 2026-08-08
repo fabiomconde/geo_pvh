@@ -1,0 +1,39 @@
+name: Deploy Automático VPS
+
+on:
+  push:
+    branches:
+      - confi_remoto  # Vai rodar sempre que você fizer push na branch confi_remoto
+
+jobs:
+  deploy:
+    name: Deploy com Ansible
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Instalar Ansible no Runner do GitHub
+        run: sudo apt-get update && sudo apt-get install -y ansible
+
+      - name: Preparar chaves SSH e Inventário
+        env:
+          # Passamos os segredos de forma segura para o bash
+          PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
+          IP_VPS: ${{ secrets.VPS_IP }}
+          USUARIO_VPS: ${{ secrets.VPS_USER }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          # Cria o arquivo dizendo ao Ansible onde conectar
+          echo "$IP_VPS ansible_user=$USUARIO_VPS" > inventory.ini
+
+      - name: Executar o Ansible Playbook
+        env:
+          # Desativa a exigência de known_hosts (substitui o ssh-keyscan)
+          ANSIBLE_HOST_KEY_CHECKING: False
+          DOTENV_SECRET: ${{ secrets.ENV_FILE_CONTENT_GEO }}
+        run: ansible-playbook -i inventory.ini ansible/deploy.yml --private-key ~/.ssh/id_rsa
