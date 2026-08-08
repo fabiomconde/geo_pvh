@@ -1,13 +1,96 @@
-services:
+services: 
+  # ─────────────────────────────────────
+  # PostgreSQL com PostGIS
+  # ─────────────────────────────────────
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: pvh_postgis
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - rede_proxy
+
+  # ─────────────────────────────────────
+  # Redis
+  # ─────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: pvh_redis
+    restart: always
+    volumes:
+      - ./redis_data:/data
+    networks:
+      - rede_proxy
+
+  # ─────────────────────────────────────
+  # GeoServer
+  # ─────────────────────────────────────
+  geoserver:
+    image: kartoza/geoserver:2.23.0
+    container_name: pvh_geoserver
+    restart: always
+    environment:
+      GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER}
+      GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD}
+      JAVA_OPTS: "-Xms512m -Xmx2048m -DSKIP_DEMO_DATA=true"
+      PROXY_BASE_URL: "https://geoserver.provaconceito.tech/geoserver"
+    volumes:
+      - ./geoserver_data:/opt/geoserver/data_dir
+    depends_on:
+      - db
+    networks:
+      - rede_proxy
+
+  # ─────────────────────────────────────
+  # Django (GeoDjango)
+  # ─────────────────────────────────────
   django:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    container_name: pvh_django
+    restart: always
+    env_file: .env
     environment:
       - POSTGRES_HOST=pvh_postgis
+    volumes:
+      - ./static_volume:/app/staticfiles
+      - ./media_volume:/app/media
+      - ./data_source:/app/data_source
     command: >
-      sh -c "python manage.py migrate &&
+      sh -c "pip install --no-cache-dir -r requirements.txt &&
              python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
              gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120"
+             # Troque 'core.wsgi' pelo nome da sua pasta principal se não for 'core'
+    depends_on:
+      - db
+      - redis
+    networks:
+      - rede_proxy
+
+  # ─────────────────────────────────────
+  # Nginx Interno
+  # ─────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: pvh_nginx
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static_volume:/var/www/static:ro
+      - ./media_volume:/var/www/media:ro
+    depends_on:
+      - django
+      - geoserver
+    networks:
+      - rede_proxy
 
 networks:
-  default:
-    name: rede_proxy
+  rede_proxy:
     external: true
