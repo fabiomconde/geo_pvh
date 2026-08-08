@@ -10,7 +10,7 @@
     - name: Forçar descarte de alterações locais e puxar código
       ansible.builtin.shell: |
         git reset --hard HEAD
-        git pull confi_remoto
+        git pull origin confi_remoto
       args:
         chdir: "{{ repo_dir }}"
 
