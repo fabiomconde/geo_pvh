@@ -22,7 +22,7 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 systemctl enable --now docker
 ```
-
+ 
 ## 4. Permissões de Usuário
 Para gerenciar o Docker sem precisar do comando `sudo` toda vez, adicione seu usuário (ex: `dev`) ao grupo do Docker:
 ```bash
