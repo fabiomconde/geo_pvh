@@ -13,6 +13,9 @@
         {% if filtro_tipo %}<input type="hidden" name="tipo" value="{{ filtro_tipo }}">{% endif %}
         {% if filtro_conflito %}<input type="hidden" name="conflito" value="{{ filtro_conflito }}">{% endif %}
         {% if filtro_violacao %}<input type="hidden" name="violacao" value="{{ filtro_violacao }}">{% endif %}
+        {% if filtro_ator %}<input type="hidden" name="ator" value="{{ filtro_ator }}">{% endif %}
+        {% if filtro_ano_pub %}<input type="hidden" name="ano_pub" value="{{ filtro_ano_pub }}">{% endif %}
+        {% if filtro_ano_fato %}<input type="hidden" name="ano_fato" value="{{ filtro_ano_fato }}">{% endif %}
         <div class="input-group input-group-sm">
             <input type="text" name="busca" class="form-control bg-transparent border-secondary"
                 placeholder="Pesquisar título..." value="{{ filtro_busca|default:'' }}">
@@ -25,12 +28,12 @@
 
 <div class="filter-group">
     <h6 class="filter-title">Tipo de Documento</h6>
-    <a href="?{% if filtro_conflito %}conflito={{ filtro_conflito }}&{% endif %}{% if filtro_violacao %}violacao={{ filtro_violacao }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
+    <a href="?{% if filtro_conflito %}conflito={{ filtro_conflito }}&{% endif %}{% if filtro_violacao %}violacao={{ filtro_violacao }}&{% endif %}{% if filtro_ator %}ator={{ filtro_ator }}&{% endif %}{% if filtro_ano_pub %}ano_pub={{ filtro_ano_pub }}&{% endif %}{% if filtro_ano_fato %}ano_fato={{ filtro_ano_fato }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
        class="filter-item {% if not filtro_tipo %}active{% endif %}">
         <i class="bi bi-collection me-2"></i> Todos
     </a>
     {% for tipo in tipos_documento %}
-    <a href="?tipo={{ tipo.id }}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
+    <a href="?tipo={{ tipo.id }}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
        class="filter-item {% if filtro_tipo == tipo.id|stringformat:'d' %}active{% endif %}">
         <i class="bi bi-file-earmark-text me-2"></i> {{ tipo.nome }}
     </a>
@@ -39,12 +42,12 @@
 
 <div class="filter-group">
     <h6 class="filter-title">Conflito</h6>
-    <a href="?{% if filtro_tipo %}tipo={{ filtro_tipo }}&{% endif %}{% if filtro_violacao %}violacao={{ filtro_violacao }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
+    <a href="?{% if filtro_tipo %}tipo={{ filtro_tipo }}&{% endif %}{% if filtro_violacao %}violacao={{ filtro_violacao }}&{% endif %}{% if filtro_ator %}ator={{ filtro_ator }}&{% endif %}{% if filtro_ano_pub %}ano_pub={{ filtro_ano_pub }}&{% endif %}{% if filtro_ano_fato %}ano_fato={{ filtro_ano_fato }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
        class="filter-item {% if not filtro_conflito %}active{% endif %}">
         <i class="bi bi-list me-2"></i> Todos
     </a>
     {% for conflito in conflitos %}
-    <a href="?conflito={{ conflito.id }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
+    <a href="?conflito={{ conflito.id }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
        class="filter-item {% if filtro_conflito == conflito.id|stringformat:'d' %}active{% endif %}">
         <i class="bi bi-exclamation-diamond me-2"></i> {{ conflito.nome|truncatechars:30 }}
     </a>
@@ -53,14 +56,56 @@
 
 <div class="filter-group">
     <h6 class="filter-title">Violações</h6>
-    <a href="?{% if filtro_tipo %}tipo={{ filtro_tipo }}&{% endif %}{% if filtro_conflito %}conflito={{ filtro_conflito }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
+    <a href="?{% if filtro_tipo %}tipo={{ filtro_tipo }}&{% endif %}{% if filtro_conflito %}conflito={{ filtro_conflito }}&{% endif %}{% if filtro_ator %}ator={{ filtro_ator }}&{% endif %}{% if filtro_ano_pub %}ano_pub={{ filtro_ano_pub }}&{% endif %}{% if filtro_ano_fato %}ano_fato={{ filtro_ano_fato }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
        class="filter-item {% if not filtro_violacao %}active{% endif %}">
         <i class="bi bi-shield me-2"></i> Todas
     </a>
     {% for violacao in violacoes %}
-    <a href="?violacao={{ violacao.id }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
+    <a href="?violacao={{ violacao.id }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
        class="filter-item {% if filtro_violacao == violacao.id|stringformat:'d' %}active{% endif %}">
         <i class="bi bi-shield-exclamation me-2"></i> {{ violacao.nome|truncatechars:30 }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="filter-group">
+    <h6 class="filter-title">Atores Citados</h6>
+    <a href="?{% if filtro_tipo %}tipo={{ filtro_tipo }}&{% endif %}{% if filtro_conflito %}conflito={{ filtro_conflito }}&{% endif %}{% if filtro_violacao %}violacao={{ filtro_violacao }}&{% endif %}{% if filtro_ano_pub %}ano_pub={{ filtro_ano_pub }}&{% endif %}{% if filtro_ano_fato %}ano_fato={{ filtro_ano_fato }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if not filtro_ator %}active{% endif %}">
+        <i class="bi bi-people me-2"></i> Todos
+    </a>
+    {% for ator in atores %}
+    <a href="?ator={{ ator.id }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if filtro_ator == ator.id|stringformat:'d' %}active{% endif %}">
+        <i class="bi bi-person me-2"></i> {{ ator.nome|truncatechars:30 }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="filter-group">
+    <h6 class="filter-title">Ano da Publicação</h6>
+    <a href="?{% if filtro_tipo %}tipo={{ filtro_tipo }}&{% endif %}{% if filtro_conflito %}conflito={{ filtro_conflito }}&{% endif %}{% if filtro_violacao %}violacao={{ filtro_violacao }}&{% endif %}{% if filtro_ator %}ator={{ filtro_ator }}&{% endif %}{% if filtro_ano_fato %}ano_fato={{ filtro_ano_fato }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if not filtro_ano_pub %}active{% endif %}">
+        <i class="bi bi-calendar-event me-2"></i> Todos
+    </a>
+    {% for ano in anos_pub %}
+    <a href="?ano_pub={{ ano }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if filtro_ano_pub == ano|stringformat:'d' %}active{% endif %}">
+        <i class="bi bi-calendar me-2"></i> {{ ano }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="filter-group">
+    <h6 class="filter-title">Ano do Fato</h6>
+    <a href="?{% if filtro_tipo %}tipo={{ filtro_tipo }}&{% endif %}{% if filtro_conflito %}conflito={{ filtro_conflito }}&{% endif %}{% if filtro_violacao %}violacao={{ filtro_violacao }}&{% endif %}{% if filtro_ator %}ator={{ filtro_ator }}&{% endif %}{% if filtro_ano_pub %}ano_pub={{ filtro_ano_pub }}&{% endif %}{% if filtro_busca %}busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if not filtro_ano_fato %}active{% endif %}">
+        <i class="bi bi-calendar-check me-2"></i> Todos
+    </a>
+    {% for ano in anos_fato %}
+    <a href="?ano_fato={{ ano }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}"
+       class="filter-item {% if filtro_ano_fato == ano|stringformat:'d' %}active{% endif %}">
+        <i class="bi bi-calendar3 me-2"></i> {{ ano }}
     </a>
     {% endfor %}
 </div>
@@ -68,7 +113,7 @@
 
 {% block breadcrumbs %}
 <span class="text-muted">Publicações / <strong>
-    {% if filtro_tipo or filtro_conflito or filtro_violacao or filtro_busca %}
+    {% if filtro_tipo or filtro_conflito or filtro_violacao or filtro_ator or filtro_ano_pub or filtro_ano_fato or filtro_busca %}
         Filtradas ({{ total_resultados }} resultado{{ total_resultados|pluralize:"s" }})
     {% else %}
         Todas ({{ total_resultados }})
@@ -88,7 +133,7 @@
     <ul class="pagination justify-content-center">
         {% if publicacoes.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ publicacoes.previous_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+            <a class="page-link" href="?page={{ publicacoes.previous_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
                 <i class="bi bi-chevron-left"></i> Anterior
             </a>
         </li>
@@ -105,7 +150,7 @@
             </li>
             {% elif num > publicacoes.number|add:'-3' and num < publicacoes.number|add:'3' %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ num }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
                     {{ num }}
                 </a>
             </li>
@@ -114,7 +159,7 @@
 
         {% if publicacoes.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ publicacoes.next_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+            <a class="page-link" href="?page={{ publicacoes.next_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
                 Próxima <i class="bi bi-chevron-right"></i>
             </a>
         </li>
@@ -128,7 +173,7 @@
 {% endif %}
 
 <!-- Active Filters -->
-{% if filtro_tipo or filtro_conflito or filtro_violacao or filtro_busca %}
+{% if filtro_tipo or filtro_conflito or filtro_violacao or filtro_ator or filtro_ano_pub or filtro_ano_fato or filtro_busca %}
 <div class="active-filters mb-4">
     <span class="text-muted me-2"><i class="bi bi-funnel-fill"></i> Filtros ativos:</span>
     {% if filtro_busca %}
@@ -154,6 +199,19 @@
                 <span class="badge bg-danger me-1">{{ v.nome|truncatechars:25 }}</span>
             {% endif %}
         {% endfor %}
+    {% endif %}
+    {% if filtro_ator %}
+        {% for a in atores %}
+            {% if a.id|stringformat:'d' == filtro_ator %}
+                <span class="badge bg-info text-dark me-1"><i class="bi bi-person"></i> {{ a.nome|truncatechars:25 }}</span>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    {% if filtro_ano_pub %}
+        <span class="badge bg-dark me-1"><i class="bi bi-calendar"></i> Pub: {{ filtro_ano_pub }}</span>
+    {% endif %}
+    {% if filtro_ano_fato %}
+        <span class="badge bg-dark me-1"><i class="bi bi-calendar3"></i> Fato: {{ filtro_ano_fato }}</span>
     {% endif %}
     <a href="{% url 'core_gis:lista_publicacoes' %}" class="btn btn-sm btn-outline-secondary ms-2">
         <i class="bi bi-x-circle"></i> Limpar
@@ -236,7 +294,7 @@
     <ul class="pagination justify-content-center">
         {% if publicacoes.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ publicacoes.previous_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+            <a class="page-link" href="?page={{ publicacoes.previous_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
                 <i class="bi bi-chevron-left"></i> Anterior
             </a>
         </li>
@@ -253,7 +311,7 @@
             </li>
             {% elif num > publicacoes.number|add:'-3' and num < publicacoes.number|add:'3' %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ num }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
                     {{ num }}
                 </a>
             </li>
@@ -262,7 +320,7 @@
 
         {% if publicacoes.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ publicacoes.next_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
+            <a class="page-link" href="?page={{ publicacoes.next_page_number }}{% if filtro_tipo %}&tipo={{ filtro_tipo }}{% endif %}{% if filtro_conflito %}&conflito={{ filtro_conflito }}{% endif %}{% if filtro_violacao %}&violacao={{ filtro_violacao }}{% endif %}{% if filtro_ator %}&ator={{ filtro_ator }}{% endif %}{% if filtro_ano_pub %}&ano_pub={{ filtro_ano_pub }}{% endif %}{% if filtro_ano_fato %}&ano_fato={{ filtro_ano_fato }}{% endif %}{% if filtro_busca %}&busca={{ filtro_busca }}{% endif %}">
                 Próxima <i class="bi bi-chevron-right"></i>
             </a>
         </li>

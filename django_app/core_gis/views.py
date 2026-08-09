@@ -556,7 +556,7 @@ def estatisticas_gerais(request):
 def lista_publicacoes(request):
     """Página de listagem de publicações com filtros"""
     from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-    from .models import Conflito, TipoViolacao
+    from .models import Conflito, TipoViolacao, Ator
 
     publicacoes = Publicacao.objects.filter(is_publicado=True).select_related(
         'tipo_documento', 'conflito'
@@ -566,6 +566,9 @@ def lista_publicacoes(request):
     tipo_id = request.GET.get('tipo')
     conflito_id = request.GET.get('conflito')
     violacao_id = request.GET.get('violacao')
+    ator_id = request.GET.get('ator')
+    ano_pub = request.GET.get('ano_pub')
+    ano_fato = request.GET.get('ano_fato')
     busca = request.GET.get('busca', '').strip()
 
     if tipo_id:
@@ -574,6 +577,12 @@ def lista_publicacoes(request):
         publicacoes = publicacoes.filter(conflito_id=conflito_id)
     if violacao_id:
         publicacoes = publicacoes.filter(violacoes_denunciadas__id=violacao_id)
+    if ator_id:
+        publicacoes = publicacoes.filter(atores_citados__id=ator_id)
+    if ano_pub:
+        publicacoes = publicacoes.filter(data_publicacao__year=ano_pub)
+    if ano_fato:
+        publicacoes = publicacoes.filter(data_fato__year=ano_fato)
     if busca:
         publicacoes = publicacoes.filter(titulo__icontains=busca)
 
@@ -593,6 +602,16 @@ def lista_publicacoes(request):
     tipos_documento = TipoDocumento.objects.all().order_by('nome')
     conflitos = Conflito.objects.all().order_by('nome')
     violacoes = TipoViolacao.objects.all().order_by('nome')
+    
+    # Atores que possuem publicações publicadas (para evitar lista vazia)
+    atores = Ator.objects.filter(publicacao__is_publicado=True).distinct().order_by('nome')
+    
+    # Anos únicos das datas de publicação e fato
+    anos_pub = Publicacao.objects.filter(is_publicado=True, data_publicacao__isnull=False).dates('data_publicacao', 'year', order='DESC')
+    anos_pub = [data.year for data in anos_pub]
+    
+    anos_fato = Publicacao.objects.filter(is_publicado=True, data_fato__isnull=False).dates('data_fato', 'year', order='DESC')
+    anos_fato = [data.year for data in anos_fato]
 
     context = {
         'page_title': 'Publicações',
@@ -600,9 +619,15 @@ def lista_publicacoes(request):
         'tipos_documento': tipos_documento,
         'conflitos': conflitos,
         'violacoes': violacoes,
+        'atores': atores,
+        'anos_pub': anos_pub,
+        'anos_fato': anos_fato,
         'filtro_tipo': tipo_id,
         'filtro_conflito': conflito_id,
         'filtro_violacao': violacao_id,
+        'filtro_ator': ator_id,
+        'filtro_ano_pub': ano_pub,
+        'filtro_ano_fato': ano_fato,
         'filtro_busca': busca,
         'total_resultados': paginator.count,
     }
