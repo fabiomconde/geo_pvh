@@ -39,6 +39,8 @@ services:
       GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD}
       JAVA_OPTS: "-Xms512m -Xmx2048m -DSKIP_DEMO_DATA=true"
       PROXY_BASE_URL: "https://geoserver.provaconceito.tech/geoserver"
+      # ADICIONE ESTA LINHA AQUI:
+      GEOSERVER_CSRF_WHITELIST: "geoserver.provaconceito.tech"
     volumes:
       - ./geoserver_data:/opt/geoserver/data_dir
     depends_on:
